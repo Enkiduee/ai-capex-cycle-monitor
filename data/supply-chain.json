@@ -1,0 +1,238 @@
+{
+  "updatedAt": "2026-07-11",
+  "isDemoData": true,
+  "dataNotice": "公司财务趋势、风险等级与产业链分数均为演示数据，不是最新财报结论。",
+  "riskScale": ["low", "medium", "high", "critical", "unknown"],
+  "companies": [
+    {
+      "ticker": "NVDA",
+      "name": "NVIDIA",
+      "segment": "GPU",
+      "revenueTrend": "高位增长",
+      "grossMarginTrend": "基本稳定",
+      "inventoryRisk": "low",
+      "receivablesRisk": "medium",
+      "debtRisk": "low",
+      "customerConcentration": "high",
+      "overallRisk": "medium",
+      "riskScore": 29,
+      "updatedAt": "2026-07-11",
+      "source": "演示数据（非官方财务数据）"
+    },
+    {
+      "ticker": "AVGO",
+      "name": "Broadcom",
+      "segment": "高速连接",
+      "revenueTrend": "稳健增长",
+      "grossMarginTrend": "基本稳定",
+      "inventoryRisk": "low",
+      "receivablesRisk": "medium",
+      "debtRisk": "medium",
+      "customerConcentration": "high",
+      "overallRisk": "medium",
+      "riskScore": 34,
+      "updatedAt": "2026-07-11",
+      "source": "演示数据（非官方财务数据）"
+    },
+    {
+      "ticker": "ANET",
+      "name": "Arista Networks",
+      "segment": "交换机与网络",
+      "revenueTrend": "稳健增长",
+      "grossMarginTrend": "小幅改善",
+      "inventoryRisk": "medium",
+      "receivablesRisk": "low",
+      "debtRisk": "low",
+      "customerConcentration": "high",
+      "overallRisk": "medium",
+      "riskScore": 31,
+      "updatedAt": "2026-07-11",
+      "source": "演示数据（非官方财务数据）"
+    },
+    {
+      "ticker": "MRVL",
+      "name": "Marvell Technology",
+      "segment": "高速连接",
+      "revenueTrend": "增长放缓",
+      "grossMarginTrend": "小幅承压",
+      "inventoryRisk": "medium",
+      "receivablesRisk": "medium",
+      "debtRisk": "medium",
+      "customerConcentration": "high",
+      "overallRisk": "medium",
+      "riskScore": 46,
+      "updatedAt": "2026-07-10",
+      "source": "演示数据（非官方财务数据）"
+    },
+    {
+      "ticker": "CRDO",
+      "name": "Credo Technology",
+      "segment": "高速连接",
+      "revenueTrend": "快速增长",
+      "grossMarginTrend": "基本稳定",
+      "inventoryRisk": "medium",
+      "receivablesRisk": "medium",
+      "debtRisk": "low",
+      "customerConcentration": "high",
+      "overallRisk": "medium",
+      "riskScore": 43,
+      "updatedAt": "2026-07-10",
+      "source": "演示数据（非官方财务数据）"
+    },
+    {
+      "ticker": "ALAB",
+      "name": "Astera Labs",
+      "segment": "高速连接",
+      "revenueTrend": "快速增长",
+      "grossMarginTrend": "小幅改善",
+      "inventoryRisk": "medium",
+      "receivablesRisk": "high",
+      "debtRisk": "low",
+      "customerConcentration": "high",
+      "overallRisk": "medium",
+      "riskScore": 48,
+      "updatedAt": "2026-07-09",
+      "source": "演示数据（非官方财务数据）"
+    },
+    {
+      "ticker": "LITE",
+      "name": "Lumentum",
+      "segment": "光芯片",
+      "revenueTrend": "温和复苏",
+      "grossMarginTrend": "逐步改善",
+      "inventoryRisk": "high",
+      "receivablesRisk": "medium",
+      "debtRisk": "medium",
+      "customerConcentration": "medium",
+      "overallRisk": "high",
+      "riskScore": 53,
+      "updatedAt": "2026-07-09",
+      "source": "演示数据（非官方财务数据）"
+    },
+    {
+      "ticker": "COHR",
+      "name": "Coherent",
+      "segment": "光模块",
+      "revenueTrend": "温和复苏",
+      "grossMarginTrend": "基本稳定",
+      "inventoryRisk": "high",
+      "receivablesRisk": "medium",
+      "debtRisk": "medium",
+      "customerConcentration": "medium",
+      "overallRisk": "high",
+      "riskScore": 51,
+      "updatedAt": "2026-07-08",
+      "source": "演示数据（非官方财务数据）"
+    },
+    {
+      "ticker": "AAOI",
+      "name": "Applied Optoelectronics",
+      "segment": "光模块",
+      "revenueTrend": "波动增长",
+      "grossMarginTrend": "波动承压",
+      "inventoryRisk": "high",
+      "receivablesRisk": "high",
+      "debtRisk": "medium",
+      "customerConcentration": "high",
+      "overallRisk": "high",
+      "riskScore": 62,
+      "updatedAt": "2026-07-08",
+      "source": "演示数据（非官方财务数据）"
+    },
+    {
+      "ticker": "CRWV",
+      "name": "CoreWeave",
+      "segment": "Neocloud",
+      "revenueTrend": "高速扩张",
+      "grossMarginTrend": "波动加大",
+      "inventoryRisk": "medium",
+      "receivablesRisk": "high",
+      "debtRisk": "critical",
+      "customerConcentration": "critical",
+      "overallRisk": "critical",
+      "riskScore": 78,
+      "updatedAt": "2026-07-11",
+      "source": "演示数据（非官方财务数据）"
+    },
+    {
+      "ticker": "NBIS",
+      "name": "Nebius Group",
+      "segment": "Neocloud",
+      "revenueTrend": "高速扩张",
+      "grossMarginTrend": "仍在爬坡",
+      "inventoryRisk": "unknown",
+      "receivablesRisk": "high",
+      "debtRisk": "critical",
+      "customerConcentration": "high",
+      "overallRisk": "critical",
+      "riskScore": 73,
+      "updatedAt": "2026-07-07",
+      "source": "演示数据（非官方财务数据）"
+    }
+  ],
+  "segments": [
+    {
+      "id": "hyperscalers",
+      "name": "云巨头",
+      "score": 35,
+      "riskLevel": "medium",
+      "description": "预算仍在扩张，但资本开支增速已由高位回落。"
+    },
+    {
+      "id": "gpu",
+      "name": "GPU",
+      "score": 28,
+      "riskLevel": "medium",
+      "description": "核心加速器需求保持韧性，主要风险来自客户集中与高基数。"
+    },
+    {
+      "id": "switching-network",
+      "name": "交换机与网络",
+      "score": 32,
+      "riskLevel": "medium",
+      "description": "网络升级需求延续，但采购节奏可能随集群交付而波动。"
+    },
+    {
+      "id": "high-speed-connectivity",
+      "name": "高速连接",
+      "score": 43,
+      "riskLevel": "medium",
+      "description": "收入增长较快，应收账款和单一客户依赖开始抬升。"
+    },
+    {
+      "id": "optical-modules",
+      "name": "光模块",
+      "score": 51,
+      "riskLevel": "high",
+      "description": "扩产与产品迭代并行，库存消化和价格竞争值得关注。"
+    },
+    {
+      "id": "optical-chips",
+      "name": "光芯片",
+      "score": 47,
+      "riskLevel": "medium",
+      "description": "需求正在修复，但盈利能力对产能利用率仍较敏感。"
+    },
+    {
+      "id": "pcb-materials",
+      "name": "PCB 与材料",
+      "score": 38,
+      "riskLevel": "medium",
+      "description": "高端材料需求稳健，扩产领先终端需求的风险仍可控。"
+    },
+    {
+      "id": "power-cooling",
+      "name": "电力与液冷",
+      "score": 34,
+      "riskLevel": "medium",
+      "description": "电力接入仍是建设瓶颈，订单能见度较好但项目周期偏长。"
+    },
+    {
+      "id": "neocloud",
+      "name": "Neocloud",
+      "score": 76,
+      "riskLevel": "critical",
+      "description": "高杠杆、再融资依赖与客户集中使信用风险显著高于其他环节。"
+    }
+  ]
+}

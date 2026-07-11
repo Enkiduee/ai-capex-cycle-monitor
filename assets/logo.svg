@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="logo-title logo-desc">
+  <title id="logo-title">AI CapEx Cycle Monitor Logo</title>
+  <desc id="logo-desc">数据中心机架、周期雷达圆环与风险趋势折线组成的图标</desc>
+  <rect x="3" y="3" width="58" height="58" rx="14" fill="#0b1220" stroke="#334155" stroke-width="2"/>
+  <circle cx="32" cy="32" r="22" fill="none" stroke="#1e3a5f" stroke-width="2"/>
+  <path d="M32 10a22 22 0 0 1 20.8 14.8" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+  <path d="M50.5 20.8l2.5 4.5-5.1.2" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="15" y="24" width="9" height="23" rx="2" fill="#172033" stroke="#94a3b8" stroke-width="1.5"/>
+  <rect x="27.5" y="18" width="9" height="29" rx="2" fill="#172033" stroke="#94a3b8" stroke-width="1.5"/>
+  <rect x="40" y="28" width="9" height="19" rx="2" fill="#172033" stroke="#94a3b8" stroke-width="1.5"/>
+  <path d="M18 38l7-7 7 4 7-9 8 5" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="18" cy="38" r="2" fill="#22c55e"/>
+  <circle cx="47" cy="31" r="2.5" fill="#f59e0b"/>
+  <path d="M18 28h3M30.5 23h3M43 32h3" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

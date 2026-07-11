@@ -1,0 +1,136 @@
+{
+  "updatedAt": "2026-07-11",
+  "isDemoData": true,
+  "dataNotice": "宏观指标为情景化演示值，不是 FRED、央行或市场数据的实时快照。",
+  "status": {
+    "id": "high-rates-growth",
+    "name": "高利率 + 经济增长",
+    "riskLevel": "medium",
+    "riskScore": 49,
+    "summary": "增长仍具韧性，有助于维持 AI 基础设施需求；但实际利率和融资成本偏高，估值与高杠杆项目继续承压。"
+  },
+  "indicators": [
+    {
+      "id": "us10yYield",
+      "name": "美国 10 年期国债收益率",
+      "value": 4.32,
+      "previousValue": 4.18,
+      "change": 0.14,
+      "unit": "%",
+      "direction": "up",
+      "riskLevel": "high",
+      "riskScore": 62,
+      "impact": "长端利率上行会抬高数据中心项目的折现率与长期融资成本。",
+      "updatedAt": "2026-07-11",
+      "source": "演示数据（非实时美国国债数据）"
+    },
+    {
+      "id": "realRate",
+      "name": "实际利率",
+      "value": 2.04,
+      "previousValue": 1.92,
+      "change": 0.12,
+      "unit": "%",
+      "direction": "up",
+      "riskLevel": "high",
+      "riskScore": 66,
+      "impact": "实际利率偏高会削弱远期现金流价值，并提高新建算力项目的资本门槛。",
+      "updatedAt": "2026-07-11",
+      "source": "演示数据（非实时 FRED 数据）"
+    },
+    {
+      "id": "highYieldSpread",
+      "name": "高收益债信用利差",
+      "value": 3.45,
+      "previousValue": 3.28,
+      "change": 0.17,
+      "unit": "%",
+      "direction": "up",
+      "riskLevel": "medium",
+      "riskScore": 48,
+      "impact": "利差温和走阔提示风险偏好下降，Neocloud 与高杠杆供应商再融资成本可能上升。",
+      "updatedAt": "2026-07-11",
+      "source": "演示数据（非实时信用市场数据）"
+    },
+    {
+      "id": "manufacturingPmi",
+      "name": "制造业 PMI",
+      "value": 51.4,
+      "previousValue": 50.8,
+      "change": 0.6,
+      "unit": "点",
+      "direction": "up",
+      "riskLevel": "low",
+      "riskScore": 22,
+      "impact": "PMI 位于扩张区间，说明企业需求尚有韧性，对 AI 硬件订单形成支撑。",
+      "updatedAt": "2026-07-11",
+      "source": "演示数据（非实时 PMI 数据）"
+    },
+    {
+      "id": "bankLendingStandards",
+      "name": "银行贷款标准",
+      "value": 14.2,
+      "previousValue": 12.5,
+      "change": 1.7,
+      "unit": "净收紧比例 %",
+      "direction": "up",
+      "riskLevel": "medium",
+      "riskScore": 47,
+      "impact": "贷款标准继续收紧会压缩中小型数据中心运营商的可用信贷额度。",
+      "updatedAt": "2026-07-11",
+      "source": "演示数据（非实时银行信贷调查）"
+    },
+    {
+      "id": "corporateFundingCost",
+      "name": "企业融资成本",
+      "value": 5.86,
+      "previousValue": 5.68,
+      "change": 0.18,
+      "unit": "%",
+      "direction": "up",
+      "riskLevel": "high",
+      "riskScore": 61,
+      "impact": "综合融资成本上升会拉长资本回收期，并增加依赖债务融资项目的现金流压力。",
+      "updatedAt": "2026-07-11",
+      "source": "演示数据（非实时企业债融资数据）"
+    }
+  ],
+  "quadrants": [
+    {
+      "id": "lower-rates-growth",
+      "name": "降息 + 经济增长",
+      "rateTrend": "down",
+      "growthTrend": "growth",
+      "riskLevel": "low",
+      "isCurrent": false,
+      "description": "最有利：融资成本下降，同时终端需求和企业预算保持增长。"
+    },
+    {
+      "id": "high-rates-growth",
+      "name": "高利率 + 经济增长",
+      "rateTrend": "high",
+      "growthTrend": "growth",
+      "riskLevel": "medium",
+      "isCurrent": true,
+      "description": "估值承压，但经济韧性可能维持 AI 基础设施需求。"
+    },
+    {
+      "id": "lower-rates-recession",
+      "name": "降息 + 经济衰退",
+      "rateTrend": "down",
+      "growthTrend": "recession",
+      "riskLevel": "high",
+      "isCurrent": false,
+      "description": "业绩先承压，随着融资条件改善，周期后段可能出现修复。"
+    },
+    {
+      "id": "high-rates-recession",
+      "name": "高利率 + 经济衰退",
+      "rateTrend": "high",
+      "growthTrend": "recession",
+      "riskLevel": "critical",
+      "isCurrent": false,
+      "description": "最危险：需求收缩与高融资成本叠加，订单和信用风险可能同步恶化。"
+    }
+  ]
+}

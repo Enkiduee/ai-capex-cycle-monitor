@@ -1,0 +1,61 @@
+{
+  "updatedAt": "2026-07-11",
+  "isDemoData": true,
+  "dataNotice": "本文件为研究框架演示数据，不代表任何公司或市场的实时状况。",
+  "manualScore": 42,
+  "stage": "扩张中后期",
+  "level": "yellow",
+  "summary": "AI 基础设施仍处于扩张中后期。巨头资本开支维持高位，但增速正在放缓，自由现金流与融资成本压力有所上升，尚未出现全面订单反转。",
+  "components": [
+    {
+      "id": "capexMomentum",
+      "name": "巨头 CapEx 动量",
+      "score": 30,
+      "weight": 0.25,
+      "level": "yellow",
+      "description": "资本开支仍在增长，但同比增速由高位回落，需要关注预算增量是否继续收窄。",
+      "updatedAt": "2026-07-11",
+      "source": "演示数据：云巨头季度资本开支样本"
+    },
+    {
+      "id": "aiRevenueRealization",
+      "name": "AI 收入兑现程度",
+      "score": 38,
+      "weight": 0.2,
+      "level": "yellow",
+      "description": "云业务收入保持增长，但增速仍低于资本开支增速，投资回报需要更长时间兑现。",
+      "updatedAt": "2026-07-11",
+      "source": "演示数据：云业务收入增长样本"
+    },
+    {
+      "id": "supplyChainRisk",
+      "name": "供应链订单与库存",
+      "score": 43,
+      "weight": 0.2,
+      "level": "yellow",
+      "description": "核心算力与网络需求尚稳，光通信和部分高增长供应商的库存、应收账款风险开始分化。",
+      "updatedAt": "2026-07-11",
+      "source": "演示数据：AI 基础设施供应链样本"
+    },
+    {
+      "id": "neocloudCreditRisk",
+      "name": "Neocloud 信用风险",
+      "score": 57,
+      "weight": 0.2,
+      "level": "orange",
+      "description": "高资本强度、集中客户与外部融资依赖共同推升信用压力，是当前风险贡献最高的分项。",
+      "updatedAt": "2026-07-11",
+      "source": "演示数据：Neocloud 融资与信用压力样本"
+    },
+    {
+      "id": "macroRisk",
+      "name": "宏观与利率环境",
+      "score": 46,
+      "weight": 0.15,
+      "level": "yellow",
+      "description": "经济仍在扩张，但实际利率和企业融资成本偏高，对长久期 AI 基础设施资产形成约束。",
+      "updatedAt": "2026-07-11",
+      "source": "演示数据：利率、信用利差与制造业景气样本"
+    }
+  ]
+}
