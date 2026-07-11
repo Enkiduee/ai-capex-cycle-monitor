@@ -11,6 +11,7 @@
     <title>AI CapEx Cycle Monitor｜AI 数据中心资本开支周期雷达</title>
     <link rel="icon" type="image/svg+xml" href="./assets/logo.svg">
     <link rel="stylesheet" href="./css/styles.css">
+    <script type="module" src="https://widgets.tradingview-widget.com/w/en/tv-mini-chart.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
     <script defer src="./js/utils.js"></script>
     <script defer src="./js/scoring.js"></script>
@@ -249,6 +250,66 @@
               </tbody>
             </table>
           </div>
+        </article>
+
+        <div class="subsection-heading valuation-heading">
+          <div>
+            <p class="eyebrow">Price &amp; valuation watch</p>
+            <h3 id="valuation-watch-title">价格与估值观察</h3>
+          </div>
+          <p>研究区间为演示参数；行情由第三方自动更新，可能延迟。</p>
+        </div>
+
+        <article class="valuation-card" aria-labelledby="valuation-watch-title" aria-describedby="valuation-disclosure">
+          <div class="valuation-toolbar">
+            <div class="filter-field valuation-company-field">
+              <label for="valuation-company-select">选择供应链公司</label>
+              <select id="valuation-company-select" aria-controls="valuation-summary valuation-price-chart">
+                <option value="">正在加载公司…</option>
+              </select>
+            </div>
+            <div class="valuation-toolbar-meta">
+              <span class="demo-chip">演示研究区间</span>
+              <span class="provider-chip">行情：TradingView</span>
+            </div>
+          </div>
+
+          <p id="valuation-status" class="visually-hidden" role="status" aria-live="polite"></p>
+
+          <div class="valuation-grid">
+            <section id="valuation-summary" class="valuation-summary" aria-label="所选公司估值观察摘要">
+              <div class="loading-block">正在加载估值观察参数…</div>
+            </section>
+
+            <section class="valuation-chart-card" aria-labelledby="valuation-chart-title">
+              <div class="valuation-chart-heading">
+                <div>
+                  <p class="panel-kicker">Auto-updating market chart</p>
+                  <h4 id="valuation-chart-title">价格走势</h4>
+                </div>
+                <a
+                  id="valuation-source-link"
+                  class="source-link"
+                  href="https://www.tradingview.com/symbols/NASDAQ-NVDA/"
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                >在 TradingView 查看 ↗</a>
+              </div>
+              <div id="valuation-chart-shell" class="valuation-chart-shell" aria-busy="true">
+                <div id="valuation-price-chart" class="valuation-price-chart">
+                  <div class="chart-placeholder">行情组件加载中…</div>
+                </div>
+              </div>
+              <p id="valuation-chart-fallback" class="valuation-market-note">
+                行情图由 TradingView 提供并自动更新；交易所数据可能延迟，不作为实时成交或交易依据。
+              </p>
+            </section>
+          </div>
+
+          <aside id="valuation-disclosure" class="valuation-disclosure">
+            <strong>研究边界</strong>
+            <p>研究观察区间是在特定日期、期限和假设下用于触发进一步复核的参考带，不是目标价、买入价、收益保证或针对任何人的投资建议。公司基本面、估值输入和市场价格可能快速变化。</p>
+          </aside>
         </article>
 
         <div class="subsection-heading heatmap-heading">

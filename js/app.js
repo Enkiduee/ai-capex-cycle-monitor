@@ -5,6 +5,7 @@
     risk: { path: './data/risk-score.json', label: '风险评分' },
     hyperscalers: { path: './data/hyperscalers.json', label: '云巨头 CapEx' },
     supplyChain: { path: './data/supply-chain.json', label: '供应链风险' },
+    valuation: { path: './data/valuation-bands.json', label: '价格与估值观察' },
     macro: { path: './data/macro.json', label: '宏观环境' },
     events: { path: './data/events.json', label: '重大事件' }
   };
@@ -16,6 +17,9 @@
       risk: 'all',
       sortKey: 'overallRisk',
       sortDirection: 'desc'
+    },
+    valuation: {
+      ticker: 'NVDA'
     },
     events: {
       sentiment: 'all',
@@ -38,6 +42,14 @@
   };
 
   const chartSeriesColors = ['#69d7df', '#f2c75c', '#f26f76', '#5bd39a', '#a991f7'];
+  const tradingViewSymbolPattern = /^(?:NASDAQ|NYSE):[A-Z][A-Z0-9.-]{0,9}$/;
+  const confidenceLabels = Object.freeze({
+    high: '高',
+    medium: '中',
+    low: '低',
+    not_assessed: '待评估',
+    unknown: '待评估'
+  });
 
   function byId(id) {
     return document.getElementById(id);
@@ -304,6 +316,242 @@
     select.value = Array.from(select.options).some((option) => option.value === current) ? current : 'all';
   }
 
+  function textValue(value, fallback) {
+    return typeof value === 'string' && value.trim() ? value.trim() : fallback;
+  }
+
+  function safeTradingViewSymbol(value) {
+    const symbol = textValue(value, '');
+    return tradingViewSymbolPattern.test(symbol) ? symbol : '';
+  }
+
+  function safeCurrency(value, fallback) {
+    const currency = textValue(value, '').toUpperCase();
+    if (/^[A-Z]{3}$/.test(currency)) return currency;
+    const fallbackCurrency = textValue(fallback, 'USD').toUpperCase();
+    return /^[A-Z]{3}$/.test(fallbackCurrency) ? fallbackCurrency : 'USD';
+  }
+
+  function normalizeValuationRange(range) {
+    if (!range || typeof range !== 'object') return null;
+    const low = toFiniteNumber(range.low);
+    const high = toFiniteNumber(range.high);
+    if (low === null || high === null || low <= 0 || high < low) return null;
+    return { low, high };
+  }
+
+  function formatCurrencyAmount(value, currency) {
+    const amount = toFiniteNumber(value);
+    if (amount === null) return '—';
+    const decimals = Number.isInteger(amount) ? 0 : 2;
+    try {
+      return new Intl.NumberFormat('zh-CN', {
+        style: 'currency',
+        currency,
+        currencyDisplay: 'code',
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: 2
+      }).format(amount);
+    } catch (error) {
+      return `${currency} ${formatNumber(amount, decimals)}`;
+    }
+  }
+
+  function formatValuationRange(range, currency) {
+    const normalized = normalizeValuationRange(range);
+    if (!normalized) {
+      return { isValid: false, text: '待建立' };
+    }
+    return {
+      isValid: true,
+      text: `${formatCurrencyAmount(normalized.low, currency)} – ${formatCurrencyAmount(normalized.high, currency)}`
+    };
+  }
+
+  function valuationConfidence(value) {
+    const key = textValue(value, 'unknown').toLowerCase();
+    return confidenceLabels[key] || confidenceLabels.unknown;
+  }
+
+  function getValuationCompanies(data) {
+    const companies = data && Array.isArray(data.companies) ? data.companies : [];
+    const uniqueCompanies = new Map();
+
+    companies.forEach((company) => {
+      if (!company || typeof company !== 'object') return;
+      const ticker = textValue(company.ticker, '');
+      if (!/^[A-Z][A-Z0-9.-]{0,9}$/.test(ticker) || uniqueCompanies.has(ticker)) return;
+      uniqueCompanies.set(ticker, company);
+    });
+
+    return Array.from(uniqueCompanies.values());
+  }
+
+  function renderTradingViewChart(company, marketDataNotice) {
+    const shell = byId('valuation-chart-shell');
+    const container = byId('valuation-price-chart');
+    const sourceLink = byId('valuation-source-link');
+    const fallback = byId('valuation-chart-fallback');
+    if (!shell || !container || !sourceLink || !fallback) return false;
+
+    shell.setAttribute('aria-busy', 'true');
+    const symbol = safeTradingViewSymbol(company && company.tradingViewSymbol);
+    const ticker = textValue(company && company.ticker, '该公司');
+    const companyName = textValue(company && company.name, ticker);
+
+    if (!symbol) {
+      const placeholder = document.createElement('div');
+      placeholder.className = 'chart-placeholder';
+      placeholder.textContent = '行情符号无效，暂时无法加载价格图。';
+      container.replaceChildren(placeholder);
+      sourceLink.hidden = true;
+      sourceLink.removeAttribute('href');
+      fallback.textContent = '行情组件已安全降级；估值观察参数仍可查看。';
+      shell.setAttribute('aria-busy', 'false');
+      return false;
+    }
+
+    let widget = container.querySelector('tv-mini-chart');
+    if (!widget) {
+      widget = document.createElement('tv-mini-chart');
+    }
+    container.replaceChildren(widget);
+    widget.setAttribute('symbol', symbol);
+    widget.setAttribute('theme', 'dark');
+    widget.setAttribute('transparent', '');
+    widget.setAttribute('aria-label', `${companyName}（${ticker}）价格走势，行情可能延迟`);
+    widget.style.display = 'block';
+    widget.style.width = '100%';
+    widget.style.height = '100%';
+
+    sourceLink.hidden = false;
+    sourceLink.href = `https://www.tradingview.com/symbols/${symbol.replace(':', '-')}/`;
+    sourceLink.textContent = `在 TradingView 查看 ${ticker} ↗`;
+    fallback.textContent = textValue(
+      marketDataNotice,
+      '行情图由 TradingView 提供并自动更新；交易所数据可能延迟，不作为实时成交或交易依据。'
+    );
+    shell.setAttribute('aria-busy', 'false');
+    return true;
+  }
+
+  function renderSelectedValuation() {
+    const data = state.data.valuation;
+    const companies = getValuationCompanies(data);
+    const company = companies.find((item) => item.ticker === state.valuation.ticker);
+    if (!data || !company) {
+      throw new Error('未找到所选公司的估值观察参数。');
+    }
+
+    const ticker = textValue(company.ticker, '—');
+    const name = textValue(company.name, ticker);
+    const segment = textValue(company.segment, '待分类');
+    const currency = safeCurrency(company.currency, data.currency);
+    const observationRange = formatValuationRange(company.observationRange, currency);
+    const fairValueRange = formatValuationRange(company.fairValueRange, currency);
+    const confidence = valuationConfidence(company.confidence);
+    const valuationBasis = textValue(company.valuationBasis, '暂未提供估值框架说明。');
+    const riskNote = textValue(company.riskNote, '暂未提供单独风险提示。');
+    const source = textValue(company.source, '演示研究参数');
+    const updatedAt = formatDate(company.updatedAt || data.updatedAt);
+    const assumptions = Array.isArray(company.assumptions)
+      ? company.assumptions.filter((item) => typeof item === 'string' && item.trim()).map((item) => item.trim())
+      : [];
+    const assumptionItems = assumptions.length
+      ? assumptions.map((item) => `<li>${escapeHTML(item)}</li>`).join('')
+      : '<li>暂未提供关键假设明细。</li>';
+    const observationContext = observationRange.isValid
+      ? '演示研究参数；仅用于触发进一步复核，不是买入建议。'
+      : '缺少有效上下限，暂不展示区间。';
+    const summary = byId('valuation-summary');
+
+    if (!summary) {
+      throw new Error('找不到估值观察摘要容器。');
+    }
+
+    summary.innerHTML = `
+      <div class="valuation-summary-head">
+        <div>
+          <span class="valuation-company-segment">${escapeHTML(segment)}</span>
+          <h4 class="valuation-company-name">${escapeHTML(name)}</h4>
+        </div>
+        <span class="valuation-symbol">${escapeHTML(ticker)}</span>
+      </div>
+      <div class="valuation-range-panel">
+        <span class="valuation-range-label">研究观察区间</span>
+        <strong class="valuation-range-value">${escapeHTML(observationRange.text)}</strong>
+        <span class="valuation-range-context">${escapeHTML(observationContext)}</span>
+      </div>
+      <div class="valuation-detail-grid">
+        <div class="valuation-detail">
+          <span>演示公允价值区间</span>
+          <strong>${escapeHTML(fairValueRange.text)}</strong>
+        </div>
+        <div class="valuation-detail">
+          <span>研究置信度</span>
+          <strong>${escapeHTML(confidence)}</strong>
+        </div>
+        <div class="valuation-detail">
+          <span>产业链环节</span>
+          <strong>${escapeHTML(segment)}</strong>
+        </div>
+        <div class="valuation-detail">
+          <span>计价币种</span>
+          <strong>${escapeHTML(currency)}</strong>
+        </div>
+      </div>
+      <p class="valuation-basis"><strong>估值框架</strong>${escapeHTML(valuationBasis)}</p>
+      <div class="valuation-assumptions">
+        <strong>关键假设</strong>
+        <ul>${assumptionItems}</ul>
+      </div>
+      <p class="valuation-risk-note"><strong>主要风险</strong>${escapeHTML(riskNote)}</p>
+      <p class="valuation-meta-line">数据更新：${escapeHTML(updatedAt)} · 来源：${escapeHTML(source)}</p>
+    `;
+
+    const chartTitle = byId('valuation-chart-title');
+    if (chartTitle) chartTitle.textContent = `${name}（${ticker}）价格走势`;
+    const chartReady = renderTradingViewChart(company, data.marketDataNotice);
+    const status = byId('valuation-status');
+    if (status) {
+      status.textContent = `已显示 ${name}（${ticker}）的估值观察参数。${chartReady ? '行情图已更新，价格可能延迟。' : '行情图暂不可用。'}`;
+    }
+  }
+
+  function renderValuation(data) {
+    const companies = getValuationCompanies(data);
+    const select = byId('valuation-company-select');
+    if (!select || !companies.length) {
+      throw new Error('价格与估值观察缺少有效公司数据。');
+    }
+
+    state.data.valuation = data;
+    select.replaceChildren();
+    companies.forEach((company) => {
+      const ticker = textValue(company.ticker, '');
+      const name = textValue(company.name, ticker);
+      const option = document.createElement('option');
+      option.value = ticker;
+      option.textContent = `${ticker} · ${name}`;
+      select.append(option);
+    });
+
+    const selected = companies.find((company) => company.ticker === state.valuation.ticker) || companies[0];
+    state.valuation.ticker = selected.ticker;
+    select.value = selected.ticker;
+    select.disabled = false;
+
+    const disclosure = byId('valuation-disclosure');
+    if (disclosure) {
+      disclosure.innerHTML = `<strong>研究边界</strong><p>${escapeHTML(textValue(
+        data.dataNotice,
+        '研究观察区间仅用于信息展示与进一步复核，不构成任何投资建议。'
+      ))}</p>`;
+    }
+
+    renderSelectedValuation();
+  }
+
   function compareSupplyRows(left, right, key) {
     const riskKeys = ['inventoryRisk', 'receivablesRisk', 'debtRisk', 'customerConcentration', 'overallRisk'];
     if (key === 'overallRisk') {
@@ -531,6 +779,28 @@
     } else if (key === 'supplyChain') {
       byId('supply-chain-body').innerHTML = `<tr><td colspan="11" class="table-empty">${escapeHTML(message)}</td></tr>`;
       api.renderSectionError('supply-chain-heatmap', message);
+    } else if (key === 'valuation') {
+      const select = byId('valuation-company-select');
+      if (select) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = '估值观察暂不可用';
+        select.replaceChildren(option);
+        select.disabled = true;
+      }
+      api.renderSectionError('valuation-summary', message);
+      api.renderSectionError('valuation-price-chart', message);
+      const shell = byId('valuation-chart-shell');
+      if (shell) shell.setAttribute('aria-busy', 'false');
+      const sourceLink = byId('valuation-source-link');
+      if (sourceLink) {
+        sourceLink.hidden = true;
+        sourceLink.removeAttribute('href');
+      }
+      const fallback = byId('valuation-chart-fallback');
+      if (fallback) fallback.textContent = message;
+      const status = byId('valuation-status');
+      if (status) status.textContent = message;
     } else if (key === 'macro') {
       api.renderSectionError('macro-metrics', message);
       byId('macro-regime-summary').textContent = message;
@@ -562,6 +832,17 @@
       state.supply.risk = event.target.value;
       renderSupplyTable();
     });
+    const valuationSelect = byId('valuation-company-select');
+    if (valuationSelect) {
+      valuationSelect.addEventListener('change', (event) => {
+        state.valuation.ticker = event.target.value;
+        try {
+          renderSelectedValuation();
+        } catch (error) {
+          renderSectionError('valuation', DATA_SOURCES.valuation, error);
+        }
+      });
+    }
     document.querySelectorAll('.sort-button').forEach((button) => {
       button.addEventListener('click', () => {
         const key = button.dataset.sort;
@@ -616,6 +897,7 @@
       risk: renderOverview,
       hyperscalers: renderHyperscalers,
       supplyChain: renderSupplyChain,
+      valuation: renderValuation,
       macro: renderMacro,
       events: renderEvents
     };

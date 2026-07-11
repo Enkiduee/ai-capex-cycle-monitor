@@ -1,0 +1,284 @@
+{
+  "updatedAt": "2026-07-11",
+  "isDemoData": true,
+  "dataNotice": "以下区间全部为演示研究参数，用于展示看板交互与估值框架，不是当前股价判断、个性化建议或任何形式的买卖推荐。",
+  "marketDataNotice": "本文件不包含、读取或推断实时行情；页面中的 TradingView 行情由第三方独立提供，可能存在延迟。",
+  "currency": "USD",
+  "companies": [
+    {
+      "ticker": "NVDA",
+      "name": "NVIDIA",
+      "segment": "GPU",
+      "tradingViewSymbol": "NASDAQ:NVDA",
+      "currency": "USD",
+      "observationRange": {
+        "low": 95,
+        "high": 115
+      },
+      "fairValueRange": {
+        "low": 130,
+        "high": 165
+      },
+      "valuationBasis": "演示研究参数：以情景化远期盈利、增长溢价和估值倍数折价构建，不基于当前实时行情。",
+      "confidence": "low",
+      "assumptions": [
+        "AI 加速器需求保持增长但逐步回归长期趋势",
+        "毛利率较高位温和回落",
+        "客户集中与供应约束获得额外风险折价"
+      ],
+      "riskNote": "高估值、客户集中、出口限制和产品迭代可能使演示区间迅速失效。",
+      "updatedAt": "2026-07-11",
+      "source": "演示研究参数（非实时行情、非当前建议）"
+    },
+    {
+      "ticker": "AVGO",
+      "name": "Broadcom",
+      "segment": "高速连接",
+      "tradingViewSymbol": "NASDAQ:AVGO",
+      "currency": "USD",
+      "observationRange": {
+        "low": 150,
+        "high": 180
+      },
+      "fairValueRange": {
+        "low": 205,
+        "high": 255
+      },
+      "valuationBasis": "演示研究参数：以半导体增长、基础设施软件现金流和整合折价构建，不基于当前实时行情。",
+      "confidence": "low",
+      "assumptions": [
+        "AI 网络与定制芯片收入维持中期增长",
+        "基础设施软件业务贡献稳定现金流",
+        "并购相关杠杆与整合风险计入折价"
+      ],
+      "riskNote": "并购整合、负债水平、客户集中和半导体周期可能显著改变估值中枢。",
+      "updatedAt": "2026-07-11",
+      "source": "演示研究参数（非实时行情、非当前建议）"
+    },
+    {
+      "ticker": "ANET",
+      "name": "Arista Networks",
+      "segment": "交换机与网络",
+      "tradingViewSymbol": "NYSE:ANET",
+      "currency": "USD",
+      "observationRange": {
+        "low": 55,
+        "high": 70
+      },
+      "fairValueRange": {
+        "low": 82,
+        "high": 105
+      },
+      "valuationBasis": "演示研究参数：以云网络收入增速、利润率韧性和客户集中折价构建，不基于当前实时行情。",
+      "confidence": "low",
+      "assumptions": [
+        "高速以太网升级需求延续",
+        "软件与服务收入占比缓慢提升",
+        "大型云客户采购波动纳入安全边际"
+      ],
+      "riskNote": "核心客户资本开支、竞争格局和订单确认节奏会造成较大估值波动。",
+      "updatedAt": "2026-07-11",
+      "source": "演示研究参数（非实时行情、非当前建议）"
+    },
+    {
+      "ticker": "MRVL",
+      "name": "Marvell Technology",
+      "segment": "高速连接",
+      "tradingViewSymbol": "NASDAQ:MRVL",
+      "currency": "USD",
+      "observationRange": {
+        "low": 45,
+        "high": 58
+      },
+      "fairValueRange": {
+        "low": 68,
+        "high": 88
+      },
+      "valuationBasis": "演示研究参数：以数据中心业务复苏、定制芯片机会和周期性折价构建，不基于当前实时行情。",
+      "confidence": "low",
+      "assumptions": [
+        "数据中心收入改善抵消传统终端疲弱",
+        "定制计算项目按计划量产",
+        "毛利率和研发投入保持在可持续区间"
+      ],
+      "riskNote": "项目延期、客户集中、库存调整和竞争压力可能压低盈利兑现度。",
+      "updatedAt": "2026-07-11",
+      "source": "演示研究参数（非实时行情、非当前建议）"
+    },
+    {
+      "ticker": "CRDO",
+      "name": "Credo Technology",
+      "segment": "高速连接",
+      "tradingViewSymbol": "NASDAQ:CRDO",
+      "currency": "USD",
+      "observationRange": {
+        "low": 35,
+        "high": 45
+      },
+      "fairValueRange": {
+        "low": 54,
+        "high": 72
+      },
+      "valuationBasis": "演示研究参数：以高速连接市场扩张、规模效应和小型成长股风险折价构建，不基于当前实时行情。",
+      "confidence": "low",
+      "assumptions": [
+        "AEC 与高速 SerDes 渗透率继续提升",
+        "收入增长带来适度经营杠杆",
+        "单一客户依赖通过较高折价反映"
+      ],
+      "riskNote": "规模较小、客户集中和产品放量节奏可能导致收入与估值剧烈变化。",
+      "updatedAt": "2026-07-11",
+      "source": "演示研究参数（非实时行情、非当前建议）"
+    },
+    {
+      "ticker": "ALAB",
+      "name": "Astera Labs",
+      "segment": "高速连接",
+      "tradingViewSymbol": "NASDAQ:ALAB",
+      "currency": "USD",
+      "observationRange": {
+        "low": 65,
+        "high": 82
+      },
+      "fairValueRange": {
+        "low": 96,
+        "high": 125
+      },
+      "valuationBasis": "演示研究参数：以 AI 连接产品增长、平台扩张和新上市公司不确定性折价构建，不基于当前实时行情。",
+      "confidence": "low",
+      "assumptions": [
+        "PCIe、CXL 与以太网连接产品持续放量",
+        "研发投入支持产品组合扩展",
+        "高客户集中通过安全边际反映"
+      ],
+      "riskNote": "上市历史较短、估值敏感度高，客户与产品集中可能放大回撤。",
+      "updatedAt": "2026-07-11",
+      "source": "演示研究参数（非实时行情、非当前建议）"
+    },
+    {
+      "ticker": "LITE",
+      "name": "Lumentum",
+      "segment": "光芯片",
+      "tradingViewSymbol": "NASDAQ:LITE",
+      "currency": "USD",
+      "observationRange": {
+        "low": 38,
+        "high": 48
+      },
+      "fairValueRange": {
+        "low": 58,
+        "high": 75
+      },
+      "valuationBasis": "演示研究参数：以光通信需求复苏、产能利用率和库存周期折价构建，不基于当前实时行情。",
+      "confidence": "low",
+      "assumptions": [
+        "云与网络业务需求逐步复苏",
+        "产能利用率改善带动毛利率修复",
+        "库存与产品转换风险计入折价"
+      ],
+      "riskNote": "光通信周期、库存消化、客户采购变化和技术切换可能推迟盈利修复。",
+      "updatedAt": "2026-07-11",
+      "source": "演示研究参数（非实时行情、非当前建议）"
+    },
+    {
+      "ticker": "COHR",
+      "name": "Coherent",
+      "segment": "光模块",
+      "tradingViewSymbol": "NYSE:COHR",
+      "currency": "USD",
+      "observationRange": {
+        "low": 55,
+        "high": 70
+      },
+      "fairValueRange": {
+        "low": 82,
+        "high": 108
+      },
+      "valuationBasis": "演示研究参数：以数据通信复苏、组合优化、债务去杠杆和周期折价构建，不基于当前实时行情。",
+      "confidence": "low",
+      "assumptions": [
+        "高速光通信需求改善",
+        "业务组合优化推动利润率恢复",
+        "现金流优先支持降低杠杆"
+      ],
+      "riskNote": "债务、整合执行、周期性需求和库存压力会影响自由现金流与估值。",
+      "updatedAt": "2026-07-11",
+      "source": "演示研究参数（非实时行情、非当前建议）"
+    },
+    {
+      "ticker": "AAOI",
+      "name": "Applied Optoelectronics",
+      "segment": "光模块",
+      "tradingViewSymbol": "NASDAQ:AAOI",
+      "currency": "USD",
+      "observationRange": {
+        "low": 12,
+        "high": 16
+      },
+      "fairValueRange": {
+        "low": 19,
+        "high": 26
+      },
+      "valuationBasis": "演示研究参数：以高速光模块放量、盈利拐点和小市值波动折价构建，不基于当前实时行情。",
+      "confidence": "low",
+      "assumptions": [
+        "高速产品出货占比逐步提升",
+        "收入增长推动固定成本摊薄",
+        "客户集中和执行风险要求较高安全边际"
+      ],
+      "riskNote": "客户集中、亏损历史、融资需求与产品验证进度可能造成极高波动。",
+      "updatedAt": "2026-07-11",
+      "source": "演示研究参数（非实时行情、非当前建议）"
+    },
+    {
+      "ticker": "CRWV",
+      "name": "CoreWeave",
+      "segment": "Neocloud",
+      "tradingViewSymbol": "NASDAQ:CRWV",
+      "currency": "USD",
+      "observationRange": {
+        "low": 28,
+        "high": 36
+      },
+      "fairValueRange": {
+        "low": 43,
+        "high": 58
+      },
+      "valuationBasis": "演示研究参数：以算力收入增长、资本强度、债务成本和客户集中折价构建，不基于当前实时行情。",
+      "confidence": "low",
+      "assumptions": [
+        "已签约算力需求按计划转化为收入",
+        "新增数据中心融资保持可得",
+        "高杠杆与集中度通过大幅折价反映"
+      ],
+      "riskNote": "高杠杆、负自由现金流、再融资依赖与客户集中可能导致永久性资本损失。",
+      "updatedAt": "2026-07-11",
+      "source": "演示研究参数（非实时行情、非当前建议）"
+    },
+    {
+      "ticker": "NBIS",
+      "name": "Nebius Group",
+      "segment": "Neocloud",
+      "tradingViewSymbol": "NASDAQ:NBIS",
+      "currency": "USD",
+      "observationRange": {
+        "low": 20,
+        "high": 28
+      },
+      "fairValueRange": {
+        "low": 34,
+        "high": 48
+      },
+      "valuationBasis": "演示研究参数：以 AI 云业务爬坡、资产价值、资本开支和执行风险折价构建，不基于当前实时行情。",
+      "confidence": "low",
+      "assumptions": [
+        "AI 云基础设施利用率逐步提升",
+        "资本支出按阶段获得资金支持",
+        "新业务执行与地区风险计入较高折价"
+      ],
+      "riskNote": "商业模式仍在验证，资本开支、融资、执行和地区风险会造成显著估值不确定性。",
+      "updatedAt": "2026-07-11",
+      "source": "演示研究参数（非实时行情、非当前建议）"
+    }
+  ]
+}
