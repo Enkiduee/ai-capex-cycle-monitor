@@ -454,6 +454,30 @@
     const riskNote = textValue(company.riskNote, '暂未提供单独风险提示。');
     const source = textValue(company.source, '演示研究参数');
     const updatedAt = formatDate(company.updatedAt || data.updatedAt);
+    const reviewStatus = ['demo', 'reviewed', 'needs-review'].includes(company.reviewStatus)
+      ? company.reviewStatus
+      : 'demo';
+    const reviewMeta = {
+      demo: { label: '演示区间 · 待验证', className: 'is-demo' },
+      reviewed: { label: '已完成估值复核', className: 'is-reviewed' },
+      'needs-review': { label: '发现新披露 · 需复核', className: 'is-review' }
+    }[reviewStatus];
+    const reviewReason = textValue(
+      company.reviewReason,
+      reviewStatus === 'needs-review'
+        ? '系统发现新的公司披露，当前区间仅保留作历史研究参考。'
+        : '当前为演示研究区间；自动巡检不会机械生成公允价值或买卖建议。'
+    );
+    const latestFiling = company.latestSecFiling && typeof company.latestSecFiling === 'object'
+      ? company.latestSecFiling
+      : null;
+    const filingUrl = safeExternalUrl(latestFiling && latestFiling.sourceUrl);
+    const filingLink = filingUrl
+      ? `<a class="valuation-filing-link" href="${escapeHTML(filingUrl)}" target="_blank" rel="noopener noreferrer nofollow">查看 SEC ${escapeHTML(latestFiling.form || '披露')} ↗</a>`
+      : '';
+    const automation = data.automation && typeof data.automation === 'object' ? data.automation : {};
+    const lastDailyCheck = automation.lastDailyCheckAt ? formatDate(automation.lastDailyCheckAt) : '等待首次运行';
+    const automationSummary = `${textValue(automation.dailySchedule, '每天自动巡检')} · 最近巡检：${lastDailyCheck}`;
     const assumptions = Array.isArray(company.assumptions)
       ? company.assumptions.filter((item) => typeof item === 'string' && item.trim()).map((item) => item.trim())
       : [];
@@ -461,7 +485,9 @@
       ? assumptions.map((item) => `<li>${escapeHTML(item)}</li>`).join('')
       : '<li>暂未提供关键假设明细。</li>';
     const observationContext = observationRange.isValid
-      ? '演示研究参数；仅用于触发进一步复核，不是买入建议。'
+      ? reviewStatus === 'needs-review'
+        ? '新披露后尚未重估；当前区间仅作历史研究参考。'
+        : '演示研究参数；仅用于触发进一步复核，不是买入建议。'
       : '缺少有效上下限，暂不展示区间。';
     const summary = byId('valuation-summary');
 
@@ -481,6 +507,11 @@
         <span class="valuation-range-label">研究观察区间</span>
         <strong class="valuation-range-value">${escapeHTML(observationRange.text)}</strong>
         <span class="valuation-range-context">${escapeHTML(observationContext)}</span>
+      </div>
+      <div class="valuation-review-status ${escapeHTML(reviewMeta.className)}">
+        <strong>${escapeHTML(reviewMeta.label)}</strong>
+        <span>${escapeHTML(reviewReason)}</span>
+        ${filingLink}
       </div>
       <div class="valuation-detail-grid">
         <div class="valuation-detail">
@@ -507,6 +538,7 @@
       </div>
       <p class="valuation-risk-note"><strong>主要风险</strong>${escapeHTML(riskNote)}</p>
       <p class="valuation-meta-line">数据更新：${escapeHTML(updatedAt)} · 来源：${escapeHTML(source)}</p>
+      <p class="valuation-auto-meta">自动巡检：${escapeHTML(automationSummary)}</p>
     `;
 
     const chartTitle = byId('valuation-chart-title');
@@ -514,7 +546,7 @@
     const chartReady = renderTradingViewChart(company, data.marketDataNotice);
     const status = byId('valuation-status');
     if (status) {
-      status.textContent = `已显示 ${name}（${ticker}）的估值观察参数。${chartReady ? '行情图已更新，价格可能延迟。' : '行情图暂不可用。'}`;
+      status.textContent = `已显示 ${name}（${ticker}）的估值观察参数。${chartReady ? '已请求切换行情图，第三方价格可能延迟。' : '行情图暂不可用。'}`;
     }
   }
 
@@ -753,6 +785,15 @@
 
   function renderEvents(data) {
     state.data.events = data;
+    const sourceChip = byId('event-source-chip');
+    if (sourceChip) {
+      const hasAutomatedEvents = Array.isArray(data.events) && data.events.some((event) => event && event.isAutomated === true);
+      sourceChip.textContent = hasAutomatedEvents ? '演示情景 + SEC 官方披露' : '演示情景；SEC 披露发现后加入';
+    }
+    const dataNotice = byId('event-data-notice-text');
+    if (dataNotice) {
+      dataNotice.textContent = [data.dataNotice, data.automationNotice].filter(Boolean).join(' ');
+    }
     populateSelect(
       byId('entity-filter'),
       Array.from(new Set(data.events.map((event) => event.entity))).sort((a, b) => a.localeCompare(b, 'en')),
@@ -806,6 +847,8 @@
       byId('macro-regime-summary').textContent = message;
     } else if (key === 'events') {
       api.renderSectionError('event-timeline', message);
+      const dataNotice = byId('event-data-notice-text');
+      if (dataNotice) dataNotice.textContent = message;
     }
   }
 

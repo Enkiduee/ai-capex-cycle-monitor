@@ -1,0 +1,213 @@
+name: Monitor SEC filings and daily status
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/refresh-data.yml
+      - scripts/**
+      - data/valuation-bands.json
+      - data/sec-filings-state.json
+  schedule:
+    - cron: '23 1 * * *'
+    - cron: '47 2,6,10,14,18,22 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Refresh mode
+        required: true
+        default: full
+        type: choice
+        options:
+          - full
+          - daily
+          - events
+          - bootstrap
+      dry_run:
+        description: Validate without committing data changes
+        required: true
+        default: false
+        type: boolean
+  repository_dispatch:
+    types:
+      - refresh-data
+      - financial-report
+      - major-event
+
+permissions: {}
+
+concurrency:
+  group: data-refresh-main
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      changed: ${{ steps.publish.outputs.changed }}
+      commit_sha: ${{ steps.publish.outputs.commit_sha }}
+    env:
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+    steps:
+      - name: Check out main with history
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Select refresh mode
+        id: mode
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          SCHEDULE: ${{ github.event.schedule }}
+          MANUAL_MODE: ${{ inputs.mode }}
+        run: |
+          mode=events
+          if [ "$EVENT_NAME" = "push" ]; then
+            mode=bootstrap
+          elif [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            mode="$MANUAL_MODE"
+          elif [ "$EVENT_NAME" = "repository_dispatch" ]; then
+            mode=full
+          elif [ "$SCHEDULE" = "23 1 * * *" ]; then
+            mode=daily
+          fi
+          case "$mode" in
+            full|daily|events|bootstrap) ;;
+            *) echo "Unsupported mode: $mode" >&2; exit 1 ;;
+          esac
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          echo "Selected refresh mode: $mode"
+
+      - name: Run SEC monitor regression fixtures
+        run: node scripts/test-sec-monitor.mjs
+
+      - name: Check SEC filings and refresh status
+        env:
+          MODE: ${{ steps.mode.outputs.mode }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+        run: |
+          args=(--mode "$MODE")
+          if [ "$DRY_RUN" = "true" ]; then
+            args+=(--dry-run)
+          fi
+          node scripts/check-sec-filings.mjs "${args[@]}"
+
+      - name: Validate all data contracts
+        run: node scripts/validate-data.mjs
+
+      - name: Commit and push changed data
+        id: publish
+        env:
+          MODE: ${{ steps.mode.outputs.mode }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Dry run complete; no files will be committed."
+            exit 0
+          fi
+
+          git add -- data/events.json data/valuation-bands.json data/sec-filings-state.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No data changes detected."
+            exit 0
+          fi
+
+          git config user.name "ai-capex-data-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore(data): refresh ${MODE} data"
+          pushed=false
+          for attempt in 1 2 3; do
+            if ! git fetch origin main; then
+              echo "Fetch attempt $attempt failed; retrying." >&2
+              sleep $((attempt * 2))
+              continue
+            fi
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "Data files conflict with a newer main commit; refusing to overwrite it." >&2
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              pushed=true
+              break
+            fi
+            sleep $((attempt * 2))
+          done
+          if [ "$pushed" != "true" ]; then
+            echo "Unable to push data commit after 3 attempts." >&2
+            exit 1
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "commit_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Write run summary
+        if: always()
+        env:
+          MODE: ${{ steps.mode.outputs.mode }}
+          CHANGED: ${{ steps.publish.outputs.changed }}
+          COMMIT_SHA: ${{ steps.publish.outputs.commit_sha }}
+        run: |
+          {
+            echo "## Data refresh"
+            echo "- Mode: \`$MODE\`"
+            echo "- Data changed: \`${CHANGED:-false}\`"
+            echo "- Commit: \`${COMMIT_SHA:-none}\`"
+            echo "- Daily schedule: 09:23 Asia/Shanghai"
+            echo "- SEC event scan: every 4 hours"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    needs: refresh
+    if: needs.refresh.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out latest main
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Validate latest main before deployment
+        run: |
+          node scripts/validate-data.mjs
+          node scripts/test-sec-monitor.mjs
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload static site artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: .
+
+      - name: Deploy refreshed data to Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

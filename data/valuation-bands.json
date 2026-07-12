@@ -1,15 +1,26 @@
 {
   "updatedAt": "2026-07-11",
   "isDemoData": true,
-  "dataNotice": "以下区间全部为演示研究参数，用于展示看板交互与估值框架，不是当前股价判断、个性化建议或任何形式的买卖推荐。",
-  "marketDataNotice": "本文件不包含、读取或推断实时行情；页面中的 TradingView 行情由第三方独立提供，可能存在延迟。",
+  "dataNotice": "以下区间全部为演示研究参数，用于展示看板交互与估值框架，不是当前股价判断、个性化建议或任何形式的买卖推荐。自动化只负责每日巡检和新 SEC 披露提醒，不会机械生成公允价值或买卖建议。",
+  "marketDataNotice": "本文件不抓取、保存或再分发行情；页面中的 TradingView 行情由第三方独立提供并自动更新，可能存在延迟。",
   "currency": "USD",
+  "automation": {
+    "dailySchedule": "每天 09:23（Asia/Shanghai，GitHub Actions 可能延迟）",
+    "eventSchedule": "每 4 小时检查 SEC EDGAR；发现新披露时额外更新",
+    "marketPriceMode": "TradingView 组件自动更新，仓库不抓取或再分发行情",
+    "valuationRangeMode": "演示区间仅在明确估值复核后人工更新",
+    "lastDailyCheckAt": null,
+    "lastDailySecCheckAt": null,
+    "lastEventDetectedAt": null
+  },
   "companies": [
     {
       "ticker": "NVDA",
       "name": "NVIDIA",
       "segment": "GPU",
       "tradingViewSymbol": "NASDAQ:NVDA",
+      "secCik": "0001045810",
+      "reviewStatus": "demo",
       "currency": "USD",
       "observationRange": {
         "low": 95,
@@ -35,6 +46,8 @@
       "name": "Broadcom",
       "segment": "高速连接",
       "tradingViewSymbol": "NASDAQ:AVGO",
+      "secCik": "0001730168",
+      "reviewStatus": "demo",
       "currency": "USD",
       "observationRange": {
         "low": 150,
@@ -60,6 +73,8 @@
       "name": "Arista Networks",
       "segment": "交换机与网络",
       "tradingViewSymbol": "NYSE:ANET",
+      "secCik": "0001596532",
+      "reviewStatus": "demo",
       "currency": "USD",
       "observationRange": {
         "low": 55,
@@ -85,6 +100,8 @@
       "name": "Marvell Technology",
       "segment": "高速连接",
       "tradingViewSymbol": "NASDAQ:MRVL",
+      "secCik": "0001835632",
+      "reviewStatus": "demo",
       "currency": "USD",
       "observationRange": {
         "low": 45,
@@ -110,6 +127,8 @@
       "name": "Credo Technology",
       "segment": "高速连接",
       "tradingViewSymbol": "NASDAQ:CRDO",
+      "secCik": "0001807794",
+      "reviewStatus": "demo",
       "currency": "USD",
       "observationRange": {
         "low": 35,
@@ -135,6 +154,8 @@
       "name": "Astera Labs",
       "segment": "高速连接",
       "tradingViewSymbol": "NASDAQ:ALAB",
+      "secCik": "0001736297",
+      "reviewStatus": "demo",
       "currency": "USD",
       "observationRange": {
         "low": 65,
@@ -160,6 +181,8 @@
       "name": "Lumentum",
       "segment": "光芯片",
       "tradingViewSymbol": "NASDAQ:LITE",
+      "secCik": "0001633978",
+      "reviewStatus": "demo",
       "currency": "USD",
       "observationRange": {
         "low": 38,
@@ -185,6 +208,8 @@
       "name": "Coherent",
       "segment": "光模块",
       "tradingViewSymbol": "NYSE:COHR",
+      "secCik": "0000820318",
+      "reviewStatus": "demo",
       "currency": "USD",
       "observationRange": {
         "low": 55,
@@ -210,6 +235,8 @@
       "name": "Applied Optoelectronics",
       "segment": "光模块",
       "tradingViewSymbol": "NASDAQ:AAOI",
+      "secCik": "0001158114",
+      "reviewStatus": "demo",
       "currency": "USD",
       "observationRange": {
         "low": 12,
@@ -235,6 +262,8 @@
       "name": "CoreWeave",
       "segment": "Neocloud",
       "tradingViewSymbol": "NASDAQ:CRWV",
+      "secCik": "0001769628",
+      "reviewStatus": "demo",
       "currency": "USD",
       "observationRange": {
         "low": 28,
@@ -260,6 +289,8 @@
       "name": "Nebius Group",
       "segment": "Neocloud",
       "tradingViewSymbol": "NASDAQ:NBIS",
+      "secCik": "0001513845",
+      "reviewStatus": "demo",
       "currency": "USD",
       "observationRange": {
         "low": 20,

@@ -257,7 +257,7 @@
             <p class="eyebrow">Price &amp; valuation watch</p>
             <h3 id="valuation-watch-title">价格与估值观察</h3>
           </div>
-          <p>研究区间为演示参数；行情由第三方自动更新，可能延迟。</p>
+          <p>每日仅记录 SEC 巡检状态；计划每 4 小时检查新披露。行情与研究区间不由巡检脚本改写。</p>
         </div>
 
         <article class="valuation-card" aria-labelledby="valuation-watch-title" aria-describedby="valuation-disclosure">
@@ -270,6 +270,7 @@
             </div>
             <div class="valuation-toolbar-meta">
               <span class="demo-chip">演示研究区间</span>
+              <span class="automation-chip">每日 SEC 巡检</span>
               <span class="provider-chip">行情：TradingView</span>
             </div>
           </div>
@@ -384,7 +385,7 @@
             <h2 id="events-title">重大事件时间线</h2>
             <p>将 CapEx 指引、订单变化、融资与宏观政策转换为可追踪的风险增量。</p>
           </div>
-          <span class="demo-chip">演示事件 / Demo Events</span>
+          <span id="event-source-chip" class="demo-chip">演示情景；SEC 披露发现后加入</span>
         </div>
 
         <div class="filter-bar event-filters" aria-label="重大事件筛选">
@@ -405,6 +406,11 @@
           </div>
           <p id="event-result-count" class="result-count" aria-live="polite">正在加载事件…</p>
         </div>
+
+        <aside class="event-data-notice" role="note" aria-labelledby="event-data-notice-title">
+          <strong id="event-data-notice-title">事件数据边界</strong>
+          <span id="event-data-notice-text">正在加载事件来源与自动巡检说明…</span>
+        </aside>
 
         <div id="event-timeline" class="timeline" aria-live="polite">
           <div class="loading-block">正在加载重大事件…</div>
@@ -455,7 +461,7 @@
           <p>AI 数据中心资本开支周期雷达</p>
         </div>
         <div class="footer-meta">
-          <span>GitHub 仓库入口：<span class="footer-placeholder">部署后填写</span></span>
+          <span>GitHub 仓库：<a class="source-link" href="https://github.com/Enkiduee/ai-capex-cycle-monitor" target="_blank" rel="noopener noreferrer">查看源码 ↗</a></span>
           <span>数据更新：<time id="footer-updated-at" datetime="">加载中…</time></span>
         </div>
         <p class="footer-disclaimer">本项目仅用于信息展示、产业研究与教育用途，不构成任何投资建议。页面中的演示数据可能不准确、不完整或已经过时。</p>

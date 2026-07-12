@@ -1,7 +1,8 @@
 {
   "updatedAt": "2026-07-11",
   "isDemoData": true,
-  "dataNotice": "以下事件均为用于展示筛选和风险传导逻辑的合成情景，不代表公司实际公告；来源链接仅为官方信息入口占位。",
+  "dataNotice": "事件流支持两类内容：明确标注的演示情景，以及发现后自动收录的 SEC EDGAR 官方披露；是否已有官方披露请以本页来源标识为准。自动披露保持中性、风险变化为 0，只用于提醒人工复核，不代表系统判断利好利空。",
+  "automationNotice": "GitHub Actions 每 4 小时检查一次所列供应链公司的 10-K、10-Q、20-F、8-K、6-K 等相关申报；GitHub 定时任务可能延迟。",
   "riskScoreChangeMeaning": "正数表示风险上升，负数表示风险下降。",
   "events": [
     {

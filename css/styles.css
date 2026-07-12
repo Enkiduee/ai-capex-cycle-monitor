@@ -1035,6 +1035,20 @@ tbody tr:hover {
   font-weight: 700;
 }
 
+.automation-chip {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  padding: 4px 9px;
+  border: 1px solid #315e75;
+  border-radius: 999px;
+  background: #102534;
+  color: var(--accent-strong);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+}
+
 .valuation-grid {
   display: grid;
   grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr);
@@ -1136,6 +1150,52 @@ tbody tr:hover {
   font-size: 10px;
 }
 
+.valuation-review-status {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.valuation-review-status strong {
+  color: var(--text);
+  font-size: 10px;
+}
+
+.valuation-review-status.is-demo {
+  border-color: #5c5331;
+  background: #211f14;
+}
+
+.valuation-review-status.is-reviewed {
+  border-color: #285c48;
+  background: var(--green-bg);
+}
+
+.valuation-review-status.is-review {
+  border-color: #7a4931;
+  background: #2b1c15;
+}
+
+.valuation-review-status.is-review strong {
+  color: #ffbd86;
+}
+
+.valuation-filing-link {
+  color: var(--accent-strong);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .valuation-detail-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1198,6 +1258,14 @@ tbody tr:hover {
   margin-top: 13px;
   line-height: 1.5;
   text-transform: none;
+}
+
+.valuation-auto-meta {
+  margin: 5px 0 0;
+  color: var(--accent-strong);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.5;
 }
 
 .valuation-chart-card {
@@ -1488,6 +1556,25 @@ tbody tr:hover {
   margin-bottom: 12px;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
+}
+
+.event-data-notice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  margin: 10px 0 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.event-data-notice strong {
+  color: var(--accent-strong);
+  white-space: nowrap;
 }
 
 .timeline {
@@ -2012,6 +2099,20 @@ tbody tr:hover {
 
   .valuation-grid {
     padding: 8px;
+  }
+
+  .valuation-review-status {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .valuation-filing-link {
+    white-space: normal;
+  }
+
+  .event-data-notice {
+    grid-template-columns: 1fr;
+    gap: 6px;
   }
 
   .valuation-summary,

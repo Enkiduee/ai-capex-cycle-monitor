@@ -41,6 +41,8 @@ AI CapEx Cycle Monitor 将分散的产业信号整理为统一的风险研究框
 - CapEx 增速与云收入增速对比：自动判断两者差值并生成提示
 - 供应链风险：排序、产业链环节筛选、风险等级筛选与移动端横向滚动
 - 供应链公司估值观察：展示演示观察区间、演示合理价值区间、估值依据、假设与风险提示，并嵌入 TradingView Mini Chart
+- 自动数据巡检：每天 09:23（上海时间）记录 SEC 巡检状态，计划每 4 小时检查一次财报与重大事项申报
+- SEC 事件提醒：发现新的 10-K、10-Q、20-F、8-K 或 6-K 后，以中性事件加入时间线，并把对应估值区间标记为“需复核”
 - 产业链风险热力图：覆盖云巨头、GPU、网络、高速连接、光模块、电力与液冷、Neocloud 等环节
 - 宏观环境：关键融资指标及利率/增长四象限说明
 - 重大事件时间线：支持情绪与公司筛选，并可跳转到已提供的外部来源
@@ -71,11 +73,11 @@ http://localhost:8000
 npx serve .
 ```
 
-项目本身不依赖 Node.js，也不需要 API Key。ECharts 与 TradingView Mini Chart 均依赖第三方网络资源；TradingView 图表会自动更新公开市场行情，但可能存在延迟，也可能因网络、地区限制或第三方服务状态而暂时不可用。
+网站运行本身不依赖 Node.js，也不需要 API Key。仓库维护脚本使用 GitHub Actions 自带的 Node.js。ECharts 与 TradingView Mini Chart 均依赖第三方网络资源；TradingView 图表会自动显示其提供的市场行情，但可能存在延迟，也可能因网络、地区限制或第三方服务状态而暂时不可用。
 
 ## 5. 🚀 GitHub Pages 部署 / Deployment
 
-仓库内的 `.github/workflows/deploy-pages.yml` 使用 GitHub 官方 Pages Actions。它会在推送到 `main` 分支时自动发布，也支持从 Actions 页面手动运行。
+仓库内的 `.github/workflows/deploy-pages.yml` 使用 GitHub 官方 Pages Actions。它会在推送到 `main` 分支时自动发布，也支持从 Actions 页面手动运行。自动数据工作流在机器人提交成功后会由独立的部署任务校验并发布当时最新的 `main`，既补足机器人推送无法再次触发普通 `push` 工作流的问题，也避免并发任务把站点回退到旧提交。
 
 首次部署前，在 GitHub 仓库中设置：
 
@@ -93,7 +95,7 @@ Repository
 https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 ```
 
-页面内资源均使用相对路径，因此兼容 GitHub Pages 项目站点。仓库入口占位：`https://github.com/YOUR_GITHUB_USERNAME/ai-capex-cycle-monitor`。
+页面内资源均使用相对路径，因此兼容 GitHub Pages 项目站点。当前仓库：`https://github.com/Enkiduee/ai-capex-cycle-monitor`。
 
 ## 6. 💾 JSON 数据文件 / Data Files
 
@@ -103,6 +105,7 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 | `data/hyperscalers.json` | 云巨头季度 CapEx、合计 CapEx 增速与云收入增速 |
 | `data/supply-chain.json` | 供应链公司、经营趋势、资产负债风险与综合等级 |
 | `data/valuation-bands.json` | 供应链公司的演示观察区间、演示合理价值区间、估值依据、假设与风险提示 |
+| `data/sec-filings-state.json` | SEC accession number 去重状态；避免同一披露被重复加入事件流 |
 | `data/macro.json` | 宏观指标、变化方向、风险等级与周期影响 |
 | `data/events.json` | 重大事件、情绪、影响环节、风险分数变化与来源 |
 
@@ -118,10 +121,45 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 - `observationRange`、`fairValueRange`：分别填写 `low` 与 `high`，并确保下限不高于上限
 - `valuationBasis`、`assumptions`、`riskNote`：记录估值逻辑、关键假设和失效风险
 - `confidence`、`updatedAt`、`source`：记录研究置信度、更新时间与来源
+- `reviewStatus`：可使用 `demo`、`needs-review` 或 `reviewed`；标为 `reviewed` 时必须同时填写 `reviewedAt`、`reviewedBy` 与 HTTPS `reviewEvidenceUrl`
 
 修改 JSON 并刷新页面即可看到新内容，无需构建或后端服务。TradingView Mini Chart 的行情并不写入该 JSON，而是由第三方组件自动请求和更新；它无需 API Key，但行情可能延迟，显示可用性也取决于第三方网络。
 
 估值文件中的观察区间与合理价值区间均为演示研究参数，不是目标价、买入建议或任何形式的投资建议。替换数据时应注明估值日期、口径、来源和主要假设；未经核验的数据应继续保留 `"isDemoData": true`。
+
+### 🤖 自动更新机制
+
+`.github/workflows/refresh-data.yml` 提供免费的无服务器自动化：
+
+- 每天 `09:23`（Asia/Shanghai）记录一次 SEC 巡检状态
+- 计划每 4 小时轮询一次 SEC EDGAR，另有每日巡检；GitHub 定时任务可能延迟且没有准时 SLA
+- 支持 Actions 页面手动选择 `full`、`daily`、`events` 或 `bootstrap`
+- 支持 `refresh-data`、`financial-report` 与 `major-event` 三种 `repository_dispatch`
+- 只有业务数据或巡检状态确实变化时才提交；事件扫描没有新披露时不会制造空提交
+- 自动提交完成后由独立任务校验并部署当时最新的 `main`；部署失败可单独重跑，不需要服务器或个人访问令牌
+
+SEC 检测使用官方 `data.sec.gov/submissions/CIK##########.json`，监测 10-K、10-Q、10-KT、10-QT、20-F、40-F、8-K、6-K 及部分财报延期申报。首次运行只建立 accession number 基线，不会把旧披露全部误报成新事件。发现新披露时，系统只执行两件事：
+
+1. 将官方披露作为 `neutral`、风险变化 `0` 的事件加入时间线；
+2. 将对应公司的演示估值区间标记为“发现新披露，需人工复核”。
+
+自动化不会仅凭申报表类型编造利好/利空、风险分数或公允价值，也不会每天改写宏观、CapEx、供应链、行情或估值数值。TradingView 行情仍由组件独立提供；仓库不会抓取、保存或再分发行情。演示观察区间与公允价值区间只有在明确的估值复核后才人工更新。
+
+SEC 要求自动客户端声明“项目/组织名 + 可联系邮箱”的 User-Agent。工作流不会把联系邮箱写入公开代码；上线前必须在仓库中进入 `Settings → Secrets and variables → Actions → Secrets → New repository secret`，新增：
+
+```text
+Name: SEC_USER_AGENT
+Value: AI CapEx Cycle Monitor your-contact@example.com
+```
+
+它不是 API Key，但使用 repository secret 可以避免把联系邮箱直接公开在源码中。缺少该配置时，SEC 巡检会安全失败并且不会写入任何数据。
+
+本地校验自动化脚本：
+
+```bash
+node scripts/validate-data.mjs
+node scripts/check-sec-filings.mjs --mode events --dry-run
+```
 
 ## 7. 📐 风险评分公式 / Scoring Method
 
@@ -150,7 +188,7 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 
 ## 8. 🧭 后续路线 / Roadmap
 
-- 接入经过校验的 SEC、FRED 与公司财报公开数据
+- 扩展 SEC XBRL 基本面字段，并为人工估值复核提供可复现输入
 - 增加数据来源、口径变更和修订历史
 - 补充自由现金流、订单能见度、融资期限与信用利差指标
 - 增加可下载快照、历史周期对比与无障碍图表摘要
@@ -158,7 +196,7 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 
 ## 9. ⚠️ 数据免责声明 / Disclaimer
 
-本项目仅用于信息展示、产业研究与教育用途，不构成任何投资建议。页面中的演示数据可能不准确、不完整或已经过时。估值观察卡中的演示区间不是目标价、买入建议或投资建议；TradingView Mini Chart 的自动更新行情可能存在延迟，且其可用性依赖第三方网络服务。
+本项目仅用于信息展示、产业研究与教育用途，不构成任何投资建议。页面中的演示数据可能不准确、不完整或已经过时。估值观察卡中的演示区间不是目标价、买入建议或投资建议；TradingView Mini Chart 的自动更新行情可能存在延迟，且其可用性依赖第三方网络服务。SEC 自动提醒只证明申报已出现，不代表对内容、重要性或市场影响的判断。
 
 The dashboard is provided for informational, research, and educational purposes only. It is not investment advice. Demo data may be inaccurate, incomplete, or outdated.
 

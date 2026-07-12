@@ -24,6 +24,19 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Validate site data and SEC monitor invariants
+        run: |
+          node scripts/validate-data.mjs
+          node scripts/test-sec-monitor.mjs
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
