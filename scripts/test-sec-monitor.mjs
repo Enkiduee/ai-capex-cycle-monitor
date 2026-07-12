@@ -69,10 +69,15 @@ try {
   await mkdir(dataDirectory, { recursive: true });
   await mkdir(fixtureDirectory, { recursive: true });
 
-  for (const name of ['valuation-bands.json', 'events.json', 'sec-filings-state.json']) {
+  for (const name of ['valuation-bands.json', 'events.json']) {
     const source = await readFile(path.join(ROOT_DIR, 'data', name), 'utf8');
     await writeFile(path.join(dataDirectory, name), source, 'utf8');
   }
+  await writeFile(path.join(dataDirectory, 'sec-filings-state.json'), serializeJson({
+    version: 1,
+    initializedAt: null,
+    companies: {}
+  }), 'utf8');
 
   const valuation = JSON.parse(await readFile(path.join(dataDirectory, 'valuation-bands.json'), 'utf8'));
   const baselineRows = new Map();
