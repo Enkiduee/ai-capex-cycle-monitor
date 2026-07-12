@@ -9,9 +9,23 @@
     macro: { path: './data/macro.json', label: '宏观环境' },
     events: { path: './data/events.json', label: '重大事件' }
   };
+  const DEFAULT_ROUTE = 'overview';
+  const BASE_TITLE = 'AI CapEx Cycle Monitor';
+  const ROUTES = Object.freeze({
+    overview: { label: '周期总览', titleId: 'overview-title' },
+    hyperscalers: { label: '云巨头 CapEx', titleId: 'hyperscalers-title' },
+    'supply-chain': { label: '供应链风险与估值', titleId: 'supply-chain-title' },
+    macro: { label: '宏观与利率环境', titleId: 'macro-title' },
+    events: { label: '重大事件时间线', titleId: 'events-title' },
+    methodology: { label: '方法说明', titleId: 'methodology-title' }
+  });
 
   const state = {
     data: {},
+    routing: {
+      active: DEFAULT_ROUTE,
+      bound: false
+    },
     supply: {
       segment: 'all',
       risk: 'all',
@@ -53,6 +67,146 @@
 
   function byId(id) {
     return document.getElementById(id);
+  }
+
+  function prefersReducedMotion() {
+    return typeof window.matchMedia === 'function'
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function replaceRouteHash(route) {
+    const nextUrl = `${window.location.pathname}${window.location.search}#/${route}`;
+    window.history.replaceState(window.history.state, '', nextUrl);
+  }
+
+  function resolveRoute(hash = window.location.hash) {
+    const value = String(hash || '');
+    if (!value || value === '#') {
+      return { route: DEFAULT_ROUTE, replace: true };
+    }
+
+    if (value.startsWith('#/')) {
+      const route = value.slice(2).split(/[?&]/, 1)[0].replace(/\/+$/, '');
+      return ROUTES[route]
+        ? { route, replace: false }
+        : { route: DEFAULT_ROUTE, replace: true };
+    }
+
+    const legacyRoute = value.slice(1);
+    if (ROUTES[legacyRoute]) {
+      return { route: legacyRoute, replace: true };
+    }
+
+    return { route: state.routing.active || DEFAULT_ROUTE, replace: false, isPageAnchor: true };
+  }
+
+  function refreshRouteMedia(route, options = {}) {
+    const refreshValuation = options.refreshValuation !== false;
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        if (state.routing.active !== route) return;
+        if (route === 'hyperscalers') {
+          const chartApi = charts();
+          if (chartApi && typeof chartApi.resizeAll === 'function') {
+            chartApi.resizeAll();
+          }
+        }
+        if (route === 'supply-chain' && refreshValuation && state.data.valuation) {
+          try {
+            renderSelectedValuation({ forceChart: true });
+          } catch (error) {
+            renderSectionError('valuation', DATA_SOURCES.valuation, error);
+          }
+        }
+      });
+    });
+  }
+
+  function applyRoute(route, options = {}) {
+    const safeRoute = ROUTES[route] ? route : DEFAULT_ROUTE;
+    const config = ROUTES[safeRoute];
+    const shouldFocus = options.focus === true;
+    const shouldAnimate = options.animate === true && !prefersReducedMotion();
+    let activeSection = null;
+
+    state.routing.active = safeRoute;
+    document.querySelectorAll('.route-view').forEach((section) => {
+      const isActive = section.dataset.route === safeRoute;
+      section.hidden = !isActive;
+      section.inert = !isActive;
+      section.classList.remove('is-entering');
+      if (isActive) {
+        section.removeAttribute('aria-hidden');
+        activeSection = section;
+      } else {
+        section.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    let activeLink = null;
+    document.querySelectorAll('.section-nav [data-route]').forEach((link) => {
+      const isActive = link.dataset.route === safeRoute;
+      link.classList.toggle('is-active', isActive);
+      if (isActive) {
+        link.setAttribute('aria-current', 'page');
+        activeLink = link;
+      } else {
+        link.removeAttribute('aria-current');
+      }
+    });
+
+    document.title = `${config.label}｜${BASE_TITLE}`;
+    if (shouldAnimate && activeSection) {
+      activeSection.classList.add('is-entering');
+      activeSection.addEventListener('animationend', () => {
+        activeSection.classList.remove('is-entering');
+      }, { once: true });
+    }
+
+    if (shouldFocus) {
+      const heading = byId(config.titleId);
+      if (heading) heading.focus({ preventScroll: true });
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    }
+
+    if (activeLink) {
+      activeLink.scrollIntoView({
+        block: 'nearest',
+        inline: 'center',
+        behavior: shouldFocus && !prefersReducedMotion() ? 'smooth' : 'auto'
+      });
+    }
+
+    if (options.refreshMedia !== false) {
+      refreshRouteMedia(safeRoute);
+    }
+  }
+
+  function bindRouting() {
+    if (state.routing.bound) return;
+    state.routing.bound = true;
+
+    const initial = resolveRoute();
+    if (initial.replace) replaceRouteHash(initial.route);
+    applyRoute(initial.route, { focus: false, animate: false, refreshMedia: false });
+    delete document.documentElement.dataset.initialRoute;
+
+    window.addEventListener('hashchange', () => {
+      const resolved = resolveRoute();
+      if (resolved.isPageAnchor) return;
+      if (resolved.replace) replaceRouteHash(resolved.route);
+      applyRoute(resolved.route, { focus: true, animate: true, refreshMedia: true });
+    });
+
+    const skipLink = document.querySelector('.skip-link');
+    const main = byId('main-content');
+    if (skipLink && main) {
+      skipLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        main.focus({ preventScroll: true });
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      });
+    }
   }
 
   function toFiniteNumber(value) {
@@ -387,7 +541,7 @@
     return Array.from(uniqueCompanies.values());
   }
 
-  function renderTradingViewChart(company, marketDataNotice) {
+  function renderTradingViewChart(company, marketDataNotice, forceRefresh = false) {
     const shell = byId('valuation-chart-shell');
     const container = byId('valuation-price-chart');
     const sourceLink = byId('valuation-source-link');
@@ -411,7 +565,7 @@
       return false;
     }
 
-    let widget = container.querySelector('tv-mini-chart');
+    let widget = forceRefresh ? null : container.querySelector('tv-mini-chart');
     if (!widget) {
       widget = document.createElement('tv-mini-chart');
     }
@@ -435,7 +589,7 @@
     return true;
   }
 
-  function renderSelectedValuation() {
+  function renderSelectedValuation(options = {}) {
     const data = state.data.valuation;
     const companies = getValuationCompanies(data);
     const company = companies.find((item) => item.ticker === state.valuation.ticker);
@@ -499,7 +653,7 @@
       <div class="valuation-summary-head">
         <div>
           <span class="valuation-company-segment">${escapeHTML(segment)}</span>
-          <h4 class="valuation-company-name">${escapeHTML(name)}</h4>
+          <h3 class="valuation-company-name">${escapeHTML(name)}</h3>
         </div>
         <span class="valuation-symbol">${escapeHTML(ticker)}</span>
       </div>
@@ -543,10 +697,18 @@
 
     const chartTitle = byId('valuation-chart-title');
     if (chartTitle) chartTitle.textContent = `${name}（${ticker}）价格走势`;
-    const chartReady = renderTradingViewChart(company, data.marketDataNotice);
+    const chartIsActive = state.routing.active === 'supply-chain';
+    const chartReady = chartIsActive
+      ? renderTradingViewChart(company, data.marketDataNotice, options.forceChart === true)
+      : false;
     const status = byId('valuation-status');
     if (status) {
-      status.textContent = `已显示 ${name}（${ticker}）的估值观察参数。${chartReady ? '已请求切换行情图，第三方价格可能延迟。' : '行情图暂不可用。'}`;
+      const chartStatus = chartReady
+        ? '已请求切换行情图，第三方价格可能延迟。'
+        : chartIsActive
+          ? '行情图暂不可用。'
+          : '行情图将在打开供应链与估值页面后加载。';
+      status.textContent = `已显示 ${name}（${ticker}）的估值观察参数。${chartStatus}`;
     }
   }
 
@@ -672,7 +834,7 @@
       return `
         <article class="heatmap-node ${escapeHTML(meta.className)}">
           <span class="node-order">${String(index + 1).padStart(2, '0')}</span>
-          <h4>${escapeHTML(segment.name)}</h4>
+          <h3>${escapeHTML(segment.name)}</h3>
           <div class="node-score">${escapeHTML(segment.score)}<span>/100</span></div>
           ${renderRiskBadge(segment.riskLevel)}
           <p>${escapeHTML(segment.description)}</p>
@@ -708,7 +870,7 @@
       return `
         <article class="macro-card">
           <div class="macro-card-topline">
-            <h3>${escapeHTML(indicator.name)}</h3>
+            <h2>${escapeHTML(indicator.name)}</h2>
             ${renderRiskBadge(indicator.riskLevel)}
           </div>
           <div class="macro-values">
@@ -727,7 +889,7 @@
       return `
         <article class="quadrant-card ${className}">
           <span class="quadrant-axis">${escapeHTML(quadrant.name)}</span>
-          <h4>${quadrant.isCurrent ? '当前所处象限' : '情景路径'} ${current}</h4>
+          <h3>${quadrant.isCurrent ? '当前所处象限' : '情景路径'} ${current}</h3>
           <p>${escapeHTML(quadrant.description)}</p>
         </article>
       `;
@@ -766,7 +928,7 @@
               <span class="timeline-entity">${escapeHTML(event.entity)}</span>
               <span class="sentiment-badge sentiment-${escapeHTML(event.sentiment)}">${escapeHTML(sentimentLabels[event.sentiment] || '待判断')}</span>
             </div>
-            <h3>${escapeHTML(event.title)}</h3>
+            <h2>${escapeHTML(event.title)}</h2>
             <p>${escapeHTML(event.description)}</p>
             <div class="timeline-meta">
               <span class="type-badge">${escapeHTML(event.type)}</span>
@@ -909,6 +1071,7 @@
   }
 
   async function initialize() {
+    bindRouting();
     const api = utils();
     const scoreApi = scoring();
     if (!api || !scoreApi) {
@@ -955,6 +1118,7 @@
       }
     });
     updateSharedDates();
+    refreshRouteMedia(state.routing.active, { refreshValuation: false });
 
     if (failureCount > 0) {
       const notice = byId('global-notice');

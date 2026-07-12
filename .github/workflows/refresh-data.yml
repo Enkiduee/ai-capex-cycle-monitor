@@ -88,8 +88,10 @@ jobs:
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
           echo "Selected refresh mode: $mode"
 
-      - name: Run SEC monitor regression fixtures
-        run: node scripts/test-sec-monitor.mjs
+      - name: Validate site and SEC monitor fixtures
+        run: |
+          node scripts/validate-site.mjs
+          node scripts/test-sec-monitor.mjs
 
       - name: Check SEC filings and refresh status
         env:
@@ -197,6 +199,7 @@ jobs:
 
       - name: Validate latest main before deployment
         run: |
+          node scripts/validate-site.mjs
           node scripts/validate-data.mjs
           node scripts/test-sec-monitor.mjs
 

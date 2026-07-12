@@ -11,6 +11,14 @@
     <title>AI CapEx Cycle Monitor｜AI 数据中心资本开支周期雷达</title>
     <link rel="icon" type="image/svg+xml" href="./assets/logo.svg">
     <link rel="stylesheet" href="./css/styles.css">
+    <script>
+      (function () {
+        var routes = ['overview', 'hyperscalers', 'supply-chain', 'macro', 'events', 'methodology'];
+        var hash = window.location.hash || '';
+        var candidate = hash.indexOf('#/') === 0 ? hash.slice(2).split(/[?&]/, 1)[0].replace(/\/+$/, '') : hash.slice(1);
+        document.documentElement.dataset.initialRoute = routes.indexOf(candidate) >= 0 ? candidate : 'overview';
+      }());
+    </script>
     <script type="module" src="https://widgets.tradingview-widget.com/w/en/tv-mini-chart.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
     <script defer src="./js/utils.js"></script>
@@ -24,7 +32,7 @@
     <header class="site-header">
       <div class="header-shell">
         <div class="masthead">
-          <a class="brand" href="#overview" aria-label="返回周期总览">
+          <a class="brand" href="#/overview" aria-label="返回周期总览">
             <img class="brand-logo" src="./assets/logo.svg" alt="AI CapEx 周期雷达图标" width="46" height="46">
             <span class="brand-copy">
               <strong>AI CapEx Cycle Monitor</strong>
@@ -44,13 +52,13 @@
           </div>
         </div>
 
-        <nav class="section-nav" aria-label="页面章节">
-          <a href="#overview">周期总览</a>
-          <a href="#hyperscalers">巨头 CapEx</a>
-          <a href="#supply-chain">供应链风险</a>
-          <a href="#macro">宏观环境</a>
-          <a href="#events">重大事件</a>
-          <a href="#methodology">方法说明</a>
+        <nav class="section-nav" aria-label="看板页面">
+          <a href="#/overview" data-route="overview" aria-controls="overview">总览</a>
+          <a href="#/hyperscalers" data-route="hyperscalers" aria-controls="hyperscalers">云巨头</a>
+          <a href="#/supply-chain" data-route="supply-chain" aria-controls="supply-chain">供应链与估值</a>
+          <a href="#/macro" data-route="macro" aria-controls="macro">宏观</a>
+          <a href="#/events" data-route="events" aria-controls="events">事件</a>
+          <a href="#/methodology" data-route="methodology" aria-controls="methodology">方法</a>
         </nav>
       </div>
     </header>
@@ -59,14 +67,14 @@
       <div class="noscript-notice">本看板需要启用 JavaScript 才能加载本地 JSON 数据与图表。</div>
     </noscript>
 
-    <main id="main-content" class="dashboard-shell">
+    <main id="main-content" class="dashboard-shell" tabindex="-1">
       <div id="global-notice" class="global-notice" role="status" aria-live="polite" hidden></div>
 
-      <section id="overview" class="dashboard-section section-first" aria-labelledby="overview-title">
+      <section id="overview" class="dashboard-section route-view" data-route="overview" aria-labelledby="overview-title">
         <div class="section-heading">
           <div>
             <p class="eyebrow">Cycle overview</p>
-            <h1 id="overview-title">周期总览</h1>
+            <h1 id="overview-title" tabindex="-1">周期总览</h1>
             <p>把资本开支、商业兑现、供应链、信用与宏观压力压缩为一组可追踪的周期信号。</p>
           </div>
           <span class="demo-chip">研究框架 · 演示数据</span>
@@ -137,11 +145,11 @@
         </div>
       </section>
 
-      <section id="hyperscalers" class="dashboard-section" aria-labelledby="hyperscalers-title">
+      <section id="hyperscalers" class="dashboard-section route-view" data-route="hyperscalers" aria-labelledby="hyperscalers-title">
         <div class="section-heading">
           <div>
             <p class="eyebrow">Hyperscaler pulse</p>
-            <h2 id="hyperscalers-title">云巨头 CapEx</h2>
+            <h1 id="hyperscalers-title" tabindex="-1">云巨头 CapEx</h1>
             <p>观察算力基础设施投入强度，以及投入增速与云收入兑现之间的距离。</p>
           </div>
           <span class="demo-chip">演示数据 / Demo Data</span>
@@ -151,7 +159,7 @@
           <div class="card-heading">
             <div>
               <p class="panel-kicker">Quarterly capital expenditure</p>
-              <h3>云巨头季度资本开支趋势</h3>
+              <h2>云巨头季度资本开支趋势</h2>
             </div>
             <span class="unit-label">单位：十亿美元</span>
           </div>
@@ -173,7 +181,7 @@
           <div class="card-heading">
             <div>
               <p class="panel-kicker">Investment versus monetization</p>
-              <h3>CapEx 增速与云收入增速对比</h3>
+              <h2>CapEx 增速与云收入增速对比</h2>
             </div>
             <span class="unit-label">单位：同比 %</span>
           </div>
@@ -195,11 +203,11 @@
         </article>
       </section>
 
-      <section id="supply-chain" class="dashboard-section" aria-labelledby="supply-chain-title">
+      <section id="supply-chain" class="dashboard-section route-view" data-route="supply-chain" aria-labelledby="supply-chain-title">
         <div class="section-heading">
           <div>
             <p class="eyebrow">Supply-chain stress</p>
-            <h2 id="supply-chain-title">供应链风险</h2>
+            <h1 id="supply-chain-title" tabindex="-1">供应链风险与估值</h1>
             <p>从订单、毛利率、库存、应收、杠杆与客户集中度观察脆弱环节。</p>
           </div>
           <span class="demo-chip">演示数据 / Demo Data</span>
@@ -255,7 +263,7 @@
         <div class="subsection-heading valuation-heading">
           <div>
             <p class="eyebrow">Price &amp; valuation watch</p>
-            <h3 id="valuation-watch-title">价格与估值观察</h3>
+            <h2 id="valuation-watch-title">价格与估值观察</h2>
           </div>
           <p>每日仅记录 SEC 巡检状态；计划每 4 小时检查新披露。行情与研究区间不由巡检脚本改写。</p>
         </div>
@@ -286,7 +294,7 @@
               <div class="valuation-chart-heading">
                 <div>
                   <p class="panel-kicker">Auto-updating market chart</p>
-                  <h4 id="valuation-chart-title">价格走势</h4>
+                  <h3 id="valuation-chart-title">价格走势</h3>
                 </div>
                 <a
                   id="valuation-source-link"
@@ -316,7 +324,7 @@
         <div class="subsection-heading heatmap-heading">
           <div>
             <p class="eyebrow">Risk transmission map</p>
-            <h3>产业链风险热力图</h3>
+            <h2>产业链风险热力图</h2>
           </div>
           <p>箭头表示资本开支冲击可能沿产业链传导的方向。</p>
         </div>
@@ -325,11 +333,11 @@
         </div>
       </section>
 
-      <section id="macro" class="dashboard-section" aria-labelledby="macro-title">
+      <section id="macro" class="dashboard-section route-view" data-route="macro" aria-labelledby="macro-title">
         <div class="section-heading">
           <div>
             <p class="eyebrow">Macro regime</p>
-            <h2 id="macro-title">宏观与利率环境</h2>
+            <h1 id="macro-title" tabindex="-1">宏观与利率环境</h1>
             <p>融资成本与增长组合决定项目回报门槛，也决定信用风险何时被放大。</p>
           </div>
           <span class="demo-chip">演示数据 / Demo Data</span>
@@ -338,7 +346,7 @@
         <article id="macro-regime" class="regime-banner" aria-live="polite">
           <div>
             <p class="panel-kicker">当前宏观象限</p>
-            <h3 id="macro-regime-title">等待宏观数据</h3>
+            <h2 id="macro-regime-title">等待宏观数据</h2>
           </div>
           <p id="macro-regime-summary">数据加载后将说明当前环境对 AI CapEx 的含义。</p>
         </article>
@@ -350,39 +358,39 @@
         <div class="subsection-heading">
           <div>
             <p class="eyebrow">Four regimes</p>
-            <h3>利率 × 增长四象限</h3>
+            <h2>利率 × 增长四象限</h2>
           </div>
           <p>这是情景框架，不代表对未来宏观路径的预测。</p>
         </div>
         <div id="macro-quadrants" class="quadrant-grid" aria-label="宏观环境四象限说明">
           <article class="quadrant-card quadrant-favorable">
             <span class="quadrant-axis">降息 × 经济增长</span>
-            <h4>扩张顺风</h4>
+            <h3>扩张顺风</h3>
             <p>融资成本下行、需求扩张，是 AI 基础设施最有利的组合。</p>
           </article>
           <article class="quadrant-card quadrant-watch">
             <span class="quadrant-axis">高利率 × 经济增长</span>
-            <h4>需求韧性</h4>
+            <h3>需求韧性</h3>
             <p>估值和融资承压，但终端需求与现金流可能维持投入。</p>
           </article>
           <article class="quadrant-card quadrant-watch">
             <span class="quadrant-axis">降息 × 经济衰退</span>
-            <h4>先压后修复</h4>
+            <h3>先压后修复</h3>
             <p>短期业绩承压，政策宽松为周期后段修复创造条件。</p>
           </article>
           <article class="quadrant-card quadrant-danger">
             <span class="quadrant-axis">高利率 × 经济衰退</span>
-            <h4>双重挤压</h4>
+            <h3>双重挤压</h3>
             <p>需求回落叠加融资成本高企，是信用与订单最危险的组合。</p>
           </article>
         </div>
       </section>
 
-      <section id="events" class="dashboard-section" aria-labelledby="events-title">
+      <section id="events" class="dashboard-section route-view" data-route="events" aria-labelledby="events-title">
         <div class="section-heading">
           <div>
             <p class="eyebrow">Event ledger</p>
-            <h2 id="events-title">重大事件时间线</h2>
+            <h1 id="events-title" tabindex="-1">重大事件时间线</h1>
             <p>将 CapEx 指引、订单变化、融资与宏观政策转换为可追踪的风险增量。</p>
           </div>
           <span id="event-source-chip" class="demo-chip">演示情景；SEC 披露发现后加入</span>
@@ -417,11 +425,11 @@
         </div>
       </section>
 
-      <section id="methodology" class="dashboard-section" aria-labelledby="methodology-title">
+      <section id="methodology" class="dashboard-section route-view" data-route="methodology" aria-labelledby="methodology-title">
         <div class="section-heading">
           <div>
             <p class="eyebrow">Methodology</p>
-            <h2 id="methodology-title">方法说明</h2>
+            <h1 id="methodology-title" tabindex="-1">方法说明</h1>
             <p>把研究框架、判断边界与数据责任透明化。</p>
           </div>
         </div>
@@ -429,7 +437,7 @@
         <div class="method-grid">
           <article class="method-card method-formula">
             <span class="method-number">01</span>
-            <h3>加权风险模型</h3>
+            <h2>加权风险模型</h2>
             <p>综合分由五项 0–100 分的信号加权计算，分数越高代表下行与信用风险越强。</p>
             <div class="formula" aria-label="风险评分公式">
               <code>25% CapEx + 20% 收入兑现 + 20% 供应链 + 20% 信用 + 15% 宏观</code>
@@ -437,12 +445,12 @@
           </article>
           <article class="method-card">
             <span class="method-number">02</span>
-            <h3>研究框架，不是预测器</h3>
+            <h2>研究框架，不是预测器</h2>
             <p>第一版使用演示数据，风险分数同时包含客观财务指标与主观研究判断，不应被视为交易信号。</p>
           </article>
           <article class="method-card">
             <span class="method-number">03</span>
-            <h3>可替换的数据层</h3>
+            <h2>可替换的数据层</h2>
             <p>后续可把 JSON 演示数据替换为 SEC、FRED 与公司财报数据；每项指标都应保留来源和更新时间。</p>
           </article>
         </div>

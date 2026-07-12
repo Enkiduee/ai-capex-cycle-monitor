@@ -35,6 +35,7 @@ jobs:
 
       - name: Validate site data and SEC monitor invariants
         run: |
+          node scripts/validate-site.mjs
           node scripts/validate-data.mjs
           node scripts/test-sec-monitor.mjs
 

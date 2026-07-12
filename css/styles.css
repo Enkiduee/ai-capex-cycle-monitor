@@ -215,10 +215,13 @@ a:hover {
 
 .section-nav {
   display: flex;
-  min-height: 42px;
-  align-items: stretch;
-  gap: 4px;
+  min-height: 48px;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 8px;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
   scrollbar-width: none;
 }
 
@@ -229,45 +232,83 @@ a:hover {
 .section-nav a {
   position: relative;
   display: inline-flex;
+  min-height: 34px;
   flex: 0 0 auto;
   align-items: center;
-  padding: 0 13px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 999px;
   color: var(--text-secondary);
   font-size: 12px;
   font-weight: 650;
   letter-spacing: 0.025em;
+  scroll-snap-align: center;
   text-decoration: none;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
 }
 
 .section-nav a::after {
-  position: absolute;
-  right: 13px;
-  bottom: 0;
-  left: 13px;
-  height: 2px;
-  background: transparent;
-  content: "";
+  content: none;
 }
 
 .section-nav a:hover,
 .section-nav a:focus-visible {
+  border-color: var(--border-strong);
+  background: var(--surface-muted);
   color: var(--text);
 }
 
-.section-nav a:hover::after {
-  background: var(--accent);
+.section-nav a:focus-visible {
+  outline-offset: -3px;
+}
+
+.section-nav a[aria-current="page"],
+.section-nav a.is-active {
+  border-color: #315e75;
+  background: var(--accent-muted);
+  color: var(--accent-strong);
 }
 
 .dashboard-shell {
-  padding-bottom: 72px;
+  min-height: calc(100svh - 205px);
+  padding-bottom: 56px;
 }
 
 .dashboard-section {
-  padding-top: 82px;
+  padding-top: clamp(30px, 4vw, 52px);
 }
 
-.section-first {
-  padding-top: 56px;
+.route-view[hidden] {
+  display: none !important;
+}
+
+:root[data-initial-route] .route-view {
+  display: none;
+}
+
+:root[data-initial-route="overview"] .route-view[data-route="overview"],
+:root[data-initial-route="hyperscalers"] .route-view[data-route="hyperscalers"],
+:root[data-initial-route="supply-chain"] .route-view[data-route="supply-chain"],
+:root[data-initial-route="macro"] .route-view[data-route="macro"],
+:root[data-initial-route="events"] .route-view[data-route="events"],
+:root[data-initial-route="methodology"] .route-view[data-route="methodology"] {
+  display: block;
+}
+
+.route-view.is-entering {
+  animation: route-enter 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes route-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .section-heading,
@@ -293,6 +334,7 @@ a:hover {
 .section-heading h2,
 .subsection-heading h2,
 .subsection-heading h3,
+.card-heading h2,
 .card-heading h3 {
   margin: 0;
   color: var(--text);
@@ -311,6 +353,7 @@ a:hover {
   font-size: 24px;
 }
 
+.card-heading h2,
 .card-heading h3 {
   font-size: 19px;
 }
@@ -1081,7 +1124,7 @@ tbody tr:hover {
 }
 
 .valuation-company-name,
-.valuation-chart-heading h4 {
+.valuation-chart-heading h3 {
   margin: 0;
   color: var(--text);
   font-size: 18px;
@@ -1384,7 +1427,7 @@ tbody tr:hover {
   font-size: 10px;
 }
 
-.heatmap-node h4 {
+.heatmap-node h3 {
   min-height: 40px;
   margin: 8px 0 0;
   font-size: 13px;
@@ -1423,7 +1466,7 @@ tbody tr:hover {
   box-shadow: none;
 }
 
-.regime-banner h3 {
+.regime-banner h2 {
   margin: 0;
   font-size: 21px;
 }
@@ -1457,7 +1500,7 @@ tbody tr:hover {
   gap: 12px;
 }
 
-.macro-card h3 {
+.macro-card h2 {
   margin: 0;
   font-size: 14px;
 }
@@ -1517,7 +1560,7 @@ tbody tr:hover {
   letter-spacing: 0.04em;
 }
 
-.quadrant-card h4 {
+.quadrant-card h3 {
   margin: 24px 0 6px;
   font-size: 17px;
 }
@@ -1657,7 +1700,7 @@ tbody tr:hover {
   font-weight: 800;
 }
 
-.timeline-card h3 {
+.timeline-card h2 {
   margin: 10px 0 6px;
   color: var(--text);
   font-size: 17px;
@@ -1751,7 +1794,7 @@ tbody tr:hover {
   font-weight: 800;
 }
 
-.method-card h3 {
+.method-card h2 {
   margin: 38px 0 10px;
   font-size: 19px;
 }
@@ -1912,10 +1955,6 @@ tbody tr:hover {
   }
 
   .dashboard-section {
-    padding-top: 66px;
-  }
-
-  .section-first {
     padding-top: 38px;
   }
 
@@ -1967,7 +2006,7 @@ tbody tr:hover {
 
 @media (max-width: 680px) {
   html {
-    scroll-padding-top: 170px;
+    scroll-padding-top: 112px;
   }
 
   .header-shell,
@@ -1978,9 +2017,10 @@ tbody tr:hover {
   }
 
   .masthead {
+    min-height: 58px;
     gap: 12px;
-    flex-wrap: wrap;
-    padding: 10px 0 8px;
+    flex-wrap: nowrap;
+    padding: 7px 0 6px;
   }
 
   .brand-logo {
@@ -1993,10 +2033,7 @@ tbody tr:hover {
   }
 
   .header-readouts {
-    display: grid;
-    width: 100%;
-    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
-    gap: 6px;
+    display: none;
   }
 
   .readout {
@@ -2017,7 +2054,18 @@ tbody tr:hover {
 
   .section-nav {
     margin-inline: -12px;
-    padding-inline: 8px;
+    min-height: 46px;
+    gap: 2px;
+    padding: 0 12px 7px;
+  }
+
+  .section-nav a {
+    min-height: 44px;
+    padding-inline: 13px;
+  }
+
+  .dashboard-section {
+    padding-top: 28px;
   }
 
   .section-heading,
@@ -2205,6 +2253,8 @@ tbody tr:hover {
   *,
   *::before,
   *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
@@ -2236,4 +2286,5 @@ tbody tr:hover {
   .dashboard-section {
     break-inside: avoid;
   }
+
 }

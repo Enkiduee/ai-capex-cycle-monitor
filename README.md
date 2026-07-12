@@ -36,6 +36,7 @@ AI CapEx Cycle Monitor 将分散的产业信号整理为统一的风险研究框
 ## 2. ✨ 当前功能 / Features
 
 - 周期总览：综合风险分数、周期阶段、CapEx 动量与信用压力
+- 六视图导航：总览、云巨头、供应链与估值、宏观、事件、方法通过 GitHub Pages Hash 路由独立切换，支持刷新、分享与浏览器前进/后退
 - 风险评分拆解：五项风险贡献、权重、等级与解释
 - 云巨头 CapEx 趋势：Microsoft、Amazon、Alphabet、Meta 与 Oracle 的季度演示数据
 - CapEx 增速与云收入增速对比：自动判断两者差值并生成提示
@@ -67,6 +68,12 @@ python3 -m http.server 8000
 http://localhost:8000
 ```
 
+也可以直接打开某个视图，例如：
+
+```text
+http://localhost:8000/#/supply-chain
+```
+
 如果本机已有 Node.js，也可以临时使用：
 
 ```bash
@@ -96,6 +103,15 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 ```
 
 页面内资源均使用相对路径，因此兼容 GitHub Pages 项目站点。当前仓库：`https://github.com/Enkiduee/ai-capex-cycle-monitor`。
+
+顶部导航使用 `#/页面` 形式的 Hash 路由，不需要服务器端重写规则，因此直接刷新或分享子视图不会出现 GitHub Pages 404：
+
+- [总览](https://enkiduee.github.io/ai-capex-cycle-monitor/#/overview)
+- [云巨头 CapEx](https://enkiduee.github.io/ai-capex-cycle-monitor/#/hyperscalers)
+- [供应链与估值](https://enkiduee.github.io/ai-capex-cycle-monitor/#/supply-chain)
+- [宏观环境](https://enkiduee.github.io/ai-capex-cycle-monitor/#/macro)
+- [重大事件](https://enkiduee.github.io/ai-capex-cycle-monitor/#/events)
+- [方法说明](https://enkiduee.github.io/ai-capex-cycle-monitor/#/methodology)
 
 ## 6. 💾 JSON 数据文件 / Data Files
 
