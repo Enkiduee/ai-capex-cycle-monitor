@@ -56,7 +56,8 @@
   };
 
   const chartSeriesColors = ['#69d7df', '#f2c75c', '#f26f76', '#5bd39a', '#a991f7'];
-  const tradingViewSymbolPattern = /^(?:NASDAQ|NYSE):[A-Z][A-Z0-9.-]{0,9}$/;
+  const valuationTickerPattern = /^(?:[A-Z][A-Z0-9.-]{0,9}|\d{6})$/;
+  const tradingViewSymbolPattern = /^(?:NASDAQ|NYSE|SZSE):(?:[A-Z][A-Z0-9.-]{0,9}|\d{6})$/;
   const confidenceLabels = Object.freeze({
     high: '高',
     medium: '中',
@@ -486,14 +487,6 @@
     return /^[A-Z]{3}$/.test(fallbackCurrency) ? fallbackCurrency : 'USD';
   }
 
-  function normalizeValuationRange(range) {
-    if (!range || typeof range !== 'object') return null;
-    const low = toFiniteNumber(range.low);
-    const high = toFiniteNumber(range.high);
-    if (low === null || high === null || low <= 0 || high < low) return null;
-    return { low, high };
-  }
-
   function formatCurrencyAmount(value, currency) {
     const amount = toFiniteNumber(value);
     if (amount === null) return '—';
@@ -511,15 +504,20 @@
     }
   }
 
-  function formatValuationRange(range, currency) {
-    const normalized = normalizeValuationRange(range);
-    if (!normalized) {
-      return { isValid: false, text: '待建立' };
+  function formatValuationPrice(value, currency) {
+    const amount = toFiniteNumber(value);
+    if (amount === null) return '—';
+    try {
+      return new Intl.NumberFormat('zh-CN', {
+        style: 'currency',
+        currency,
+        currencyDisplay: 'code',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(amount);
+    } catch (error) {
+      return `${currency} ${formatNumber(amount, 2)}`;
     }
-    return {
-      isValid: true,
-      text: `${formatCurrencyAmount(normalized.low, currency)} – ${formatCurrencyAmount(normalized.high, currency)}`
-    };
   }
 
   function valuationConfidence(value) {
@@ -527,15 +525,269 @@
     return confidenceLabels[key] || confidenceLabels.unknown;
   }
 
+  function formatBuyZonePrice(value, currency, minimumFractionDigits = 0) {
+    const amount = toFiniteNumber(value);
+    if (amount === null) return '—';
+    try {
+      return new Intl.NumberFormat('zh-CN', {
+        style: 'currency',
+        currency: safeCurrency(currency, 'USD'),
+        currencyDisplay: 'narrowSymbol',
+        minimumFractionDigits,
+        maximumFractionDigits: 2
+      }).format(amount);
+    } catch (error) {
+      return `${currency} ${formatNumber(amount, minimumFractionDigits)}`;
+    }
+  }
+
+  function formatBuyZoneRange(zone, currency) {
+    const low = toFiniteNumber(zone && zone.low);
+    const high = toFiniteNumber(zone && zone.high);
+    if (low === null || high === null) return '—';
+    return `${formatBuyZonePrice(low, currency)}–${formatBuyZonePrice(high, currency)}`;
+  }
+
+  function getBuyZoneStatus(company) {
+    const referencePrice = toFiniteNumber(company && company.referencePrice);
+    const safety = company && company.safety ? company.safety : {};
+    const reasonable = company && company.reasonable ? company.reasonable : {};
+    const aggressive = company && company.aggressive ? company.aggressive : {};
+    if (referencePrice === null) return { label: '等待参考价', className: 'is-unknown' };
+    if (referencePrice >= Number(safety.low) && referencePrice <= Number(safety.high)) {
+      return { label: '进入安全区间', className: 'is-safety' };
+    }
+    if (referencePrice >= Number(reasonable.low) && referencePrice <= Number(reasonable.high)) {
+      return { label: '进入合理区间', className: 'is-reasonable' };
+    }
+    if (referencePrice >= Number(aggressive.low) && referencePrice <= Number(aggressive.high)) {
+      return { label: '进入激进区间', className: 'is-aggressive' };
+    }
+    if (referencePrice > Number(aggressive.high)) {
+      const premium = (referencePrice / Number(aggressive.high) - 1) * 100;
+      return {
+        label: `高于激进上限 ${formatNumber(premium, 1, '%')}`,
+        className: 'is-wait'
+      };
+    }
+    if (referencePrice < Number(safety.low)) {
+      return { label: '低于安全区间 · 先复核', className: 'is-review' };
+    }
+    return { label: '处于区间空档', className: 'is-between' };
+  }
+
+  function renderBuyZones(data) {
+    const body = byId('buy-zones-body');
+    const summary = byId('buy-zones-summary');
+    const updatedAt = byId('buy-zones-updated-at');
+    const disclosure = byId('buy-zones-disclosure');
+    const snapshot = data && data.manualBuyZones && typeof data.manualBuyZones === 'object'
+      ? data.manualBuyZones
+      : {};
+    const companies = Array.isArray(snapshot.entries) ? snapshot.entries : [];
+    if (!body || !companies.length) {
+      throw new Error('买入区间速览缺少有效公司数据。');
+    }
+
+    body.innerHTML = companies.map((company) => {
+      const ticker = textValue(company.ticker, '—');
+      const name = textValue(company.name, ticker);
+      const market = textValue(company.market, '待分类');
+      const segment = textValue(company.segment, '待分类');
+      const currency = safeCurrency(company.currency, 'USD');
+      const status = getBuyZoneStatus(company);
+      const referencePrice = `${company.referencePriceApproximate === true ? '约 ' : ''}${formatBuyZonePrice(company.referencePrice, currency, 2)}`;
+      return `
+        <tr>
+          <th scope="row">
+            <button
+              class="buy-zone-symbol"
+              type="button"
+              data-valuation-ticker="${escapeHTML(ticker)}"
+              aria-label="查看 ${escapeHTML(name)}（${escapeHTML(ticker)}）的区间详情"
+            >${escapeHTML(ticker)}</button>
+            <strong>${escapeHTML(name)}</strong>
+            <span class="buy-zone-company-meta">${escapeHTML(market)} · ${escapeHTML(segment)}</span>
+          </th>
+          <td><span class="buy-zone-reference">${escapeHTML(referencePrice)}</span></td>
+          <td><span class="buy-zone-range is-safety">${escapeHTML(formatBuyZoneRange(company.safety, currency))}</span></td>
+          <td><span class="buy-zone-range is-reasonable">${escapeHTML(formatBuyZoneRange(company.reasonable, currency))}</span></td>
+          <td><span class="buy-zone-range is-aggressive">${escapeHTML(formatBuyZoneRange(company.aggressive, currency))}</span></td>
+          <td>
+            <span class="buy-zone-status ${escapeHTML(status.className)}">${escapeHTML(status.label)}</span>
+            <span class="buy-zone-note">${escapeHTML(textValue(company.view, '等待补充研究备注。'))}</span>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    body.querySelectorAll('[data-valuation-ticker]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const ticker = textValue(button.dataset.valuationTicker, '');
+        const valuationData = state.data.valuation;
+        if (!valuationData || !getValuationCompanies(valuationData).some((company) => company.ticker === ticker)) return;
+        state.valuation.ticker = ticker;
+        const select = byId('valuation-company-select');
+        if (select) select.value = ticker;
+        try {
+          renderSelectedValuation({ forceChart: true });
+          byId('valuation-watch-title')?.scrollIntoView({
+            block: 'start',
+            behavior: prefersReducedMotion() ? 'auto' : 'smooth'
+          });
+        } catch (error) {
+          renderSectionError('valuation', DATA_SOURCES.valuation, error);
+        }
+      });
+    });
+
+    if (summary) {
+      summary.textContent = `${companies.length} 只标的 · ${textValue(snapshot.sourceLabel, '关联研究对话')} · 参考价截至 ${formatDate(snapshot.updatedAt || data.updatedAt)}`;
+    }
+    if (updatedAt) {
+      updatedAt.dateTime = snapshot.updatedAt || data.updatedAt;
+      updatedAt.textContent = `区间更新 ${formatDate(snapshot.updatedAt || data.updatedAt)}`;
+    }
+    if (disclosure) {
+      disclosure.innerHTML = `<strong>区间边界</strong><p>${escapeHTML(textValue(snapshot.notice, '静态研究价格带不构成投资建议。'))}</p>`;
+    }
+  }
+
+  function normalizeResearchBands(value) {
+    if (!value || typeof value !== 'object') return null;
+    const normalizeRange = (range) => {
+      const low = toFiniteNumber(range && range.low);
+      const high = toFiniteNumber(range && range.high);
+      return low !== null && high !== null && low > 0 && high >= low ? { low, high } : null;
+    };
+    const safety = normalizeRange(value.safety);
+    const reasonable = normalizeRange(value.reasonable);
+    const aggressive = normalizeRange(value.aggressive);
+    if (
+      !safety || !reasonable || !aggressive
+      || safety.high >= reasonable.low
+      || reasonable.high >= aggressive.low
+    ) {
+      return null;
+    }
+    return {
+      ...value,
+      safety,
+      reasonable,
+      aggressive,
+      referencePrice: toFiniteNumber(value.referencePrice)
+    };
+  }
+
+  function formatResearchRange(range, currency) {
+    return `${formatValuationPrice(range.low, currency)} – ${formatValuationPrice(range.high, currency)}`;
+  }
+
+  function calculatePePriceModel(model, methodology) {
+    const eps = toFiniteNumber(model && model.eps && model.eps.value);
+    const bearPe = toFiniteNumber(model && model.peScenarios && model.peScenarios.bear);
+    const basePe = toFiniteNumber(model && model.peScenarios && model.peScenarios.base);
+    const bullPe = toFiniteNumber(model && model.peScenarios && model.peScenarios.bull);
+    const safetyDiscount = toFiniteNumber(methodology && methodology.safetyDiscount);
+    if (
+      eps === null || eps <= 0
+      || bearPe === null || basePe === null || bullPe === null
+      || bearPe <= 0 || bearPe >= basePe || basePe >= bullPe
+      || safetyDiscount === null || safetyDiscount <= 0 || safetyDiscount >= 1
+    ) {
+      return null;
+    }
+
+    const bearValue = eps * bearPe;
+    const baseValue = eps * basePe;
+    const bullValue = eps * bullPe;
+    return {
+      eps,
+      bearPe,
+      basePe,
+      bullPe,
+      safetyDiscount,
+      bearValue,
+      baseValue,
+      bullValue,
+      safetyCap: bearValue * safetyDiscount
+    };
+  }
+
+  function renderValuationSources(sources) {
+    const links = (Array.isArray(sources) ? sources : []).map((source) => {
+      const url = safeExternalUrl(source && source.url);
+      const label = textValue(source && source.label, '来源');
+      if (!url) return `<span>${escapeHTML(label)}</span>`;
+      return `<a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer nofollow">${escapeHTML(label)} ↗</a>`;
+    }).filter(Boolean);
+    return links.length ? links.join('') : '<span>暂未提供来源说明。</span>';
+  }
+
+  function researchBandsFromEntry(snapshot, entry) {
+    return {
+      asOf: snapshot.updatedAt,
+      timeHorizon: textValue(snapshot.timeHorizon, '未来约 6–12 个月'),
+      sourceLabel: textValue(snapshot.sourceLabel, '用户提供的《股票买入区间分析》研究对话'),
+      methodology: textValue(snapshot.basis, '上一季度财报、公司指引与估值风险的人工研究快照'),
+      referencePrice: entry.referencePrice,
+      referencePriceApproximate: entry.referencePriceApproximate === true,
+      aggressive: entry.aggressive,
+      reasonable: entry.reasonable,
+      safety: entry.safety,
+      thesis: entry.view,
+      aboveAggressiveNote: entry.aboveAggressiveNote
+    };
+  }
+
   function getValuationCompanies(data) {
     const companies = data && Array.isArray(data.companies) ? data.companies : [];
+    const snapshot = data && data.manualBuyZones && typeof data.manualBuyZones === 'object'
+      ? data.manualBuyZones
+      : {};
+    const manualEntries = Array.isArray(snapshot.entries) ? snapshot.entries : [];
     const uniqueCompanies = new Map();
 
     companies.forEach((company) => {
       if (!company || typeof company !== 'object') return;
       const ticker = textValue(company.ticker, '');
-      if (!/^[A-Z][A-Z0-9.-]{0,9}$/.test(ticker) || uniqueCompanies.has(ticker)) return;
+      if (!valuationTickerPattern.test(ticker) || uniqueCompanies.has(ticker)) return;
       uniqueCompanies.set(ticker, company);
+    });
+
+    manualEntries.forEach((entry) => {
+      if (!entry || typeof entry !== 'object') return;
+      const ticker = textValue(entry.ticker, '');
+      if (!valuationTickerPattern.test(ticker)) return;
+      const buyZones = researchBandsFromEntry(snapshot, entry);
+      const existing = uniqueCompanies.get(ticker);
+      if (existing) {
+        uniqueCompanies.set(ticker, { ...existing, buyZones });
+        return;
+      }
+      uniqueCompanies.set(ticker, {
+        ticker,
+        name: textValue(entry.name, ticker),
+        segment: textValue(entry.segment, '待分类'),
+        tradingViewSymbol: textValue(entry.tradingViewSymbol, ''),
+        disclosureMonitor: 'manual',
+        reviewStatus: 'demo',
+        reviewReason: '该价格带已从用户提供的研究对话导入；财务输入与价格区间需在后续披露后手动复核。',
+        currency: safeCurrency(entry.currency, data && data.currency),
+        confidence: textValue(entry.confidence, 'not_assessed'),
+        valuationModel: { kind: 'research-range' },
+        assumptions: [
+          textValue(entry.view, '等待下一次研究复核。'),
+          '只有在核心投资逻辑未被财报、指引、融资或监管变化破坏时，价格区间才有效。'
+        ],
+        riskNote: textValue(entry.riskNote, snapshot.notice || '研究区间可能随基本面和估值条件变化而失效。'),
+        updatedAt: snapshot.updatedAt,
+        sources: [{
+          label: textValue(snapshot.sourceLabel, '用户提供的《股票买入区间分析》研究对话'),
+          type: 'analysis-origin'
+        }],
+        buyZones
+      });
     });
 
     return Array.from(uniqueCompanies.values());
@@ -601,26 +853,35 @@
     const name = textValue(company.name, ticker);
     const segment = textValue(company.segment, '待分类');
     const currency = safeCurrency(company.currency, data.currency);
-    const observationRange = formatValuationRange(company.observationRange, currency);
-    const fairValueRange = formatValuationRange(company.fairValueRange, currency);
     const confidence = valuationConfidence(company.confidence);
-    const valuationBasis = textValue(company.valuationBasis, '暂未提供估值框架说明。');
     const riskNote = textValue(company.riskNote, '暂未提供单独风险提示。');
-    const source = textValue(company.source, '演示研究参数');
     const updatedAt = formatDate(company.updatedAt || data.updatedAt);
+    const model = company.valuationModel && typeof company.valuationModel === 'object'
+      ? company.valuationModel
+      : {};
+    const eps = model.eps && typeof model.eps === 'object' ? model.eps : {};
+    const epsValue = toFiniteNumber(eps.value);
+    const epsText = epsValue === null ? '—' : formatCurrencyAmount(epsValue, currency);
+    const epsPeriod = eps.periodEnd ? formatDate(eps.periodEnd) : '待确认';
+    const epsPeriodType = { TTM: 'TTM', FY: '完整财年', Q: '单季' }[eps.periodType] || '待确认期间';
+    const isPeModel = model.kind === 'pe';
+    const pePriceModel = isPeModel ? calculatePePriceModel(model, data.methodology) : null;
+    const hasPePriceModel = Boolean(isPeModel && pePriceModel);
+    const researchBands = normalizeResearchBands(company.buyZones);
+    const hasResearchBands = Boolean(researchBands);
     const reviewStatus = ['demo', 'reviewed', 'needs-review'].includes(company.reviewStatus)
       ? company.reviewStatus
       : 'demo';
     const reviewMeta = {
-      demo: { label: '演示区间 · 待验证', className: 'is-demo' },
-      reviewed: { label: '已完成估值复核', className: 'is-reviewed' },
+      demo: { label: '研究模型 · 待验证', className: 'is-demo' },
+      reviewed: { label: '已按最新财报复核', className: 'is-reviewed' },
       'needs-review': { label: '发现新披露 · 需复核', className: 'is-review' }
     }[reviewStatus];
     const reviewReason = textValue(
       company.reviewReason,
       reviewStatus === 'needs-review'
-        ? '系统发现新的公司披露，当前区间仅保留作历史研究参考。'
-        : '当前为演示研究区间；自动巡检不会机械生成公允价值或买卖建议。'
+        ? '系统发现新的公司披露，现有 EPS 与 P/E 情景仅保留作历史研究参考。'
+        : '估值输入已人工复核；情景倍数仍是研究假设，不代表收益保证。'
     );
     const latestFiling = company.latestSecFiling && typeof company.latestSecFiling === 'object'
       ? company.latestSecFiling
@@ -631,23 +892,208 @@
       : '';
     const automation = data.automation && typeof data.automation === 'object' ? data.automation : {};
     const lastDailyCheck = automation.lastDailyCheckAt ? formatDate(automation.lastDailyCheckAt) : '等待首次运行';
-    const automationSummary = `${textValue(automation.dailySchedule, '每天自动巡检')} · 最近巡检：${lastDailyCheck}`;
+    const automationSummary = company.disclosureMonitor === 'manual'
+      ? '披露巡检：手动复核 · 财报或重大事件后需重新评估价格带'
+      : `${textValue(automation.dailySchedule, '每天自动巡检')} · ${textValue(automation.eventSchedule, '定时检查新披露')} · 最近巡检：${lastDailyCheck}`;
     const assumptions = Array.isArray(company.assumptions)
       ? company.assumptions.filter((item) => typeof item === 'string' && item.trim()).map((item) => item.trim())
       : [];
     const assumptionItems = assumptions.length
       ? assumptions.map((item) => `<li>${escapeHTML(item)}</li>`).join('')
       : '<li>暂未提供关键假设明细。</li>';
-    const observationContext = observationRange.isValid
-      ? reviewStatus === 'needs-review'
-        ? '新披露后尚未重估；当前区间仅作历史研究参考。'
-        : '演示研究参数；仅用于触发进一步复核，不是买入建议。'
-      : '缺少有效上下限，暂不展示区间。';
     const summary = byId('valuation-summary');
 
     if (!summary) {
       throw new Error('找不到估值观察摘要容器。');
     }
+
+    let valuationMarkup = '';
+    if (hasResearchBands) {
+      const analysisDate = researchBands.asOf ? formatDate(researchBands.asOf) : '待确认';
+      const referencePrice = researchBands.referencePrice === null
+        ? '未记录'
+        : `${researchBands.referencePriceApproximate ? '约 ' : ''}${formatValuationPrice(researchBands.referencePrice, currency)}`;
+      const sourceLabel = textValue(researchBands.sourceLabel, '人工研究记录');
+      valuationMarkup = `
+        <div class="valuation-model-intro is-research-band">
+          <div>
+            <span>财报与指引研究区间</span>
+            <strong>${escapeHTML(textValue(researchBands.timeHorizon, '未来约 6–12 个月'))}</strong>
+          </div>
+          <span class="valuation-model-chip">截至 ${escapeHTML(analysisDate)}</span>
+        </div>
+        <div class="valuation-scenario-grid" aria-label="${escapeHTML(ticker)} 三档研究买入区间">
+          <section class="valuation-scenario is-safety">
+            <span class="valuation-scenario-step">01 · Safety margin</span>
+            <h4>高安全边际</h4>
+            <strong class="valuation-scenario-price">${escapeHTML(formatResearchRange(researchBands.safety, currency))}</strong>
+            <p>${escapeHTML(textValue(researchBands.safety.note, '基本面未破坏时，适合更明显地分批增加仓位。'))}</p>
+          </section>
+          <section class="valuation-scenario is-reasonable">
+            <span class="valuation-scenario-step">02 · Core entry</span>
+            <h4>合理主买</h4>
+            <strong class="valuation-scenario-price">${escapeHTML(formatResearchRange(researchBands.reasonable, currency))}</strong>
+            <p>${escapeHTML(textValue(researchBands.reasonable.note, '兼顾增长兑现与估值风险的主要分批区间。'))}</p>
+          </section>
+          <section class="valuation-scenario is-aggressive">
+            <span class="valuation-scenario-step">03 · Starter position</span>
+            <h4>激进试仓</h4>
+            <strong class="valuation-scenario-price">${escapeHTML(formatResearchRange(researchBands.aggressive, currency))}</strong>
+            <p>${escapeHTML(textValue(researchBands.aggressive.note, '仅适合计划仓位的一小部分，需承受较大回撤。'))}</p>
+          </section>
+        </div>
+        <p class="valuation-wait-note"><strong>区间纪律</strong>${escapeHTML(textValue(
+          researchBands.aboveAggressiveNote,
+          `高于激进区间上沿 ${formatValuationPrice(researchBands.aggressive.high, currency)} 时等待，不追价。`
+        ))}</p>
+        <div class="valuation-detail-grid">
+          <div class="valuation-detail">
+            <span>分析参考价 · 非实时</span>
+            <strong>${escapeHTML(referencePrice)}</strong>
+          </div>
+          <div class="valuation-detail">
+            <span>区间日期</span>
+            <strong>${escapeHTML(analysisDate)}</strong>
+          </div>
+          <div class="valuation-detail">
+            <span>研究口径</span>
+            <strong>${escapeHTML(textValue(researchBands.methodology, '最近财报、管理层指引与估值情景综合判断'))}</strong>
+          </div>
+          <div class="valuation-detail">
+            <span>研究置信度</span>
+            <strong>${escapeHTML(confidence)}</strong>
+          </div>
+        </div>
+        <p class="valuation-basis"><strong>核心判断</strong>${escapeHTML(textValue(researchBands.thesis, '需结合后续财报与价格走势继续复核。'))}</p>
+        <p class="valuation-band-origin"><strong>区间来源</strong>${escapeHTML(sourceLabel)}。该区间为人工研究结论，不是实时行情自动生成。</p>
+        ${model.kind === 'pe-not-meaningful' ? `
+          <div class="valuation-unavailable-panel is-compact">
+            <span class="valuation-scenario-step">P/E CROSS-CHECK</span>
+            <h4>P/E 暂不适用</h4>
+            <p>${escapeHTML(textValue(model.notMeaningfulReason, '当前盈利不满足 P/E 估值条件；以上区间采用替代估值与前瞻情景。'))}</p>
+          </div>
+        ` : ''}
+      `;
+    } else if (hasPePriceModel) {
+      const {
+        bearPe,
+        basePe,
+        bullPe,
+        safetyDiscount,
+        bearValue,
+        baseValue,
+        bullValue,
+        safetyCap
+      } = pePriceModel;
+      const safetyPercent = Math.round(safetyDiscount * 100);
+      const safetyPrice = formatValuationPrice(safetyCap, currency);
+      const bearPrice = formatValuationPrice(bearValue, currency);
+      const basePrice = formatValuationPrice(baseValue, currency);
+      const bullPrice = formatValuationPrice(bullValue, currency);
+      valuationMarkup = `
+        <div class="valuation-model-intro">
+          <div>
+            <span>规范化盈利输入</span>
+            <strong>${escapeHTML(epsText)} / 股</strong>
+          </div>
+          <span class="valuation-model-chip">${escapeHTML(epsPeriodType)} P/E 情景</span>
+        </div>
+        <div class="valuation-scenario-grid" aria-label="${escapeHTML(ticker)} 三档估值价格">
+          <section class="valuation-scenario is-safety">
+            <span class="valuation-scenario-step">01 · Bear × ${escapeHTML(String(safetyPercent))}%</span>
+            <h4>有安全边际</h4>
+            <strong class="valuation-scenario-price">≤ ${escapeHTML(safetyPrice)}</strong>
+            <p>熊市 P/E ${escapeHTML(String(bearPe))}× 对应 ${escapeHTML(bearPrice)}，再保守折价 ${escapeHTML(String(100 - safetyPercent))}%。</p>
+          </section>
+          <section class="valuation-scenario is-reasonable">
+            <span class="valuation-scenario-step">02 · Base P/E ${escapeHTML(String(basePe))}×</span>
+            <h4>合理买入</h4>
+            <strong class="valuation-scenario-price">&gt; ${escapeHTML(safetyPrice)} – ≤ ${escapeHTML(basePrice)}</strong>
+            <p>左端不含、右端包含：高于安全边际上限，不高于基准情景价值。</p>
+          </section>
+          <section class="valuation-scenario is-aggressive">
+            <span class="valuation-scenario-step">03 · Bull P/E ${escapeHTML(String(bullPe))}×</span>
+            <h4>激进买入</h4>
+            <strong class="valuation-scenario-price">&gt; ${escapeHTML(basePrice)} – ≤ ${escapeHTML(bullPrice)}</strong>
+            <p>左端不含、右端包含；需要牛市增长兑现，容错空间最小。</p>
+          </section>
+        </div>
+        <p class="valuation-wait-note"><strong>等待线</strong> &gt; ${escapeHTML(bullPrice)} 不列入买入区；右侧实时图仅用于对照，不自动给出交易信号。</p>
+        <div class="valuation-formula-card">
+          <span>可复算公式</span>
+          <code>${escapeHTML(epsText)} × ${escapeHTML(String(bearPe))} = ${escapeHTML(bearPrice)}；${escapeHTML(bearPrice)} × ${escapeHTML(String(safetyPercent))}% = ${escapeHTML(safetyPrice)}</code>
+        </div>
+        <div class="valuation-detail-grid">
+          <div class="valuation-detail">
+            <span>EPS 口径</span>
+            <strong>${escapeHTML(textValue(eps.basis, '待确认'))}</strong>
+          </div>
+          <div class="valuation-detail">
+            <span>熊 / 基准 / 牛 P/E</span>
+            <strong>${escapeHTML(`${bearPe}× / ${basePe}× / ${bullPe}×`)}</strong>
+          </div>
+          <div class="valuation-detail">
+            <span>财务期末</span>
+            <strong>${escapeHTML(epsPeriod)}</strong>
+          </div>
+          <div class="valuation-detail">
+            <span>研究置信度</span>
+            <strong>${escapeHTML(confidence)}</strong>
+          </div>
+        </div>
+        <p class="valuation-basis"><strong>历史 P/E 背景</strong>${escapeHTML(textValue(model.historicalPeContext, '待补充。'))}</p>
+        <p class="valuation-basis"><strong>情景设定理由</strong>${escapeHTML(textValue(model.scenarioRationale, '待补充。'))}</p>
+      `;
+    } else {
+      const unavailableTitle = isPeModel ? 'P/E 模型输入异常' : '暂不提供 P/E 买入价';
+      const unavailableReason = isPeModel
+        ? '当前 EPS、P/E 或安全边际输入未通过前端完整性检查，请等待数据修复。'
+        : textValue(model.notMeaningfulReason, '当前盈利不满足 P/E 估值条件。');
+      valuationMarkup = `
+        <div class="valuation-unavailable-panel">
+          <span class="valuation-scenario-step">P/E NOT MEANINGFUL</span>
+          <h4>${escapeHTML(unavailableTitle)}</h4>
+          <p>${escapeHTML(unavailableReason)}</p>
+        </div>
+        <div class="valuation-detail-grid">
+          <div class="valuation-detail">
+            <span>已披露 EPS 观察</span>
+            <strong>${escapeHTML(epsText)} / 股</strong>
+          </div>
+          <div class="valuation-detail">
+            <span>财务期末</span>
+            <strong>${escapeHTML(epsPeriod)}</strong>
+          </div>
+          <div class="valuation-detail">
+            <span>替代估值</span>
+            <strong>${escapeHTML(textValue(model.alternativeMetric, '待建立。'))}</strong>
+          </div>
+          <div class="valuation-detail">
+            <span>重新启用 P/E 条件</span>
+            <strong>${escapeHTML(textValue(model.reentryRule, '待建立。'))}</strong>
+          </div>
+        </div>
+      `;
+    }
+
+    const modelLabel = hasResearchBands
+      ? '财报 / 指引研究区间'
+      : hasPePriceModel
+        ? 'P/E 三情景模型'
+      : isPeModel
+        ? 'P/E 模型输入异常'
+        : 'P/E 暂不适用';
+    const modelClassName = hasResearchBands
+      ? 'is-research'
+      : hasPePriceModel
+        ? 'is-pe'
+        : 'is-unavailable';
+    const epsSupportMarkup = model.eps && typeof model.eps === 'object'
+      ? `
+        <p class="valuation-basis"><strong>EPS 计算</strong>${escapeHTML(textValue(eps.calculation, '待补充。'))}</p>
+        <p class="valuation-basis"><strong>GAAP 对照</strong>${escapeHTML(textValue(eps.gaapComparison, '待补充。'))}</p>
+      `
+      : '';
 
     summary.innerHTML = `
       <div class="valuation-summary-head">
@@ -655,43 +1101,25 @@
           <span class="valuation-company-segment">${escapeHTML(segment)}</span>
           <h3 class="valuation-company-name">${escapeHTML(name)}</h3>
         </div>
-        <span class="valuation-symbol">${escapeHTML(ticker)}</span>
-      </div>
-      <div class="valuation-range-panel">
-        <span class="valuation-range-label">研究观察区间</span>
-        <strong class="valuation-range-value">${escapeHTML(observationRange.text)}</strong>
-        <span class="valuation-range-context">${escapeHTML(observationContext)}</span>
+        <div class="valuation-symbol-stack">
+          <span class="valuation-symbol">${escapeHTML(ticker)}</span>
+          <span class="valuation-model-kind ${modelClassName}">${escapeHTML(modelLabel)}</span>
+        </div>
       </div>
       <div class="valuation-review-status ${escapeHTML(reviewMeta.className)}">
         <strong>${escapeHTML(reviewMeta.label)}</strong>
         <span>${escapeHTML(reviewReason)}</span>
         ${filingLink}
       </div>
-      <div class="valuation-detail-grid">
-        <div class="valuation-detail">
-          <span>演示公允价值区间</span>
-          <strong>${escapeHTML(fairValueRange.text)}</strong>
-        </div>
-        <div class="valuation-detail">
-          <span>研究置信度</span>
-          <strong>${escapeHTML(confidence)}</strong>
-        </div>
-        <div class="valuation-detail">
-          <span>产业链环节</span>
-          <strong>${escapeHTML(segment)}</strong>
-        </div>
-        <div class="valuation-detail">
-          <span>计价币种</span>
-          <strong>${escapeHTML(currency)}</strong>
-        </div>
-      </div>
-      <p class="valuation-basis"><strong>估值框架</strong>${escapeHTML(valuationBasis)}</p>
+      ${valuationMarkup}
+      ${epsSupportMarkup}
       <div class="valuation-assumptions">
         <strong>关键假设</strong>
         <ul>${assumptionItems}</ul>
       </div>
       <p class="valuation-risk-note"><strong>主要风险</strong>${escapeHTML(riskNote)}</p>
-      <p class="valuation-meta-line">数据更新：${escapeHTML(updatedAt)} · 来源：${escapeHTML(source)}</p>
+      <div class="valuation-sources"><strong>资料来源</strong><div>${renderValuationSources(company.sources)}</div></div>
+      <p class="valuation-meta-line">研究更新：${escapeHTML(updatedAt)} · 产业链：${escapeHTML(segment)} · 币种：${escapeHTML(currency)}</p>
       <p class="valuation-auto-meta">自动巡检：${escapeHTML(automationSummary)}</p>
     `;
 
@@ -708,7 +1136,7 @@
         : chartIsActive
           ? '行情图暂不可用。'
           : '行情图将在打开供应链与估值页面后加载。';
-      status.textContent = `已显示 ${name}（${ticker}）的估值观察参数。${chartStatus}`;
+      status.textContent = `已显示 ${name}（${ticker}）的${modelLabel}。${chartStatus}`;
     }
   }
 
@@ -720,6 +1148,7 @@
     }
 
     state.data.valuation = data;
+    renderBuyZones(data);
     select.replaceChildren();
     companies.forEach((company) => {
       const ticker = textValue(company.ticker, '');
@@ -983,6 +1412,10 @@
       byId('supply-chain-body').innerHTML = `<tr><td colspan="11" class="table-empty">${escapeHTML(message)}</td></tr>`;
       api.renderSectionError('supply-chain-heatmap', message);
     } else if (key === 'valuation') {
+      const buyZoneBody = byId('buy-zones-body');
+      if (buyZoneBody) buyZoneBody.innerHTML = `<tr><td colspan="6" class="table-empty">${escapeHTML(message)}</td></tr>`;
+      const buyZoneSummary = byId('buy-zones-summary');
+      if (buyZoneSummary) buyZoneSummary.textContent = message;
       const select = byId('valuation-company-select');
       if (select) {
         const option = document.createElement('option');

@@ -34,6 +34,53 @@ const supplyTickers = (supply.companies || []).map((company) => company.ticker);
 const valuationTickers = (valuation.companies || []).map((company) => company.ticker);
 assert(JSON.stringify(supplyTickers) === JSON.stringify(valuationTickers), '供应链与估值公司的 ticker/顺序必须完全一致');
 assert(new Set(valuationTickers).size === valuationTickers.length, '估值 ticker 不能重复');
+assert(valuation.methodologyVersion === 'pe-cycle-v1', '估值方法版本必须为 pe-cycle-v1');
+const safetyDiscount = Number(valuation.methodology && valuation.methodology.safetyDiscount);
+assert(Number.isFinite(safetyDiscount) && safetyDiscount > 0 && safetyDiscount < 1, '估值安全边际折扣必须在 0..1 之间');
+for (const key of ['formula', 'safetyZone', 'reasonableZone', 'aggressiveZone', 'waitZone', 'eligibility', 'rounding']) {
+  assert(typeof (valuation.methodology && valuation.methodology[key]) === 'string' && valuation.methodology[key].trim(), `估值方法缺少 ${key}`);
+}
+
+const manualBuyZones = valuation.manualBuyZones;
+assert(manualBuyZones && typeof manualBuyZones === 'object' && !Array.isArray(manualBuyZones), '缺少 manualBuyZones 研究快照');
+assert(validDate(manualBuyZones && manualBuyZones.updatedAt), 'manualBuyZones.updatedAt 无效');
+for (const key of ['timeHorizon', 'sourceLabel', 'basis', 'notice']) {
+  assert(typeof (manualBuyZones && manualBuyZones[key]) === 'string' && manualBuyZones[key].trim(), `manualBuyZones.${key} 不能为空`);
+}
+const manualEntries = Array.isArray(manualBuyZones && manualBuyZones.entries) ? manualBuyZones.entries : [];
+const expectedManualTickers = ['AAOI', 'SKHY', 'LITE', '002436', '002916', '002156', 'AXTI', 'ASTS'];
+assert(manualEntries.length === 8, '重点标的买入区间必须包含 8 家公司');
+assert(JSON.stringify(manualEntries.map((entry) => entry.ticker)) === JSON.stringify(expectedManualTickers), '重点标的买入区间必须包含指定股票并保持约定顺序');
+const manualTickers = new Set();
+for (const entry of manualEntries) {
+  const ticker = String(entry && entry.ticker || '');
+  assert(/^(?:[A-Z][A-Z0-9.-]{0,9}|\d{6})$/.test(ticker), `手工区间 ticker 无效：${ticker}`);
+  assert(!manualTickers.has(ticker), `手工区间 ticker 重复：${ticker}`);
+  manualTickers.add(ticker);
+  assert(typeof entry.name === 'string' && entry.name.trim(), `${ticker}.name 不能为空`);
+  assert(typeof entry.market === 'string' && entry.market.trim(), `${ticker}.market 不能为空`);
+  assert(typeof entry.segment === 'string' && entry.segment.trim(), `${ticker}.segment 不能为空`);
+  assert(['USD', 'CNY'].includes(entry.currency), `${ticker}.currency 必须是 USD 或 CNY`);
+  assert(/^(?:NASDAQ|NYSE|SZSE):(?:[A-Z][A-Z0-9.-]{0,9}|\d{6})$/.test(String(entry.tradingViewSymbol || '')), `${ticker}.tradingViewSymbol 无效`);
+  assert(Number.isFinite(Number(entry.referencePrice)) && Number(entry.referencePrice) > 0, `${ticker}.referencePrice 必须大于 0`);
+  const safetyLow = Number(entry.safety && entry.safety.low);
+  const safetyHigh = Number(entry.safety && entry.safety.high);
+  const reasonableLow = Number(entry.reasonable && entry.reasonable.low);
+  const reasonableHigh = Number(entry.reasonable && entry.reasonable.high);
+  const aggressiveLow = Number(entry.aggressive && entry.aggressive.low);
+  const aggressiveHigh = Number(entry.aggressive && entry.aggressive.high);
+  assert(
+    [safetyLow, safetyHigh, reasonableLow, reasonableHigh, aggressiveLow, aggressiveHigh].every(Number.isFinite),
+    `${ticker} 三档区间必须是有限数值`
+  );
+  assert(
+    safetyLow > 0 && safetyLow < safetyHigh
+      && safetyHigh < reasonableLow && reasonableLow < reasonableHigh
+      && reasonableHigh < aggressiveLow && aggressiveLow < aggressiveHigh,
+    `${ticker} 三档区间必须满足 safety < reasonable < aggressive，且每档 low < high`
+  );
+  assert(typeof entry.view === 'string' && entry.view.trim(), `${ticker}.view 不能为空`);
+}
 
 for (const company of valuation.companies || []) {
   assert(/^[A-Z][A-Z0-9.-]{0,9}$/.test(String(company.ticker || '')), `无效 ticker：${company.ticker}`);
@@ -50,10 +97,54 @@ for (const company of valuation.companies || []) {
       errors.push(`${company.ticker} reviewed 状态必须提供有效 reviewEvidenceUrl`);
     }
   }
-  for (const key of ['observationRange', 'fairValueRange']) {
-    const range = company[key];
-    assert(range && Number.isFinite(Number(range.low)) && Number.isFinite(Number(range.high)), `${company.ticker}.${key} 必须包含有限数值`);
-    assert(Number(range && range.low) > 0 && Number(range && range.high) >= Number(range && range.low), `${company.ticker}.${key} 必须满足 0 < low <= high`);
+  assert(validDate(company.updatedAt), `${company.ticker}.updatedAt 无效`);
+  assert(['high', 'medium', 'low', 'not_assessed'].includes(company.confidence), `${company.ticker}.confidence 无效`);
+  assert(Array.isArray(company.assumptions) && company.assumptions.length > 0, `${company.ticker}.assumptions 不能为空`);
+  assert(typeof company.riskNote === 'string' && company.riskNote.trim(), `${company.ticker}.riskNote 不能为空`);
+
+  const model = company.valuationModel;
+  assert(model && ['pe', 'pe-not-meaningful'].includes(model.kind), `${company.ticker}.valuationModel.kind 无效`);
+  const eps = model && model.eps;
+  assert(eps && Number.isFinite(Number(eps.value)), `${company.ticker}.valuationModel.eps.value 必须是有限数值`);
+  assert(eps && validDate(eps.periodEnd), `${company.ticker}.valuationModel.eps.periodEnd 无效`);
+  assert(eps && ['GAAP', 'non-GAAP'].includes(eps.accountingBasis), `${company.ticker}.valuationModel.eps.accountingBasis 无效`);
+  assert(eps && ['TTM', 'FY', 'Q'].includes(eps.periodType), `${company.ticker}.valuationModel.eps.periodType 无效`);
+  for (const key of ['basis', 'calculation', 'gaapComparison']) {
+    assert(typeof (eps && eps[key]) === 'string' && eps[key].trim(), `${company.ticker}.valuationModel.eps.${key} 不能为空`);
+  }
+
+  if (model && model.kind === 'pe') {
+    assert(Number(eps && eps.value) > 0, `${company.ticker} 启用 P/E 时 EPS 必须大于 0`);
+    const bear = Number(model.peScenarios && model.peScenarios.bear);
+    const base = Number(model.peScenarios && model.peScenarios.base);
+    const bull = Number(model.peScenarios && model.peScenarios.bull);
+    assert(Number.isFinite(bear) && Number.isFinite(base) && Number.isFinite(bull), `${company.ticker} P/E 情景必须是有限数值`);
+    assert(bear > 0 && bear < base && base < bull, `${company.ticker} P/E 必须满足 0 < bear < base < bull`);
+    assert(['TTM', 'FY'].includes(eps && eps.periodType), `${company.ticker} 启用 P/E 时必须使用 TTM 或完整财年 EPS`);
+    assert(Number(eps && eps.eligibleQuarterCount) >= 4, `${company.ticker} 启用 P/E 时必须提供至少四季覆盖证据`);
+    assert(typeof (eps && eps.eligibilityEvidence) === 'string' && eps.eligibilityEvidence.trim(), `${company.ticker} 缺少 P/E 适用性证据`);
+    assert(model.peScenarios.accountingBasis === eps.accountingBasis, `${company.ticker} EPS 与历史 P/E 会计口径必须一致`);
+    assert(typeof model.historicalPeContext === 'string' && model.historicalPeContext.trim(), `${company.ticker} 缺少历史 P/E 背景`);
+    assert(typeof model.scenarioRationale === 'string' && model.scenarioRationale.trim(), `${company.ticker} 缺少 P/E 情景理由`);
+    assert((company.sources || []).some((source) => source.type === 'historical-valuation'), `${company.ticker} 启用 P/E 时必须提供历史估值来源`);
+  }
+
+  if (model && model.kind === 'pe-not-meaningful') {
+    assert(!model.peScenarios, `${company.ticker} P/E 不适用时不能生成 P/E 情景`);
+    for (const key of ['notMeaningfulReason', 'alternativeMetric', 'reentryRule']) {
+      assert(typeof model[key] === 'string' && model[key].trim(), `${company.ticker}.${key} 不能为空`);
+    }
+  }
+
+  assert(Array.isArray(company.sources) && company.sources.length > 0, `${company.ticker}.sources 不能为空`);
+  for (const source of company.sources || []) {
+    assert(typeof source.label === 'string' && source.label.trim(), `${company.ticker} 来源缺少 label`);
+    try {
+      const sourceUrl = new URL(source.url);
+      assert(sourceUrl.protocol === 'https:', `${company.ticker} 来源必须使用 HTTPS`);
+    } catch (error) {
+      errors.push(`${company.ticker} 来源 URL 无效`);
+    }
   }
   if (company.latestSecFiling) {
     assert(validDate(company.latestSecFiling.filingDate), `${company.ticker}.latestSecFiling.filingDate 无效`);

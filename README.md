@@ -31,7 +31,7 @@ AI CapEx Cycle Monitor 将分散的产业信号整理为统一的风险研究框
 - 红色：熊市或信用风险确认
 - 灰色：数据缺失或尚未判断
 
-风险状态始终同时显示文字标签，不只依赖颜色。第一版数据均为演示数据，不代表实时市场或公司财务信息。
+风险状态始终同时显示文字标签，不只依赖颜色。宏观、CapEx、风险评分等首版数据仍以演示框架为主；详细估值卡采用截至 `2026-07-12` 可得财报输入与可复算 P/E 情景，重点标的表另展示 `2026-07-13` 人工研究区间，并分别标注口径与边界。
 
 ## 2. ✨ 当前功能 / Features
 
@@ -41,7 +41,9 @@ AI CapEx Cycle Monitor 将分散的产业信号整理为统一的风险研究框
 - 云巨头 CapEx 趋势：Microsoft、Amazon、Alphabet、Meta 与 Oracle 的季度演示数据
 - CapEx 增速与云收入增速对比：自动判断两者差值并生成提示
 - 供应链风险：排序、产业链环节筛选、风险等级筛选与移动端横向滚动
-- 供应链公司估值观察：展示演示观察区间、演示合理价值区间、估值依据、假设与风险提示，并嵌入 TradingView Mini Chart
+- 8 只重点股票买入区间速览：集中展示 AAOI、SKHY、LITE、兴森科技、深南电路、通富微电、AXTI 与 ASTS 的“安全边际、合理主买、激进试仓”研究区间；点击代码可进入对应详情和行情图
+- 供应链公司估值观察：以规范化摊薄 EPS × 熊 / 基准 / 牛市 P/E 计算“安全边际、合理买入、激进买入”三档研究价格，并嵌入 TradingView Mini Chart
+- P/E 适用性护栏：亏损或一次性非经营收益主导的公司不会硬算买入价，而会说明原因、替代估值口径与重新启用条件
 - 自动数据巡检：每天 09:23（上海时间）记录 SEC 巡检状态，计划每 4 小时检查一次财报与重大事项申报
 - SEC 事件提醒：发现新的 10-K、10-Q、20-F、8-K 或 6-K 后，以中性事件加入时间线，并把对应估值区间标记为“需复核”
 - 产业链风险热力图：覆盖云巨头、GPU、网络、高速连接、光模块、电力与液冷、Neocloud 等环节
@@ -120,28 +122,44 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 | `data/risk-score.json` | 更新时间、周期阶段、综合判断、手动分数与五项风险分数 |
 | `data/hyperscalers.json` | 云巨头季度 CapEx、合计 CapEx 增速与云收入增速 |
 | `data/supply-chain.json` | 供应链公司、经营趋势、资产负债风险与综合等级 |
-| `data/valuation-bands.json` | 供应链公司的演示观察区间、演示合理价值区间、估值依据、假设与风险提示 |
+| `data/valuation-bands.json` | 8 只重点股票的人工研究区间，以及供应链公司的 EPS 口径、熊 / 基准 / 牛市 P/E、适用性判断、假设与来源 |
 | `data/sec-filings-state.json` | SEC accession number 去重状态；避免同一披露被重复加入事件流 |
 | `data/macro.json` | 宏观指标、变化方向、风险等级与周期影响 |
 | `data/events.json` | 重大事件、情绪、影响环节、风险分数变化与来源 |
 
-第一版 JSON 均包含 `"isDemoData": true`。替换为真实数据时，应保留一致字段，并为每个指标维护 `updatedAt` 和来源信息。不要将需要保密的 API Key 或凭证写入 JSON、JavaScript 或 Git 历史。
+风险、CapEx、宏观等首版 JSON 仍包含 `"isDemoData": true`；估值文件已使用 `"isDemoData": false`，但其中 P/E 倍数依然是带主观判断的研究情景。更新任何数据时都应维护 `updatedAt` 和来源信息。不要将需要保密的 API Key 或凭证写入 JSON、JavaScript 或 Git 历史。
 
 ### 🎯 编辑估值观察数据
 
-`data/valuation-bands.json` 的 `companies` 数组按股票代码维护估值观察卡。编辑时请保留现有对象结构，重点字段包括：
+`data/valuation-bands.json` 的 `manualBuyZones.entries` 维护重点标的人工研究区间；每项包含 `aggressive`、`reasonable`、`safety` 三个互不重叠的价格范围、分析参考价、币种、市场和简短判断。前端会把这些标的合并到详情选择器。`companies` 数组则按股票代码维护可复算的详细估值卡。编辑时请保留现有对象结构，重点字段包括：
 
 - `ticker`、`name`、`segment`：公司与产业链标识
 - `tradingViewSymbol`：TradingView 使用的 `交易所:代码`，例如 `NASDAQ:NVDA`
-- `currency`：区间采用的货币
-- `observationRange`、`fairValueRange`：分别填写 `low` 与 `high`，并确保下限不高于上限
-- `valuationBasis`、`assumptions`、`riskNote`：记录估值逻辑、关键假设和失效风险
-- `confidence`、`updatedAt`、`source`：记录研究置信度、更新时间与来源
+- `currency`：价格带采用的货币
+- `valuationModel.kind`：使用 `pe` 或 `pe-not-meaningful`，后者不会生成买入价格
+- `valuationModel.eps`：记录 EPS 数值、`accountingBasis`、`periodType`、四季覆盖证据、财务期末、计算过程和 GAAP 对照
+- `valuationModel.peScenarios`：仅用于 `pe` 模型，且必须满足 `0 < bear < base < bull`
+- `valuationModel.historicalPeContext`、`valuationModel.scenarioRationale`：记录历史牛熊估值背景与情景倍数为什么这样设定
+- `valuationModel.notMeaningfulReason`、`valuationModel.alternativeMetric`、`valuationModel.reentryRule`：解释 P/E 为什么失效、改看什么以及何时重启
+- `assumptions`、`riskNote`、`confidence`、`updatedAt`：记录关键假设、失效风险、研究置信度与更新时间
+- `sources`：提供官方财报和历史估值资料的 HTTPS 链接
 - `reviewStatus`：可使用 `demo`、`needs-review` 或 `reviewed`；标为 `reviewed` 时必须同时填写 `reviewedAt`、`reviewedBy` 与 HTTPS `reviewEvidenceUrl`
 
 修改 JSON 并刷新页面即可看到新内容，无需构建或后端服务。TradingView Mini Chart 的行情并不写入该 JSON，而是由第三方组件自动请求和更新；它无需 API Key，但行情可能延迟，显示可用性也取决于第三方网络。
 
-估值文件中的观察区间与合理价值区间均为演示研究参数，不是目标价、买入建议或任何形式的投资建议。替换数据时应注明估值日期、口径、来源和主要假设；未经核验的数据应继续保留 `"isDemoData": true`。
+三档价格的统一公式为：
+
+```text
+熊 / 基准 / 牛市情景价值 = 同口径规范化摊薄 EPS × 对应情景 P/E
+安全边际上限 = 熊市情景价值 × 80%
+合理买入区 = 高于安全边际上限、且不高于基准价值
+激进买入区 = 高于基准价值、且不高于牛市价值
+高于牛市价值 = 等待，不列入买入区
+```
+
+P/E 只在规范化 EPS 为正、核心经营盈利可复核、数据覆盖至少连续四季，并能找到同一 GAAP / non-GAAP 口径的历史 P/E 时启用。优先使用 TTM；遇到公司更改披露口径时可退回最近完整财年。MRVL、AAOI、CRWV 与 NBIS 当前分别因为出售收益、持续亏损、口径错配或一次性投资重估主导利润而明确显示“P/E 不适用”，页面不会为了给出一个数字而制造错误精度。
+
+这些价格带不是目标价、收益保证、个性化建议或任何形式的买卖推荐。人工研究区间必须记录分析日期、参考价和来源；P/E 区间必须注明财务期末、EPS 口径、历史估值背景和主要假设。右侧 TradingView 图表独立更新，仓库不会使用行情自动执行交易判断。
 
 ### 🤖 自动更新机制
 
@@ -157,9 +175,9 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 SEC 检测使用官方 `data.sec.gov/submissions/CIK##########.json`，监测 10-K、10-Q、10-KT、10-QT、20-F、40-F、8-K、6-K 及部分财报延期申报。首次运行只建立 accession number 基线，不会把旧披露全部误报成新事件。发现新披露时，系统只执行两件事：
 
 1. 将官方披露作为 `neutral`、风险变化 `0` 的事件加入时间线；
-2. 将对应公司的演示估值区间标记为“发现新披露，需人工复核”。
+2. 将对应公司的 EPS 与 P/E 情景标记为“发现新披露，需人工复核”。
 
-自动化不会仅凭申报表类型编造利好/利空、风险分数或公允价值，也不会每天改写宏观、CapEx、供应链、行情或估值数值。TradingView 行情仍由组件独立提供；仓库不会抓取、保存或再分发行情。演示观察区间与公允价值区间只有在明确的估值复核后才人工更新。
+自动化不会仅凭申报表类型编造利好/利空、风险分数或公允价值，也不会每天改写宏观、CapEx、供应链、行情或估值数值。TradingView 行情仍由组件独立提供；仓库不会抓取或保存当前行情。EPS 与 P/E 情景只有在财报或重大事件后的明确估值复核中才人工更新。
 
 SEC 要求自动客户端声明“项目/组织名 + 可联系邮箱”的 User-Agent。工作流不会把联系邮箱写入公开代码；上线前必须在仓库中进入 `Settings → Secrets and variables → Actions → Secrets → New repository secret`，新增：
 
@@ -174,6 +192,8 @@ Value: AI CapEx Cycle Monitor your-contact@example.com
 
 ```bash
 node scripts/validate-data.mjs
+node scripts/validate-site.mjs
+node scripts/test-sec-monitor.mjs
 node scripts/check-sec-filings.mjs --mode events --dry-run
 ```
 
@@ -204,7 +224,7 @@ node scripts/check-sec-filings.mjs --mode events --dry-run
 
 ## 8. 🧭 后续路线 / Roadmap
 
-- 扩展 SEC XBRL 基本面字段，并为人工估值复核提供可复现输入
+- 自动提取 SEC XBRL 基本面字段，并在不自动生成交易建议的前提下辅助人工估值复核
 - 增加数据来源、口径变更和修订历史
 - 补充自由现金流、订单能见度、融资期限与信用利差指标
 - 增加可下载快照、历史周期对比与无障碍图表摘要
@@ -212,7 +232,7 @@ node scripts/check-sec-filings.mjs --mode events --dry-run
 
 ## 9. ⚠️ 数据免责声明 / Disclaimer
 
-本项目仅用于信息展示、产业研究与教育用途，不构成任何投资建议。页面中的演示数据可能不准确、不完整或已经过时。估值观察卡中的演示区间不是目标价、买入建议或投资建议；TradingView Mini Chart 的自动更新行情可能存在延迟，且其可用性依赖第三方网络服务。SEC 自动提醒只证明申报已出现，不代表对内容、重要性或市场影响的判断。
+本项目仅用于信息展示、产业研究与教育用途，不构成任何投资建议。页面数据可能不准确、不完整或已经过时。估值观察卡中的“安全边际、合理买入、激进买入”来自人工财报/指引研究或特定 EPS 与 P/E 假设，不是目标价、收益保证或针对任何人的投资建议；TradingView Mini Chart 的自动更新行情可能存在延迟，且其可用性依赖第三方网络服务。SEC 自动提醒只证明申报已出现，不代表对内容、重要性或市场影响的判断。
 
 The dashboard is provided for informational, research, and educational purposes only. It is not investment advice. Demo data may be inaccurate, incomplete, or outdated.
 

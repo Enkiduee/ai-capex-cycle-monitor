@@ -210,7 +210,7 @@
             <h1 id="supply-chain-title" tabindex="-1">供应链风险与估值</h1>
             <p>从订单、毛利率、库存、应收、杠杆与客户集中度观察脆弱环节。</p>
           </div>
-          <span class="demo-chip">演示数据 / Demo Data</span>
+          <span class="demo-chip">风险表：演示 · 估值：财报复核</span>
         </div>
 
         <article class="table-card">
@@ -263,22 +263,68 @@
         <div class="subsection-heading valuation-heading">
           <div>
             <p class="eyebrow">Price &amp; valuation watch</p>
-            <h2 id="valuation-watch-title">价格与估值观察</h2>
+            <h2 id="buy-zones-title">买入区间与估值观察</h2>
           </div>
-          <p>每日仅记录 SEC 巡检状态；计划每 4 小时检查新披露。行情与研究区间不由巡检脚本改写。</p>
+          <p>先比较关联研究对话中的三档静态区间，再用财务模型下钻复核。</p>
+        </div>
+
+        <article class="buy-zones-card" aria-labelledby="buy-zones-title" aria-describedby="buy-zones-disclosure">
+          <div class="buy-zones-head">
+            <div>
+              <p class="panel-kicker">Conversation research snapshot</p>
+              <h3>8 只 AI 产业链股票买入区间速览</h3>
+              <p id="buy-zones-summary">正在读取关联研究对话中的价格带…</p>
+            </div>
+            <div class="buy-zones-meta" aria-label="区间数据状态">
+              <span class="demo-chip">静态研究快照</span>
+              <time id="buy-zones-updated-at" datetime="">加载中…</time>
+            </div>
+          </div>
+
+          <div class="buy-zones-table-scroll" tabindex="0" aria-label="可横向滚动的股票买入区间表">
+            <table class="buy-zones-table">
+              <caption>AAOI、SKHY、LITE、兴森科技、深南电路、通富微电、AXTI 与 ASTS 的三档研究价格带</caption>
+              <thead>
+                <tr>
+                  <th scope="col">标的</th>
+                  <th scope="col">对话参考价</th>
+                  <th scope="col" class="zone-safety-heading">高安全边际</th>
+                  <th scope="col" class="zone-reasonable-heading">合理主买</th>
+                  <th scope="col" class="zone-aggressive-heading">激进试仓</th>
+                  <th scope="col">参考价状态</th>
+                </tr>
+              </thead>
+              <tbody id="buy-zones-body">
+                <tr><td colspan="6" class="table-empty">正在加载买入区间…</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <aside id="buy-zones-disclosure" class="buy-zones-disclosure" role="note">
+            <strong>区间边界</strong>
+            <p>这些区间是静态研究记录，不会跟随市场价格自动移动；触及区间前仍需复核最新财报、指引与失效条件。</p>
+          </aside>
+        </article>
+
+        <div class="subsection-heading valuation-model-heading">
+          <div>
+            <p class="eyebrow">Financial model drill-down</p>
+            <h3 id="valuation-watch-title">财务估值模型下钻</h3>
+          </div>
+          <p>重点标的显示财报与指引研究区间，其余公司保留规范化 EPS × P/E 三情景估值。</p>
         </div>
 
         <article class="valuation-card" aria-labelledby="valuation-watch-title" aria-describedby="valuation-disclosure">
           <div class="valuation-toolbar">
             <div class="filter-field valuation-company-field">
-              <label for="valuation-company-select">选择供应链公司</label>
+              <label for="valuation-company-select">选择研究公司</label>
               <select id="valuation-company-select" aria-controls="valuation-summary valuation-price-chart">
                 <option value="">正在加载公司…</option>
               </select>
             </div>
             <div class="valuation-toolbar-meta">
-              <span class="demo-chip">演示研究区间</span>
-              <span class="automation-chip">每日 SEC 巡检</span>
+              <span class="demo-chip">研究区间 + P/E 情景</span>
+              <span class="automation-chip">SEC：每日 + 每 4 小时</span>
               <span class="provider-chip">行情：TradingView</span>
             </div>
           </div>
@@ -287,7 +333,7 @@
 
           <div class="valuation-grid">
             <section id="valuation-summary" class="valuation-summary" aria-label="所选公司估值观察摘要">
-              <div class="loading-block">正在加载估值观察参数…</div>
+              <div class="loading-block">正在计算三档估值价格…</div>
             </section>
 
             <section class="valuation-chart-card" aria-labelledby="valuation-chart-title">
@@ -317,7 +363,7 @@
 
           <aside id="valuation-disclosure" class="valuation-disclosure">
             <strong>研究边界</strong>
-            <p>研究观察区间是在特定日期、期限和假设下用于触发进一步复核的参考带，不是目标价、买入价、收益保证或针对任何人的投资建议。公司基本面、估值输入和市场价格可能快速变化。</p>
+            <p>价格带来自人工财报/指引研究或规范化 EPS × P/E 情景，仅用于研究纪律与进一步复核，不是目标价、收益保证或针对任何人的投资建议。公司基本面、估值输入和市场价格可能快速变化。</p>
           </aside>
         </article>
 
@@ -446,18 +492,31 @@
           <article class="method-card">
             <span class="method-number">02</span>
             <h2>研究框架，不是预测器</h2>
-            <p>第一版使用演示数据，风险分数同时包含客观财务指标与主观研究判断，不应被视为交易信号。</p>
+            <p>风险、CapEx 与宏观首版仍使用演示数据；估值卡采用可追溯财报输入，但 P/E 情景仍包含主观研究判断，均不应被视为交易信号。</p>
           </article>
           <article class="method-card">
             <span class="method-number">03</span>
             <h2>可替换的数据层</h2>
-            <p>后续可把 JSON 演示数据替换为 SEC、FRED 与公司财报数据；每项指标都应保留来源和更新时间。</p>
+            <p>后续可继续把风险与宏观 JSON 替换为 SEC、FRED 与公司财报数据；每项指标都应保留来源、口径和更新时间。</p>
+          </article>
+          <article class="method-card method-formula">
+            <span class="method-number">04</span>
+            <h2>两类价格带</h2>
+            <p>盈利稳定公司使用同口径规范化摊薄 EPS × 熊 / 基准 / 牛市 P/E；重点标的的人工区间综合上一季度财报、管理层指引、前瞻盈利与特有风险。安全边际再对熊市价值折价 20%。</p>
+            <div class="formula" aria-label="估值价格带公式">
+              <code>Safety ≤ EPS × Bear P/E × 80% · Reasonable ≤ EPS × Base P/E · Aggressive ≤ EPS × Bull P/E</code>
+            </div>
+          </article>
+          <article class="method-card">
+            <span class="method-number">05</span>
+            <h2>对话区间与财务模型分层</h2>
+            <p>区间速览保留关联研究对话的静态判断；财务模型则按统一 EPS 与 P/E 规则复算。两者分别展示，避免把主观区间误标为自动估值结果。</p>
           </article>
         </div>
 
         <aside class="disclosure" aria-label="重要免责声明">
           <strong>重要说明</strong>
-          <p>风险分数仅用于产业研究与教育展示，不构成投资建议；演示数据可能不准确、不完整或已经过时。</p>
+          <p>风险分数与估值价格带仅用于产业研究和教育展示，不构成投资建议；数据与研究假设可能不准确、不完整或已经过时。</p>
         </aside>
       </section>
     </main>
@@ -472,7 +531,7 @@
           <span>GitHub 仓库：<a class="source-link" href="https://github.com/Enkiduee/ai-capex-cycle-monitor" target="_blank" rel="noopener noreferrer">查看源码 ↗</a></span>
           <span>数据更新：<time id="footer-updated-at" datetime="">加载中…</time></span>
         </div>
-        <p class="footer-disclaimer">本项目仅用于信息展示、产业研究与教育用途，不构成任何投资建议。页面中的演示数据可能不准确、不完整或已经过时。</p>
+        <p class="footer-disclaimer">本项目仅用于信息展示、产业研究与教育用途，不构成任何投资建议。页面数据与研究假设可能不准确、不完整或已经过时。</p>
       </div>
     </footer>
   </body>

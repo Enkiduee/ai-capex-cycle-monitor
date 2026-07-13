@@ -73,7 +73,7 @@ function buildEvent(company, row, classification) {
     sentiment: 'neutral',
     affectedSegments: [company.segment],
     riskScoreChange: 0,
-    description: `SEC EDGAR 于 ${filingDate} 收录 ${classification.form}${itemText}。系统仅记录官方披露并将估值观察区间标记为待复核，不自动判断利好利空，也不自动调整风险分数或公允价值。`,
+    description: `SEC EDGAR 于 ${filingDate} 收录 ${classification.form}${itemText}。系统仅记录官方披露并将 EPS 与 P/E 情景标记为待复核，不自动判断利好利空，也不自动调整风险分数或估值价格。`,
     sourceName: `SEC EDGAR 官方披露 · ${classification.form}`,
     sourceUrl: secIndexUrl(company.secCik, accessionNumber),
     isAutomated: true,
@@ -166,7 +166,7 @@ for (let index = 0; index < companies.length; index += 1) {
       const target = nextValuation.companies.find((entry) => entry.ticker === company.ticker);
       if (target) {
         target.reviewStatus = 'needs-review';
-        target.reviewReason = `发现新的 SEC ${item.classification.form} 披露（${event.date}），原演示区间已标记为待人工复核。`;
+        target.reviewReason = `发现新的 SEC ${item.classification.form} 披露（${event.date}），现有 EPS 与 P/E 情景已标记为待人工复核。`;
         target.latestSecFiling = {
           form: item.classification.form,
           filingDate: event.date,
@@ -200,8 +200,8 @@ if (!nextValuation.automation || typeof nextValuation.automation !== 'object') {
 }
 nextValuation.automation.dailySchedule = '每天 09:23（Asia/Shanghai，GitHub Actions 可能延迟）';
 nextValuation.automation.eventSchedule = '每 4 小时检查 SEC EDGAR；发现新披露时额外更新';
-nextValuation.automation.marketPriceMode = 'TradingView 组件自动更新，仓库不抓取或再分发行情';
-nextValuation.automation.valuationRangeMode = '演示区间仅在明确估值复核后人工更新';
+nextValuation.automation.marketPriceMode = 'TradingView 组件自动更新，仓库不抓取或保存当前行情';
+nextValuation.automation.valuationRangeMode = 'P/E 情景仅在财报与重大事件后人工复核更新';
 
 if (['daily', 'full', 'bootstrap'].includes(mode)) {
   nextValuation.automation.lastDailyCheckAt = checkedAt;
