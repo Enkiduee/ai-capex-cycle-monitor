@@ -194,6 +194,7 @@
 
     try {
       response = await global.fetch(resource, {
+        cache: 'no-store',
         headers: { Accept: 'application/json' }
       });
     } catch (cause) {

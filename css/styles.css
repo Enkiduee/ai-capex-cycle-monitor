@@ -1203,6 +1203,52 @@ tbody tr:hover {
 
 .buy-zone-reference {
   color: var(--text);
+  text-decoration: none;
+}
+
+a.buy-zone-reference:hover,
+a.buy-zone-reference:focus-visible {
+  color: var(--accent-strong);
+  text-decoration: underline;
+}
+
+.buy-zone-quote-meta,
+.buy-zone-analysis-price {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.buy-zone-quote-change {
+  margin-right: 5px;
+  font-weight: 800;
+}
+
+.buy-zone-quote-change.is-up,
+.valuation-quote-meta.is-up {
+  color: var(--positive);
+}
+
+.buy-zone-quote-change.is-down,
+.valuation-quote-meta.is-down {
+  color: var(--negative);
+}
+
+.buy-zone-quote-change.is-flat,
+.valuation-quote-meta.is-flat {
+  color: var(--text-muted);
+}
+
+.valuation-quote-meta {
+  display: block;
+  margin-top: 5px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
 }
 
 .buy-zone-range {

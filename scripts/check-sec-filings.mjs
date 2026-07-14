@@ -200,7 +200,7 @@ if (!nextValuation.automation || typeof nextValuation.automation !== 'object') {
 }
 nextValuation.automation.dailySchedule = '每天 09:23（Asia/Shanghai，GitHub Actions 可能延迟）';
 nextValuation.automation.eventSchedule = '每 4 小时检查 SEC EDGAR；发现新披露时额外更新';
-nextValuation.automation.marketPriceMode = 'TradingView 组件自动更新，仓库不抓取或保存当前行情';
+nextValuation.automation.marketPriceMode = '重点标的行情由独立工作流在盘中与收盘后写入 data/market-quotes.json；TradingView 图表独立自动更新';
 nextValuation.automation.valuationRangeMode = 'P/E 情景仅在财报与重大事件后人工复核更新';
 
 if (['daily', 'full', 'bootstrap'].includes(mode)) {

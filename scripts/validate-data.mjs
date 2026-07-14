@@ -4,6 +4,7 @@ const files = [
   'data/risk-score.json',
   'data/hyperscalers.json',
   'data/supply-chain.json',
+  'data/market-quotes.json',
   'data/valuation-bands.json',
   'data/macro.json',
   'data/events.json'
@@ -11,6 +12,7 @@ const files = [
 
 const payloads = Object.fromEntries(await Promise.all(files.map(async (file) => [file, await readJson(file)])));
 const supply = payloads['data/supply-chain.json'];
+const marketQuotes = payloads['data/market-quotes.json'];
 const valuation = payloads['data/valuation-bands.json'];
 const events = payloads['data/events.json'];
 const risk = payloads['data/risk-score.json'];
@@ -23,6 +25,12 @@ function assert(condition, message) {
 
 function validDate(value) {
   return /^\d{4}-\d{2}-\d{2}$/.test(String(value || ''));
+}
+
+function validIso(value) {
+  return typeof value === 'string'
+    && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(value)
+    && !Number.isNaN(Date.parse(value));
 }
 
 for (const [file, payload] of Object.entries(payloads)) {
@@ -48,8 +56,8 @@ for (const key of ['timeHorizon', 'sourceLabel', 'basis', 'notice']) {
   assert(typeof (manualBuyZones && manualBuyZones[key]) === 'string' && manualBuyZones[key].trim(), `manualBuyZones.${key} 不能为空`);
 }
 const manualEntries = Array.isArray(manualBuyZones && manualBuyZones.entries) ? manualBuyZones.entries : [];
-const expectedManualTickers = ['AAOI', 'SKHY', 'LITE', '002436', '002916', '002156', 'AXTI', 'ASTS'];
-assert(manualEntries.length === 8, '重点标的买入区间必须包含 8 家公司');
+const expectedManualTickers = ['AAOI', 'SKHY', 'LITE', '002436', '002916', '002156', 'AXTI', 'ASTS', 'INTC', 'NBIS', 'CRWV', 'GLW'];
+assert(manualEntries.length === 12, '重点标的买入区间必须包含 12 家公司');
 assert(JSON.stringify(manualEntries.map((entry) => entry.ticker)) === JSON.stringify(expectedManualTickers), '重点标的买入区间必须包含指定股票并保持约定顺序');
 const manualTickers = new Set();
 for (const entry of manualEntries) {
@@ -80,6 +88,89 @@ for (const entry of manualEntries) {
     `${ticker} 三档区间必须满足 safety < reasonable < aggressive，且每档 low < high`
   );
   assert(typeof entry.view === 'string' && entry.view.trim(), `${ticker}.view 不能为空`);
+  if (entry.confidence !== undefined) {
+    assert(['high', 'medium', 'low', 'not_assessed'].includes(entry.confidence), `${ticker}.confidence 无效`);
+  }
+  if (entry.riskNote !== undefined) {
+    assert(typeof entry.riskNote === 'string' && entry.riskNote.trim(), `${ticker}.riskNote 不能为空`);
+  }
+  if (entry.sources !== undefined) {
+    assert(Array.isArray(entry.sources) && entry.sources.length > 0, `${ticker}.sources 必须是非空数组`);
+    for (const source of entry.sources || []) {
+      assert(typeof source.label === 'string' && source.label.trim(), `${ticker} 手工区间来源缺少 label`);
+      try {
+        const sourceUrl = new URL(source.url);
+        assert(sourceUrl.protocol === 'https:', `${ticker} 手工区间来源必须使用 HTTPS`);
+      } catch (error) {
+        errors.push(`${ticker} 手工区间来源 URL 无效`);
+      }
+    }
+  }
+}
+
+assert(marketQuotes.version === 1, 'market-quotes.version 必须为 1');
+assert(marketQuotes.fetchedAt === null || validIso(marketQuotes.fetchedAt), 'market-quotes.fetchedAt 必须为 null 或 ISO UTC 时间');
+assert(marketQuotes.source && typeof marketQuotes.source.label === 'string' && marketQuotes.source.label.trim(), 'market-quotes.source.label 不能为空');
+assert(marketQuotes.source && typeof marketQuotes.source.dataNotice === 'string' && marketQuotes.source.dataNotice.trim(), 'market-quotes.source.dataNotice 不能为空');
+try {
+  const homepage = new URL(marketQuotes.source && marketQuotes.source.homepage);
+  assert(homepage.protocol === 'https:', 'market-quotes.source.homepage 必须使用 HTTPS');
+} catch (error) {
+  errors.push('market-quotes.source.homepage 无效');
+}
+for (const marketId of ['cn', 'us']) {
+  assert(typeof (marketQuotes.schedules && marketQuotes.schedules[marketId]) === 'string' && marketQuotes.schedules[marketId].trim(), `market-quotes.schedules.${marketId} 不能为空`);
+  const session = marketQuotes.sessions && marketQuotes.sessions[marketId];
+  if (session !== null && session !== undefined) {
+    assert(session && typeof session === 'object' && !Array.isArray(session), `market-quotes.sessions.${marketId} 必须是对象或 null`);
+    assert(['intraday', 'after_close', 'manual'].includes(session && session.phase), `market-quotes.sessions.${marketId}.phase 无效`);
+    assert(validDate(session && session.sessionDate), `market-quotes.sessions.${marketId}.sessionDate 无效`);
+    assert(session && session.timezone === (marketId === 'cn' ? 'Asia/Shanghai' : 'America/New_York'), `market-quotes.sessions.${marketId}.timezone 无效`);
+    assert(validIso(session && session.refreshedAt), `market-quotes.sessions.${marketId}.refreshedAt 无效`);
+    assert(Number.isInteger(session && session.quoteCount) && session.quoteCount >= 0, `market-quotes.sessions.${marketId}.quoteCount 必须是非负整数`);
+    assert(Array.isArray(session && session.staleTickers), `market-quotes.sessions.${marketId}.staleTickers 必须是数组`);
+  }
+}
+
+const quoteRows = Array.isArray(marketQuotes.quotes) ? marketQuotes.quotes : [];
+assert(Array.isArray(marketQuotes.quotes), 'market-quotes.quotes 必须是数组');
+if (quoteRows.length) {
+  assert(validIso(marketQuotes.fetchedAt), '有行情记录时 market-quotes.fetchedAt 必须是有效 ISO UTC 时间');
+}
+const quoteTickers = new Set();
+for (const quote of quoteRows) {
+  const ticker = String(quote && quote.ticker || '');
+  const entry = manualEntries.find((item) => item.ticker === ticker);
+  assert(Boolean(entry), `market-quotes 包含未知 ticker：${ticker}`);
+  assert(!quoteTickers.has(ticker), `market-quotes ticker 重复：${ticker}`);
+  quoteTickers.add(ticker);
+  assert(['cn', 'us'].includes(quote.market), `${ticker}.market 必须是 cn 或 us`);
+  assert(['USD', 'CNY'].includes(quote.currency), `${ticker}.currency 必须是 USD 或 CNY`);
+  if (entry) {
+    const expectedMarket = entry.currency === 'CNY' ? 'cn' : 'us';
+    const [exchange, rawSymbol] = String(entry.tradingViewSymbol || '').split(':');
+    const expectedSymbol = exchange === 'SZSE' ? `${rawSymbol}.SZ` : exchange === 'SSE' ? `${rawSymbol}.SS` : rawSymbol;
+    assert(quote.market === expectedMarket, `${ticker}.market 与研究配置不一致`);
+    assert(quote.currency === entry.currency, `${ticker}.currency 与研究配置不一致`);
+    assert(quote.symbol === expectedSymbol, `${ticker}.symbol 与研究配置不一致`);
+  }
+  const price = Number(quote.price);
+  const previousClose = quote.previousClose === null ? null : Number(quote.previousClose);
+  const change = quote.change === null ? null : Number(quote.change);
+  const changePercent = quote.changePercent === null ? null : Number(quote.changePercent);
+  assert(Number.isFinite(price) && price > 0, `${ticker}.price 必须大于 0`);
+  assert(previousClose === null || (Number.isFinite(previousClose) && previousClose > 0), `${ticker}.previousClose 必须为 null 或大于 0`);
+  assert(change === null || Number.isFinite(change), `${ticker}.change 必须为 null 或有限数值`);
+  assert(changePercent === null || Number.isFinite(changePercent), `${ticker}.changePercent 必须为 null 或有限数值`);
+  assert(validIso(quote.quoteTime), `${ticker}.quoteTime 无效`);
+  assert(validDate(quote.quoteDate), `${ticker}.quoteDate 无效`);
+  assert(validIso(quote.fetchedAt), `${ticker}.fetchedAt 无效`);
+  try {
+    const sourceUrl = new URL(quote.sourceUrl);
+    assert(sourceUrl.protocol === 'https:', `${ticker}.sourceUrl 必须使用 HTTPS`);
+  } catch (error) {
+    errors.push(`${ticker}.sourceUrl 无效`);
+  }
 }
 
 for (const company of valuation.companies || []) {

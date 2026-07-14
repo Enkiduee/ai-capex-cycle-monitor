@@ -5,6 +5,7 @@
     risk: { path: './data/risk-score.json', label: '风险评分' },
     hyperscalers: { path: './data/hyperscalers.json', label: '云巨头 CapEx' },
     supplyChain: { path: './data/supply-chain.json', label: '供应链风险' },
+    marketQuotes: { path: './data/market-quotes.json', label: '自动行情快照' },
     valuation: { path: './data/valuation-bands.json', label: '价格与估值观察' },
     macro: { path: './data/macro.json', label: '宏观环境' },
     events: { path: './data/events.json', label: '重大事件' }
@@ -548,6 +549,44 @@
     return `${formatBuyZonePrice(low, currency)}–${formatBuyZonePrice(high, currency)}`;
   }
 
+  function marketQuoteForTicker(ticker) {
+    const quotes = state.data.marketQuotes && Array.isArray(state.data.marketQuotes.quotes)
+      ? state.data.marketQuotes.quotes
+      : [];
+    const quote = quotes.find((item) => item && item.ticker === ticker);
+    const price = toFiniteNumber(quote && quote.price);
+    const quoteTime = quote && typeof quote.quoteTime === 'string' ? quote.quoteTime : '';
+    if (!quote || price === null || price <= 0 || Number.isNaN(Date.parse(quoteTime))) return null;
+    return { ...quote, price };
+  }
+
+  function formatMarketQuoteTime(value, market) {
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return '时间待确认';
+    try {
+      return new Intl.DateTimeFormat('zh-CN', {
+        timeZone: market === 'cn' ? 'Asia/Shanghai' : 'America/New_York',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hourCycle: 'h23'
+      }).format(parsed).replaceAll('/', '-');
+    } catch (error) {
+      return parsed.toISOString().slice(0, 16).replace('T', ' ');
+    }
+  }
+
+  function quoteChangeMeta(quote) {
+    const percent = toFiniteNumber(quote && quote.changePercent);
+    if (percent === null) return { text: '涨跌待确认', className: 'is-flat' };
+    const prefix = percent > 0 ? '+' : '';
+    return {
+      text: `${prefix}${formatNumber(percent, 2, '%')}`,
+      className: percent > 0 ? 'is-up' : percent < 0 ? 'is-down' : 'is-flat'
+    };
+  }
+
   function getBuyZoneStatus(company) {
     const referencePrice = toFiniteNumber(company && company.referencePrice);
     const safety = company && company.safety ? company.safety : {};
@@ -595,8 +634,18 @@
       const market = textValue(company.market, '待分类');
       const segment = textValue(company.segment, '待分类');
       const currency = safeCurrency(company.currency, 'USD');
-      const status = getBuyZoneStatus(company);
-      const referencePrice = `${company.referencePriceApproximate === true ? '约 ' : ''}${formatBuyZonePrice(company.referencePrice, currency, 2)}`;
+      const quote = marketQuoteForTicker(ticker);
+      const status = getBuyZoneStatus({ ...company, referencePrice: quote ? quote.price : company.referencePrice });
+      const shownPrice = quote ? quote.price : company.referencePrice;
+      const referencePrice = `${!quote && company.referencePriceApproximate === true ? '约 ' : ''}${formatBuyZonePrice(shownPrice, currency, 2)}`;
+      const change = quoteChangeMeta(quote);
+      const quoteUrl = safeExternalUrl(quote && quote.sourceUrl);
+      const priceMarkup = quoteUrl
+        ? `<a class="buy-zone-reference" href="${escapeHTML(quoteUrl)}" target="_blank" rel="noopener noreferrer nofollow">${escapeHTML(referencePrice)} ↗</a>`
+        : `<span class="buy-zone-reference">${escapeHTML(referencePrice)}</span>`;
+      const quoteMeta = quote
+        ? `<span class="buy-zone-quote-meta"><span class="buy-zone-quote-change ${escapeHTML(change.className)}">${escapeHTML(change.text)}</span><span>自动快照 · ${escapeHTML(formatMarketQuoteTime(quote.quoteTime, quote.market))} ${quote.market === 'cn' ? '上海' : '美东'}</span></span><span class="buy-zone-analysis-price">研究价 ${escapeHTML(formatBuyZonePrice(company.referencePrice, currency, 2))}</span>`
+        : '<span class="buy-zone-quote-meta"><span>研究参考价 · 等待自动行情</span></span>';
       return `
         <tr>
           <th scope="row">
@@ -609,7 +658,7 @@
             <strong>${escapeHTML(name)}</strong>
             <span class="buy-zone-company-meta">${escapeHTML(market)} · ${escapeHTML(segment)}</span>
           </th>
-          <td><span class="buy-zone-reference">${escapeHTML(referencePrice)}</span></td>
+          <td>${priceMarkup}${quoteMeta}</td>
           <td><span class="buy-zone-range is-safety">${escapeHTML(formatBuyZoneRange(company.safety, currency))}</span></td>
           <td><span class="buy-zone-range is-reasonable">${escapeHTML(formatBuyZoneRange(company.reasonable, currency))}</span></td>
           <td><span class="buy-zone-range is-aggressive">${escapeHTML(formatBuyZoneRange(company.aggressive, currency))}</span></td>
@@ -642,14 +691,25 @@
     });
 
     if (summary) {
-      summary.textContent = `${companies.length} 只标的 · ${textValue(snapshot.sourceLabel, '关联研究对话')} · 参考价截至 ${formatDate(snapshot.updatedAt || data.updatedAt)}`;
+      const quoteCount = companies.filter((company) => marketQuoteForTicker(company.ticker)).length;
+      const marketSnapshot = state.data.marketQuotes;
+      summary.textContent = quoteCount
+        ? `${companies.length} 只标的 · ${quoteCount} 只已接入自动行情快照 · 最近抓取 ${formatMarketQuoteTime(marketSnapshot.fetchedAt, 'cn')}（上海）`
+        : `${companies.length} 只标的 · 暂用研究参考价 · 等待首次自动行情刷新`;
     }
     if (updatedAt) {
-      updatedAt.dateTime = snapshot.updatedAt || data.updatedAt;
-      updatedAt.textContent = `区间更新 ${formatDate(snapshot.updatedAt || data.updatedAt)}`;
+      const fetchedAt = state.data.marketQuotes && state.data.marketQuotes.fetchedAt;
+      updatedAt.dateTime = fetchedAt || snapshot.updatedAt || data.updatedAt;
+      updatedAt.textContent = fetchedAt
+        ? `行情抓取 ${formatMarketQuoteTime(fetchedAt, 'cn')} 上海 · 区间 ${formatDate(snapshot.updatedAt || data.updatedAt)}`
+        : `区间更新 ${formatDate(snapshot.updatedAt || data.updatedAt)}`;
     }
     if (disclosure) {
-      disclosure.innerHTML = `<strong>区间边界</strong><p>${escapeHTML(textValue(snapshot.notice, '静态研究价格带不构成投资建议。'))}</p>`;
+      const quoteNotice = textValue(
+        state.data.marketQuotes && state.data.marketQuotes.source && state.data.marketQuotes.source.dataNotice,
+        '自动行情可能延迟或暂时不可用。'
+      );
+      disclosure.innerHTML = `<strong>区间与行情边界</strong><p>${escapeHTML(textValue(snapshot.notice, '静态研究价格带不构成投资建议。'))} ${escapeHTML(quoteNotice)} 行情更新不会移动研究区间，也不会触发交易。</p>`;
     }
   }
 
@@ -725,13 +785,16 @@
   }
 
   function researchBandsFromEntry(snapshot, entry) {
+    const marketQuote = marketQuoteForTicker(entry.ticker);
     return {
       asOf: snapshot.updatedAt,
       timeHorizon: textValue(snapshot.timeHorizon, '未来约 6–12 个月'),
       sourceLabel: textValue(snapshot.sourceLabel, '用户提供的《股票买入区间分析》研究对话'),
       methodology: textValue(snapshot.basis, '上一季度财报、公司指引与估值风险的人工研究快照'),
-      referencePrice: entry.referencePrice,
-      referencePriceApproximate: entry.referencePriceApproximate === true,
+      referencePrice: marketQuote ? marketQuote.price : entry.referencePrice,
+      referencePriceApproximate: marketQuote ? false : entry.referencePriceApproximate === true,
+      analysisReferencePrice: entry.referencePrice,
+      marketQuote,
       aggressive: entry.aggressive,
       reasonable: entry.reasonable,
       safety: entry.safety,
@@ -760,6 +823,12 @@
       const ticker = textValue(entry.ticker, '');
       if (!valuationTickerPattern.test(ticker)) return;
       const buyZones = researchBandsFromEntry(snapshot, entry);
+      const entrySources = Array.isArray(entry.sources) && entry.sources.length
+        ? entry.sources
+        : [{
+            label: textValue(snapshot.sourceLabel, '用户提供的《股票买入区间分析》研究对话'),
+            type: 'analysis-origin'
+          }];
       const existing = uniqueCompanies.get(ticker);
       if (existing) {
         uniqueCompanies.set(ticker, { ...existing, buyZones });
@@ -782,10 +851,7 @@
         ],
         riskNote: textValue(entry.riskNote, snapshot.notice || '研究区间可能随基本面和估值条件变化而失效。'),
         updatedAt: snapshot.updatedAt,
-        sources: [{
-          label: textValue(snapshot.sourceLabel, '用户提供的《股票买入区间分析》研究对话'),
-          type: 'analysis-origin'
-        }],
+        sources: entrySources,
         buyZones
       });
     });
@@ -914,6 +980,14 @@
         ? '未记录'
         : `${researchBands.referencePriceApproximate ? '约 ' : ''}${formatValuationPrice(researchBands.referencePrice, currency)}`;
       const sourceLabel = textValue(researchBands.sourceLabel, '人工研究记录');
+      const marketQuote = researchBands.marketQuote && typeof researchBands.marketQuote === 'object'
+        ? researchBands.marketQuote
+        : null;
+      const quoteChange = quoteChangeMeta(marketQuote);
+      const referenceLabel = marketQuote ? '自动行情快照 · 可能延迟' : '分析参考价 · 非实时';
+      const referenceMeta = marketQuote
+        ? `${quoteChange.text} · ${formatMarketQuoteTime(marketQuote.quoteTime, marketQuote.market)} ${marketQuote.market === 'cn' ? '上海' : '美东'}`
+        : `研究区间原参考价 ${formatValuationPrice(researchBands.analysisReferencePrice, currency)}`;
       valuationMarkup = `
         <div class="valuation-model-intro is-research-band">
           <div>
@@ -948,8 +1022,9 @@
         ))}</p>
         <div class="valuation-detail-grid">
           <div class="valuation-detail">
-            <span>分析参考价 · 非实时</span>
+            <span>${escapeHTML(referenceLabel)}</span>
             <strong>${escapeHTML(referencePrice)}</strong>
+            <small class="valuation-quote-meta ${escapeHTML(marketQuote ? quoteChange.className : 'is-flat')}">${escapeHTML(referenceMeta)}</small>
           </div>
           <div class="valuation-detail">
             <span>区间日期</span>
@@ -965,7 +1040,7 @@
           </div>
         </div>
         <p class="valuation-basis"><strong>核心判断</strong>${escapeHTML(textValue(researchBands.thesis, '需结合后续财报与价格走势继续复核。'))}</p>
-        <p class="valuation-band-origin"><strong>区间来源</strong>${escapeHTML(sourceLabel)}。该区间为人工研究结论，不是实时行情自动生成。</p>
+        <p class="valuation-band-origin"><strong>区间来源</strong>${escapeHTML(sourceLabel)}。价格带为人工研究结论；自动行情只用于判断当前价格落在哪一档，不会重算区间。</p>
         ${model.kind === 'pe-not-meaningful' ? `
           <div class="valuation-unavailable-panel is-compact">
             <span class="valuation-scenario-step">P/E CROSS-CHECK</span>
@@ -1411,6 +1486,8 @@
     } else if (key === 'supplyChain') {
       byId('supply-chain-body').innerHTML = `<tr><td colspan="11" class="table-empty">${escapeHTML(message)}</td></tr>`;
       api.renderSectionError('supply-chain-heatmap', message);
+    } else if (key === 'marketQuotes') {
+      // 行情快照失败时，估值模块会自动回退到研究参考价。
     } else if (key === 'valuation') {
       const buyZoneBody = byId('buy-zones-body');
       if (buyZoneBody) buyZoneBody.innerHTML = `<tr><td colspan="6" class="table-empty">${escapeHTML(message)}</td></tr>`;
@@ -1536,6 +1613,7 @@
       risk: renderOverview,
       hyperscalers: renderHyperscalers,
       supplyChain: renderSupplyChain,
+      marketQuotes: () => {},
       valuation: renderValuation,
       macro: renderMacro,
       events: renderEvents

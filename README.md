@@ -1,4 +1,4 @@
-> 🌐 GitHub 仓库：[github.com/Enkiduee/ai-capex-cycle-monitor](https://github.com/Enkiduee/ai-capex-cycle-monitor)
+> 🌐 在线展示：[https://enkiduee.github.io/ai-capex-cycle-monitor/](https://enkiduee.github.io/ai-capex-cycle-monitor/)
 
 <p align="center">
   <img src="./assets/readme-anime-banner.png" alt="AI 数据中心资本开支周期监控原创二次元横幅" width="100%">
@@ -31,7 +31,7 @@ AI CapEx Cycle Monitor 将分散的产业信号整理为统一的风险研究框
 - 红色：熊市或信用风险确认
 - 灰色：数据缺失或尚未判断
 
-风险状态始终同时显示文字标签，不只依赖颜色。宏观、CapEx、风险评分等首版数据仍以演示框架为主；详细估值卡采用截至 `2026-07-12` 可得财报输入与可复算 P/E 情景，重点标的表另展示 `2026-07-13` 人工研究区间，并分别标注口径与边界。
+风险状态始终同时显示文字标签，不只依赖颜色。宏观、CapEx、风险评分等首版数据仍以演示框架为主；详细估值卡采用截至 `2026-07-12` 可得财报输入与可复算 P/E 情景，重点标的表另展示截至 `2026-07-14` 的人工研究区间，并分别标注口径与边界。
 
 ## 2. ✨ 当前功能 / Features
 
@@ -41,7 +41,8 @@ AI CapEx Cycle Monitor 将分散的产业信号整理为统一的风险研究框
 - 云巨头 CapEx 趋势：Microsoft、Amazon、Alphabet、Meta 与 Oracle 的季度演示数据
 - CapEx 增速与云收入增速对比：自动判断两者差值并生成提示
 - 供应链风险：排序、产业链环节筛选、风险等级筛选与移动端横向滚动
-- 8 只重点股票买入区间速览：集中展示 AAOI、SKHY、LITE、兴森科技、深南电路、通富微电、AXTI 与 ASTS 的“安全边际、合理主买、激进试仓”研究区间；点击代码可进入对应详情和行情图
+- 12 只重点股票买入区间速览：集中展示 AAOI、SKHY、LITE、兴森科技、深南电路、通富微电、AXTI、ASTS、Intel、Nebius、CoreWeave 与 Corning 的“安全边际、合理主买、激进试仓”研究区间；点击代码可进入对应详情和行情图
+- 重点标的自动行情：A 股与美股在各自盘中每 30 分钟抓取一次，并在收盘后补抓一次；页面用行情快照判断当前落在哪一档，抓取失败时回退到研究参考价
 - 供应链公司估值观察：以规范化摊薄 EPS × 熊 / 基准 / 牛市 P/E 计算“安全边际、合理买入、激进买入”三档研究价格，并嵌入 TradingView Mini Chart
 - P/E 适用性护栏：亏损或一次性非经营收益主导的公司不会硬算买入价，而会说明原因、替代估值口径与重新启用条件
 - 自动数据巡检：每天 09:23（上海时间）记录 SEC 巡检状态，计划每 4 小时检查一次财报与重大事项申报
@@ -82,7 +83,7 @@ http://localhost:8000/#/supply-chain
 npx serve .
 ```
 
-网站运行本身不依赖 Node.js，也不需要 API Key。仓库维护脚本使用 GitHub Actions 自带的 Node.js。ECharts 与 TradingView Mini Chart 均依赖第三方网络资源；TradingView 图表会自动显示其提供的市场行情，但可能存在延迟，也可能因网络、地区限制或第三方服务状态而暂时不可用。
+网站运行本身不依赖 Node.js，也不需要 API Key。仓库维护脚本使用 GitHub Actions 自带的 Node.js。重点标的行情快照和 TradingView Mini Chart 都依赖第三方网络资源，可能存在延迟，也可能因网络、地区限制或第三方服务状态而暂时不可用。
 
 ## 5. 🚀 GitHub Pages 部署 / Deployment
 
@@ -104,7 +105,7 @@ Repository
 https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 ```
 
-页面内资源均使用相对路径，因此兼容 GitHub Pages 项目站点。当前仓库：`https://github.com/Enkiduee/ai-capex-cycle-monitor`。
+页面内资源均使用相对路径，因此兼容 GitHub Pages 项目站点。
 
 顶部导航使用 `#/页面` 形式的 Hash 路由，不需要服务器端重写规则，因此直接刷新或分享子视图不会出现 GitHub Pages 404：
 
@@ -122,7 +123,8 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 | `data/risk-score.json` | 更新时间、周期阶段、综合判断、手动分数与五项风险分数 |
 | `data/hyperscalers.json` | 云巨头季度 CapEx、合计 CapEx 增速与云收入增速 |
 | `data/supply-chain.json` | 供应链公司、经营趋势、资产负债风险与综合等级 |
-| `data/valuation-bands.json` | 8 只重点股票的人工研究区间，以及供应链公司的 EPS 口径、熊 / 基准 / 牛市 P/E、适用性判断、假设与来源 |
+| `data/market-quotes.json` | 12 只重点标的最近一次自动行情快照、涨跌幅、行情时间、抓取时间与分市场刷新状态 |
+| `data/valuation-bands.json` | 12 只重点股票的人工研究区间，以及供应链公司的 EPS 口径、熊 / 基准 / 牛市 P/E、适用性判断、假设与来源 |
 | `data/sec-filings-state.json` | SEC accession number 去重状态；避免同一披露被重复加入事件流 |
 | `data/macro.json` | 宏观指标、变化方向、风险等级与周期影响 |
 | `data/events.json` | 重大事件、情绪、影响环节、风险分数变化与来源 |
@@ -145,7 +147,7 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 - `sources`：提供官方财报和历史估值资料的 HTTPS 链接
 - `reviewStatus`：可使用 `demo`、`needs-review` 或 `reviewed`；标为 `reviewed` 时必须同时填写 `reviewedAt`、`reviewedBy` 与 HTTPS `reviewEvidenceUrl`
 
-修改 JSON 并刷新页面即可看到新内容，无需构建或后端服务。TradingView Mini Chart 的行情并不写入该 JSON，而是由第三方组件自动请求和更新；它无需 API Key，但行情可能延迟，显示可用性也取决于第三方网络。
+修改 JSON 并刷新页面即可看到新内容，无需构建或后端服务。重点标的行情由独立工作流写入 `data/market-quotes.json`，不会改写 `data/valuation-bands.json` 中的静态研究区间；TradingView Mini Chart 仍由组件独立请求。两种行情都无需 API Key，但可能延迟，显示可用性也取决于第三方网络。
 
 三档价格的统一公式为：
 
@@ -159,11 +161,21 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 
 P/E 只在规范化 EPS 为正、核心经营盈利可复核、数据覆盖至少连续四季，并能找到同一 GAAP / non-GAAP 口径的历史 P/E 时启用。优先使用 TTM；遇到公司更改披露口径时可退回最近完整财年。MRVL、AAOI、CRWV 与 NBIS 当前分别因为出售收益、持续亏损、口径错配或一次性投资重估主导利润而明确显示“P/E 不适用”，页面不会为了给出一个数字而制造错误精度。
 
-这些价格带不是目标价、收益保证、个性化建议或任何形式的买卖推荐。人工研究区间必须记录分析日期、参考价和来源；P/E 区间必须注明财务期末、EPS 口径、历史估值背景和主要假设。右侧 TradingView 图表独立更新，仓库不会使用行情自动执行交易判断。
+这些价格带不是目标价、收益保证、个性化建议或任何形式的买卖推荐。人工研究区间必须记录分析日期、参考价和来源；P/E 区间必须注明财务期末、EPS 口径、历史估值背景和主要假设。自动行情快照和右侧 TradingView 图表只用于研究对照，仓库不会使用行情自动执行交易判断。
 
 ### 🤖 自动更新机制
 
-`.github/workflows/refresh-data.yml` 提供免费的无服务器自动化：
+仓库提供两套免费的无服务器自动化：`.github/workflows/refresh-data.yml` 负责 SEC 披露巡检，`.github/workflows/refresh-market-data.yml` 负责重点标的行情快照。
+
+行情工作流：
+
+- A 股交易日按 `Asia/Shanghai` 时区在 09:30–11:30、13:00–15:00 盘中每 30 分钟抓取，并在 15:17 收盘后补抓
+- 美股交易日按 `America/New_York` 时区在 09:30–16:00 核心盘中每 30 分钟抓取，并在 16:17 收盘后补抓；时区配置会自动适配美国夏令时
+- 节假日或接口只返回上一交易日数据时不会覆盖快照；任一标的抓取失败时整批不写入，避免页面出现半套新旧数据
+- 只有价格、前收盘价或行情时间确实变化时才提交；机器人提交成功后会校验并重新部署 GitHub Pages
+- GitHub Actions 定时任务可能排队延迟且没有准时 SLA，页面展示的是第三方行情快照，不是交易所实时成交数据
+
+SEC 工作流：
 
 - 每天 `09:23`（Asia/Shanghai）记录一次 SEC 巡检状态
 - 计划每 4 小时轮询一次 SEC EDGAR，另有每日巡检；GitHub 定时任务可能延迟且没有准时 SLA
@@ -177,7 +189,7 @@ SEC 检测使用官方 `data.sec.gov/submissions/CIK##########.json`，监测 10
 1. 将官方披露作为 `neutral`、风险变化 `0` 的事件加入时间线；
 2. 将对应公司的 EPS 与 P/E 情景标记为“发现新披露，需人工复核”。
 
-自动化不会仅凭申报表类型编造利好/利空、风险分数或公允价值，也不会每天改写宏观、CapEx、供应链、行情或估值数值。TradingView 行情仍由组件独立提供；仓库不会抓取或保存当前行情。EPS 与 P/E 情景只有在财报或重大事件后的明确估值复核中才人工更新。
+自动化不会仅凭申报表类型编造利好/利空、风险分数或公允价值，也不会自动改写宏观、CapEx、供应链或估值区间。行情工作流只保存第三方延迟快照；EPS 与 P/E 情景只有在财报或重大事件后的明确估值复核中才人工更新。
 
 SEC 要求自动客户端声明“项目/组织名 + 可联系邮箱”的 User-Agent。工作流不会把联系邮箱写入公开代码；上线前必须在仓库中进入 `Settings → Secrets and variables → Actions → Secrets → New repository secret`，新增：
 
@@ -194,6 +206,8 @@ Value: AI CapEx Cycle Monitor your-contact@example.com
 node scripts/validate-data.mjs
 node scripts/validate-site.mjs
 node scripts/test-sec-monitor.mjs
+node scripts/test-market-quotes.mjs
+node scripts/refresh-market-quotes.mjs --market all --force --dry-run
 node scripts/check-sec-filings.mjs --mode events --dry-run
 ```
 
@@ -232,7 +246,7 @@ node scripts/check-sec-filings.mjs --mode events --dry-run
 
 ## 9. ⚠️ 数据免责声明 / Disclaimer
 
-本项目仅用于信息展示、产业研究与教育用途，不构成任何投资建议。页面数据可能不准确、不完整或已经过时。估值观察卡中的“安全边际、合理买入、激进买入”来自人工财报/指引研究或特定 EPS 与 P/E 假设，不是目标价、收益保证或针对任何人的投资建议；TradingView Mini Chart 的自动更新行情可能存在延迟，且其可用性依赖第三方网络服务。SEC 自动提醒只证明申报已出现，不代表对内容、重要性或市场影响的判断。
+本项目仅用于信息展示、产业研究与教育用途，不构成任何投资建议。页面数据可能不准确、不完整或已经过时。估值观察卡中的“安全边际、合理买入、激进买入”来自人工财报/指引研究或特定 EPS 与 P/E 假设，不是目标价、收益保证或针对任何人的投资建议；自动行情快照与 TradingView Mini Chart 都可能延迟，且可用性依赖第三方网络服务。SEC 自动提醒只证明申报已出现，不代表对内容、重要性或市场影响的判断。
 
 The dashboard is provided for informational, research, and educational purposes only. It is not investment advice. Demo data may be inaccurate, incomplete, or outdated.
 

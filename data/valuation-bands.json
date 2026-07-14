@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2026-07-13",
+  "updatedAt": "2026-07-14",
   "isDemoData": false,
   "methodologyVersion": "pe-cycle-v1",
-  "dataNotice": "估值卡同时包含可复算 P/E 情景与截至 2026-07-13 的人工财报/指引研究区间；两者都是研究假设，不是目标价、收益保证、个性化建议或任何形式的买卖推荐。价格带必须在每份财报或重大事件后重算。",
-  "marketDataNotice": "右侧 TradingView 行情由第三方独立提供并自动更新，可能存在延迟；仓库不抓取或保存当前行情，也不会用延迟行情自动触发交易判断。",
+  "dataNotice": "估值卡同时包含可复算 P/E 情景与截至 2026-07-14 的人工财报/指引研究区间；两者都是研究假设，不是目标价、收益保证、个性化建议或任何形式的买卖推荐。价格带必须在每份财报或重大事件后重算。",
+  "marketDataNotice": "右侧 TradingView 图表由第三方独立提供；重点标的行情另由定时工作流保存为延迟快照。两者都可能延迟、缺失或暂时不可用，也不会自动触发交易判断。",
   "currency": "USD",
   "methodology": {
     "formula": "情景价值 = 同口径规范化摊薄 EPS × 对应情景 P/E",
@@ -16,9 +16,9 @@
     "rounding": "计算保留原始精度，页面价格阈值显示到 0.01 美元。"
   },
   "manualBuyZones": {
-    "updatedAt": "2026-07-13",
+    "updatedAt": "2026-07-14",
     "timeHorizon": "未来约 6–12 个月",
-    "sourceLabel": "用户提供的《股票买入区间分析》研究对话",
+    "sourceLabel": "用户提供的《股票买入区间分析》研究对话及本次新增标的研究",
     "basis": "基于上一季度财报、公司指引与估值风险的人工研究快照",
     "notice": "三档区间是 6–12 个月研究参考，不是目标价或到价即买信号。激进区间仅适合计划仓位的 20%–30%；财报、指引、融资、产能或监管条件变化后必须重新评估。",
     "entries": [
@@ -199,13 +199,123 @@
           "high": 42
         },
         "view": "商业蓝图巨大，但估值高度依赖卫星部署与收费服务兑现。"
+      },
+      {
+        "ticker": "INTC",
+        "name": "Intel",
+        "market": "美股",
+        "segment": "CPU / 晶圆代工",
+        "currency": "USD",
+        "tradingViewSymbol": "NASDAQ:INTC",
+        "referencePrice": 104.57,
+        "aggressive": {
+          "low": 86,
+          "high": 96
+        },
+        "reasonable": {
+          "low": 65,
+          "high": 78
+        },
+        "safety": {
+          "low": 48,
+          "high": 58
+        },
+        "confidence": "low",
+        "view": "CPU 与代工改善提供期权，但 GAAP 仍亏损，当前价格已计入较高的转型成功率。",
+        "riskNote": "18A 与外部代工客户兑现、资本开支、毛利率和重组费用都可能显著改变估值中枢。",
+        "sources": [
+          {
+            "label": "Intel Q1 2026 官方财报",
+            "url": "https://www.intc.com/news-events/press-releases/detail/1767/intel-reports-first-quarter-2026-financial-results",
+            "type": "earnings"
+          }
+        ]
+      },
+      {
+        "ticker": "NBIS",
+        "name": "Nebius Group",
+        "market": "美股",
+        "segment": "Neocloud",
+        "currency": "USD",
+        "tradingViewSymbol": "NASDAQ:NBIS",
+        "referencePrice": 203.41,
+        "aggressive": {
+          "low": 176,
+          "high": 190
+        },
+        "reasonable": {
+          "low": 142,
+          "high": 162
+        },
+        "safety": {
+          "low": 115,
+          "high": 130
+        },
+        "confidence": "low",
+        "view": "AI 云收入和在建电力高速增长，但估值仍依赖大规模产能按期上线与融资效率。",
+        "riskNote": "资本开支、可转债摊薄、客户集中、利用率和非经营投资重估可能造成显著波动。"
+      },
+      {
+        "ticker": "CRWV",
+        "name": "CoreWeave",
+        "market": "美股",
+        "segment": "Neocloud",
+        "currency": "USD",
+        "tradingViewSymbol": "NASDAQ:CRWV",
+        "referencePrice": 81.96,
+        "aggressive": {
+          "low": 74,
+          "high": 80
+        },
+        "reasonable": {
+          "low": 58,
+          "high": 68
+        },
+        "safety": {
+          "low": 44,
+          "high": 52
+        },
+        "confidence": "low",
+        "view": "订单积压与收入指引很强，但净亏损、利息负担和极高资本开支限制估值安全性。",
+        "riskNote": "高杠杆、负自由现金流、再融资依赖和客户集中可能放大经营或估值回撤。"
+      },
+      {
+        "ticker": "GLW",
+        "name": "Corning",
+        "market": "美股",
+        "segment": "光纤 / 先进材料",
+        "currency": "USD",
+        "tradingViewSymbol": "NYSE:GLW",
+        "referencePrice": 187.09,
+        "aggressive": {
+          "low": 164,
+          "high": 176
+        },
+        "reasonable": {
+          "low": 136,
+          "high": 152
+        },
+        "safety": {
+          "low": 110,
+          "high": 125
+        },
+        "confidence": "medium",
+        "view": "AI 光纤需求和长期大客户协议提升确定性，但当前估值已明显领先核心 EPS。",
+        "riskNote": "光通信扩产、太阳能业务爬坡、客户集中和高估值可能导致利润增长不及预期时回撤。",
+        "sources": [
+          {
+            "label": "Corning Q1 2026 官方财报",
+            "url": "https://investor.corning.com/news-and-events/news/news-details/2026/Corning-Announces-Strong-First-Quarter-2026-Financial-Results-1/default.aspx",
+            "type": "earnings"
+          }
+        ]
       }
     ]
   },
   "automation": {
     "dailySchedule": "每天 09:23（Asia/Shanghai，GitHub Actions 可能延迟）",
     "eventSchedule": "每 4 小时检查 SEC EDGAR；发现新披露时额外更新",
-    "marketPriceMode": "TradingView 组件自动更新，仓库不抓取或保存当前行情",
+    "marketPriceMode": "重点标的行情由独立工作流在盘中与收盘后写入 data/market-quotes.json；TradingView 图表独立自动更新",
     "valuationRangeMode": "P/E 情景仅在财报与重大事件后人工复核更新",
     "lastDailyCheckAt": "2026-07-14T04:19:22.247Z",
     "lastDailySecCheckAt": "2026-07-14T04:19:22.247Z",

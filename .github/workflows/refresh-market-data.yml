@@ -1,39 +1,32 @@
-name: Monitor SEC filings and daily status
+name: Refresh A-share and US market quotes
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/refresh-data.yml
-      - scripts/**
-      - data/valuation-bands.json
-      - data/sec-filings-state.json
   schedule:
-    - cron: '23 1 * * *'
-    - cron: '47 2,6,10,14,18,22 * * *'
+    - cron: '7,37 9-11,13-14 * * 1-5'
+      timezone: 'Asia/Shanghai'
+    - cron: '17 15 * * 1-5'
+      timezone: 'Asia/Shanghai'
+    - cron: '7,37 9-15 * * 1-5'
+      timezone: 'America/New_York'
+    - cron: '17 16 * * 1-5'
+      timezone: 'America/New_York'
   workflow_dispatch:
     inputs:
-      mode:
-        description: Refresh mode
+      market:
+        description: Market to refresh
         required: true
-        default: full
+        default: all
         type: choice
         options:
-          - full
-          - daily
-          - events
-          - bootstrap
+          - all
+          - cn
+          - us
+          - auto
       dry_run:
-        description: Validate without committing data changes
+        description: Fetch and validate without committing changes
         required: true
         default: false
         type: boolean
-  repository_dispatch:
-    types:
-      - refresh-data
-      - financial-report
-      - major-event
 
 permissions: {}
 
@@ -50,8 +43,8 @@ jobs:
     outputs:
       changed: ${{ steps.publish.outputs.changed }}
       commit_sha: ${{ steps.publish.outputs.commit_sha }}
-    env:
-      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+      markets: ${{ steps.quotes.outputs.markets }}
+      updated_tickers: ${{ steps.quotes.outputs.updated_tickers }}
     steps:
       - name: Check out main with history
         uses: actions/checkout@v7
@@ -64,54 +57,37 @@ jobs:
         with:
           node-version: 24
 
-      - name: Select refresh mode
-        id: mode
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          SCHEDULE: ${{ github.event.schedule }}
-          MANUAL_MODE: ${{ inputs.mode }}
-        run: |
-          mode=events
-          if [ "$EVENT_NAME" = "push" ]; then
-            mode=bootstrap
-          elif [ "$EVENT_NAME" = "workflow_dispatch" ]; then
-            mode="$MANUAL_MODE"
-          elif [ "$EVENT_NAME" = "repository_dispatch" ]; then
-            mode=full
-          elif [ "$SCHEDULE" = "23 1 * * *" ]; then
-            mode=daily
-          fi
-          case "$mode" in
-            full|daily|events|bootstrap) ;;
-            *) echo "Unsupported mode: $mode" >&2; exit 1 ;;
-          esac
-          echo "mode=$mode" >> "$GITHUB_OUTPUT"
-          echo "Selected refresh mode: $mode"
-
-      - name: Validate site and SEC monitor fixtures
+      - name: Validate current site and data
         run: |
           node scripts/validate-site.mjs
-          node scripts/test-sec-monitor.mjs
+          node scripts/validate-data.mjs
           node scripts/test-market-quotes.mjs
 
-      - name: Check SEC filings and refresh status
+      - name: Refresh market quote snapshot
+        id: quotes
         env:
-          MODE: ${{ steps.mode.outputs.mode }}
+          MARKET: ${{ github.event_name == 'workflow_dispatch' && inputs.market || 'auto' }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+          IS_MANUAL: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
-          args=(--mode "$MODE")
+          args=(--market "$MARKET")
           if [ "$DRY_RUN" = "true" ]; then
             args+=(--dry-run)
           fi
-          node scripts/check-sec-filings.mjs "${args[@]}"
+          if [ "$IS_MANUAL" = "true" ]; then
+            args+=(--force)
+          fi
+          node scripts/refresh-market-quotes.mjs "${args[@]}"
 
-      - name: Validate all data contracts
-        run: node scripts/validate-data.mjs
+      - name: Validate refreshed data
+        run: |
+          node scripts/validate-data.mjs
+          node scripts/validate-site.mjs
+          node scripts/test-market-quotes.mjs
 
-      - name: Commit and push changed data
+      - name: Commit and push changed quotes
         id: publish
         env:
-          MODE: ${{ steps.mode.outputs.mode }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
         run: |
           if [ "$DRY_RUN" = "true" ]; then
@@ -120,16 +96,16 @@ jobs:
             exit 0
           fi
 
-          git add -- data/events.json data/valuation-bands.json data/sec-filings-state.json
+          git add -- data/market-quotes.json
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "No data changes detected."
+            echo "No new quote timestamps detected."
             exit 0
           fi
 
-          git config user.name "ai-capex-data-bot"
+          git config user.name "ai-capex-market-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "chore(data): refresh ${MODE} data"
+          git commit -m "chore(data): refresh market quotes"
           pushed=false
           for attempt in 1 2 3; do
             if ! git fetch origin main; then
@@ -139,7 +115,7 @@ jobs:
             fi
             if ! git rebase origin/main; then
               git rebase --abort || true
-              echo "Data files conflict with a newer main commit; refusing to overwrite it." >&2
+              echo "Market data conflicts with a newer main commit; refusing to overwrite it." >&2
               exit 1
             fi
             if git push origin HEAD:main; then
@@ -149,7 +125,7 @@ jobs:
             sleep $((attempt * 2))
           done
           if [ "$pushed" != "true" ]; then
-            echo "Unable to push data commit after 3 attempts." >&2
+            echo "Unable to push market data after 3 attempts." >&2
             exit 1
           fi
           echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -158,17 +134,17 @@ jobs:
       - name: Write run summary
         if: always()
         env:
-          MODE: ${{ steps.mode.outputs.mode }}
           CHANGED: ${{ steps.publish.outputs.changed }}
-          COMMIT_SHA: ${{ steps.publish.outputs.commit_sha }}
+          MARKETS: ${{ steps.quotes.outputs.markets }}
+          UPDATED_TICKERS: ${{ steps.quotes.outputs.updated_tickers }}
         run: |
           {
-            echo "## Data refresh"
-            echo "- Mode: \`$MODE\`"
+            echo "## Market quote refresh"
+            echo "- Markets: \`${MARKETS:-none}\`"
+            echo "- Updated tickers: \`${UPDATED_TICKERS:-none}\`"
             echo "- Data changed: \`${CHANGED:-false}\`"
-            echo "- Commit: \`${COMMIT_SHA:-none}\`"
-            echo "- Daily schedule: 09:23 Asia/Shanghai"
-            echo "- SEC event scan: every 4 hours"
+            echo "- A shares: every 30 minutes during the session + 15:17 Asia/Shanghai"
+            echo "- US shares: every 30 minutes during the core session + 16:17 America/New_York"
           } >> "$GITHUB_STEP_SUMMARY"
 
   deploy:
@@ -203,6 +179,7 @@ jobs:
           node scripts/validate-site.mjs
           node scripts/validate-data.mjs
           node scripts/test-sec-monitor.mjs
+          node scripts/test-market-quotes.mjs
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6

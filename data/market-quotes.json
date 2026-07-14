@@ -1,0 +1,202 @@
+{
+  "version": 1,
+  "updatedAt": "2026-07-14",
+  "fetchedAt": "2026-07-14T14:27:41.753Z",
+  "source": {
+    "label": "Yahoo Finance Chart",
+    "homepage": "https://finance.yahoo.com/",
+    "dataNotice": "第三方自动行情可能延迟、缺失或暂时不可用，仅用于与静态研究区间对照，不是实时成交依据。"
+  },
+  "schedules": {
+    "cn": "A 股交易日盘中每 30 分钟，并在 15:00 收盘后刷新一次（Asia/Shanghai；GitHub Actions 可能延迟）",
+    "us": "美股交易日盘中每 30 分钟，并在 16:00 收盘后刷新一次（America/New_York；GitHub Actions 可能延迟）"
+  },
+  "sessions": {
+    "cn": {
+      "phase": "manual",
+      "sessionDate": "2026-07-14",
+      "timezone": "Asia/Shanghai",
+      "refreshedAt": "2026-07-14T13:52:10.432Z",
+      "quoteCount": 3,
+      "staleTickers": []
+    },
+    "us": {
+      "phase": "intraday",
+      "sessionDate": "2026-07-14",
+      "timezone": "America/New_York",
+      "refreshedAt": "2026-07-14T14:27:41.753Z",
+      "quoteCount": 9,
+      "staleTickers": []
+    }
+  },
+  "quotes": [
+    {
+      "ticker": "AAOI",
+      "symbol": "AAOI",
+      "market": "us",
+      "currency": "USD",
+      "price": 119.205,
+      "previousClose": 111.88,
+      "change": 7.325,
+      "changePercent": 6.547,
+      "quoteTime": "2026-07-14T14:27:30.000Z",
+      "quoteDate": "2026-07-14",
+      "fetchedAt": "2026-07-14T14:27:41.753Z",
+      "sourceUrl": "https://finance.yahoo.com/quote/AAOI"
+    },
+    {
+      "ticker": "SKHY",
+      "symbol": "SKHY",
+      "market": "us",
+      "currency": "USD",
+      "price": 169.35,
+      "previousClose": 152.35,
+      "change": 17,
+      "changePercent": 11.159,
+      "quoteTime": "2026-07-14T14:27:37.000Z",
+      "quoteDate": "2026-07-14",
+      "fetchedAt": "2026-07-14T14:27:41.753Z",
+      "sourceUrl": "https://finance.yahoo.com/quote/SKHY"
+    },
+    {
+      "ticker": "LITE",
+      "symbol": "LITE",
+      "market": "us",
+      "currency": "USD",
+      "price": 809.1,
+      "previousClose": 768.15,
+      "change": 40.95,
+      "changePercent": 5.331,
+      "quoteTime": "2026-07-14T14:27:37.000Z",
+      "quoteDate": "2026-07-14",
+      "fetchedAt": "2026-07-14T14:27:41.753Z",
+      "sourceUrl": "https://finance.yahoo.com/quote/LITE"
+    },
+    {
+      "ticker": "002436",
+      "symbol": "002436.SZ",
+      "market": "cn",
+      "currency": "CNY",
+      "price": 40.85,
+      "previousClose": 38.5,
+      "change": 2.35,
+      "changePercent": 6.104,
+      "quoteTime": "2026-07-14T07:04:45.000Z",
+      "quoteDate": "2026-07-14",
+      "fetchedAt": "2026-07-14T13:52:10.432Z",
+      "sourceUrl": "https://finance.yahoo.com/quote/002436.SZ"
+    },
+    {
+      "ticker": "002916",
+      "symbol": "002916.SZ",
+      "market": "cn",
+      "currency": "CNY",
+      "price": 408.99,
+      "previousClose": 393.59,
+      "change": 15.4,
+      "changePercent": 3.913,
+      "quoteTime": "2026-07-14T07:04:18.000Z",
+      "quoteDate": "2026-07-14",
+      "fetchedAt": "2026-07-14T13:52:10.432Z",
+      "sourceUrl": "https://finance.yahoo.com/quote/002916.SZ"
+    },
+    {
+      "ticker": "002156",
+      "symbol": "002156.SZ",
+      "market": "cn",
+      "currency": "CNY",
+      "price": 77.87,
+      "previousClose": 73.57,
+      "change": 4.3,
+      "changePercent": 5.845,
+      "quoteTime": "2026-07-14T07:04:27.000Z",
+      "quoteDate": "2026-07-14",
+      "fetchedAt": "2026-07-14T13:52:10.432Z",
+      "sourceUrl": "https://finance.yahoo.com/quote/002156.SZ"
+    },
+    {
+      "ticker": "AXTI",
+      "symbol": "AXTI",
+      "market": "us",
+      "currency": "USD",
+      "price": 56.295,
+      "previousClose": 50.46,
+      "change": 5.835,
+      "changePercent": 11.564,
+      "quoteTime": "2026-07-14T14:27:32.000Z",
+      "quoteDate": "2026-07-14",
+      "fetchedAt": "2026-07-14T14:27:41.753Z",
+      "sourceUrl": "https://finance.yahoo.com/quote/AXTI"
+    },
+    {
+      "ticker": "ASTS",
+      "symbol": "ASTS",
+      "market": "us",
+      "currency": "USD",
+      "price": 70.18,
+      "previousClose": 67.58,
+      "change": 2.6,
+      "changePercent": 3.847,
+      "quoteTime": "2026-07-14T14:27:37.000Z",
+      "quoteDate": "2026-07-14",
+      "fetchedAt": "2026-07-14T14:27:41.753Z",
+      "sourceUrl": "https://finance.yahoo.com/quote/ASTS"
+    },
+    {
+      "ticker": "INTC",
+      "symbol": "INTC",
+      "market": "us",
+      "currency": "USD",
+      "price": 103.94,
+      "previousClose": 103.12,
+      "change": 0.82,
+      "changePercent": 0.795,
+      "quoteTime": "2026-07-14T14:27:41.000Z",
+      "quoteDate": "2026-07-14",
+      "fetchedAt": "2026-07-14T14:27:41.753Z",
+      "sourceUrl": "https://finance.yahoo.com/quote/INTC"
+    },
+    {
+      "ticker": "NBIS",
+      "symbol": "NBIS",
+      "market": "us",
+      "currency": "USD",
+      "price": 202.73,
+      "previousClose": 210.51,
+      "change": -7.78,
+      "changePercent": -3.696,
+      "quoteTime": "2026-07-14T14:27:40.000Z",
+      "quoteDate": "2026-07-14",
+      "fetchedAt": "2026-07-14T14:27:41.753Z",
+      "sourceUrl": "https://finance.yahoo.com/quote/NBIS"
+    },
+    {
+      "ticker": "CRWV",
+      "symbol": "CRWV",
+      "market": "us",
+      "currency": "USD",
+      "price": 81.92,
+      "previousClose": 83.31,
+      "change": -1.39,
+      "changePercent": -1.668,
+      "quoteTime": "2026-07-14T14:27:42.000Z",
+      "quoteDate": "2026-07-14",
+      "fetchedAt": "2026-07-14T14:27:41.753Z",
+      "sourceUrl": "https://finance.yahoo.com/quote/CRWV"
+    },
+    {
+      "ticker": "GLW",
+      "symbol": "GLW",
+      "market": "us",
+      "currency": "USD",
+      "price": 188.44,
+      "previousClose": 183.11,
+      "change": 5.33,
+      "changePercent": 2.911,
+      "quoteTime": "2026-07-14T14:27:41.000Z",
+      "quoteDate": "2026-07-14",
+      "fetchedAt": "2026-07-14T14:27:41.753Z",
+      "sourceUrl": "https://finance.yahoo.com/quote/GLW"
+    }
+  ]
+}
