@@ -318,8 +318,8 @@
     "eventSchedule": "每 4 小时检查 SEC EDGAR；发现新披露时额外更新",
     "marketPriceMode": "重点标的行情由独立工作流在盘中与收盘后写入 data/market-quotes.json；TradingView 图表独立自动更新",
     "valuationRangeMode": "P/E 情景仅在财报与重大事件后人工复核更新",
-    "lastDailyCheckAt": "2026-07-14T15:06:55.401Z",
-    "lastDailySecCheckAt": "2026-07-14T15:06:55.401Z",
+    "lastDailyCheckAt": "2026-07-14T15:13:46.765Z",
+    "lastDailySecCheckAt": "2026-07-14T15:13:46.765Z",
     "lastEventDetectedAt": null
   },
   "companies": [
