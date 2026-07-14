@@ -207,8 +207,8 @@
     "eventSchedule": "每 4 小时检查 SEC EDGAR；发现新披露时额外更新",
     "marketPriceMode": "TradingView 组件自动更新，仓库不抓取或保存当前行情",
     "valuationRangeMode": "P/E 情景仅在财报与重大事件后人工复核更新",
-    "lastDailyCheckAt": "2026-07-13T14:58:32.026Z",
-    "lastDailySecCheckAt": "2026-07-13T14:58:32.026Z",
+    "lastDailyCheckAt": "2026-07-14T04:19:22.247Z",
+    "lastDailySecCheckAt": "2026-07-14T04:19:22.247Z",
     "lastEventDetectedAt": null
   },
   "companies": [
