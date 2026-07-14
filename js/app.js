@@ -620,34 +620,55 @@
   function buyZoneDistanceMetrics(company, price) {
     const referencePrice = toFiniteNumber(price);
     return [
-      { key: 'safety', label: '安全上限', range: company && company.safety },
-      { key: 'reasonable', label: '合理上限', range: company && company.reasonable },
-      { key: 'aggressive', label: '激进上限', range: company && company.aggressive }
+      { key: 'safety', label: '安全区间', range: company && company.safety },
+      { key: 'reasonable', label: '合理区间', range: company && company.reasonable },
+      { key: 'aggressive', label: '激进区间', range: company && company.aggressive }
     ].map((metric) => {
+      const lowerBound = toFiniteNumber(metric.range && metric.range.low);
       const upperBound = toFiniteNumber(metric.range && metric.range.high);
-      const distance = referencePrice !== null && upperBound !== null && upperBound > 0
+      const distanceToUpper = referencePrice !== null && upperBound !== null && upperBound > 0
         ? (referencePrice / upperBound - 1) * 100
         : null;
-      return { ...metric, distance };
+      const distanceToLower = referencePrice !== null && lowerBound !== null && lowerBound > 0
+        ? (referencePrice / lowerBound - 1) * 100
+        : null;
+      return { ...metric, distanceToUpper, distanceToLower };
     });
   }
 
-  function formatBuyZoneDistance(distance) {
-    if (!Number.isFinite(distance)) return '待确认';
-    if (Math.abs(distance) < 0.05) return '持平 0.0%';
-    return `${distance > 0 ? '高于' : '低于'} ${formatNumber(Math.abs(distance), 1, '%')}`;
+  function formatSignedBuyZonePercent(value) {
+    if (!Number.isFinite(value)) return '—';
+    if (Math.abs(value) < 0.05) return '0.0%';
+    return `${value > 0 ? '+' : '−'}${formatNumber(Math.abs(value), 1, '%')}`;
   }
 
-  function buyZoneDistanceClass(distance) {
-    if (!Number.isFinite(distance) || Math.abs(distance) < 0.05) return 'is-at';
-    return distance > 0 ? 'is-above' : 'is-below';
+  function formatBuyZoneDistanceRange(metric) {
+    const distanceToUpper = metric && metric.distanceToUpper;
+    const distanceToLower = metric && metric.distanceToLower;
+    if (!Number.isFinite(distanceToUpper) || !Number.isFinite(distanceToLower)) return '待确认';
+    if (distanceToUpper > 0) {
+      return `高于 ${formatNumber(distanceToUpper, 1, '%')}～${formatNumber(distanceToLower, 1, '%')}`;
+    }
+    if (distanceToLower < 0) {
+      return `低于 ${formatNumber(Math.abs(distanceToLower), 1, '%')}～${formatNumber(Math.abs(distanceToUpper), 1, '%')}`;
+    }
+    return `区间内 ${formatSignedBuyZonePercent(distanceToUpper)}～${formatSignedBuyZonePercent(distanceToLower)}`;
+  }
+
+  function buyZoneDistanceClass(metric) {
+    const distanceToUpper = metric && metric.distanceToUpper;
+    const distanceToLower = metric && metric.distanceToLower;
+    if (!Number.isFinite(distanceToUpper) || !Number.isFinite(distanceToLower)) return 'is-at';
+    if (distanceToUpper > 0) return 'is-above';
+    if (distanceToLower < 0) return 'is-below';
+    return 'is-within';
   }
 
   function buyZoneSortScore(company, price) {
     const aggressiveMetric = buyZoneDistanceMetrics(company, price)
       .find((metric) => metric.key === 'aggressive');
-    return aggressiveMetric && Number.isFinite(aggressiveMetric.distance)
-      ? aggressiveMetric.distance
+    return aggressiveMetric && Number.isFinite(aggressiveMetric.distanceToUpper)
+      ? aggressiveMetric.distanceToUpper
       : null;
   }
 
@@ -708,9 +729,9 @@
       const shownPrice = quote ? quote.price : company.referencePrice;
       const distanceMetrics = buyZoneDistanceMetrics(company, shownPrice);
       const distanceMarkup = distanceMetrics.map((metric) => `
-        <span class="buy-zone-distance is-${escapeHTML(metric.key)}-tier ${escapeHTML(buyZoneDistanceClass(metric.distance))}">
+        <span class="buy-zone-distance is-${escapeHTML(metric.key)}-tier ${escapeHTML(buyZoneDistanceClass(metric))}">
           <em>${escapeHTML(metric.label)}</em>
-          <strong>${escapeHTML(formatBuyZoneDistance(metric.distance))}</strong>
+          <strong>${escapeHTML(formatBuyZoneDistanceRange(metric))}</strong>
         </span>
       `).join('');
       const referencePrice = `${!quote && company.referencePriceApproximate === true ? '约 ' : ''}${formatBuyZonePrice(shownPrice, currency, 2)}`;
@@ -740,7 +761,7 @@
           <td><span class="buy-zone-range is-aggressive">${escapeHTML(formatBuyZoneRange(company.aggressive, currency))}</span></td>
           <td>
             <span class="buy-zone-status ${escapeHTML(status.className)}">${escapeHTML(status.label)}</span>
-            <span class="buy-zone-distance-grid" aria-label="当前行情相对三档区间上限的百分比距离">${distanceMarkup}</span>
+            <span class="buy-zone-distance-grid" aria-label="当前行情相对三档价格区间两端的百分比区间">${distanceMarkup}</span>
             <span class="buy-zone-note">${escapeHTML(textValue(company.view, '等待补充研究备注。'))}</span>
           </td>
         </tr>
@@ -786,7 +807,7 @@
         state.data.marketQuotes && state.data.marketQuotes.source && state.data.marketQuotes.source.dataNotice,
         '自动行情可能延迟或暂时不可用。'
       );
-      disclosure.innerHTML = `<strong>区间与行情边界</strong><p>每行百分比分别表示当前行情高于或低于安全、合理、激进区间上限的幅度；表头排序以相对激进上限的距离为统一口径。${escapeHTML(textValue(snapshot.notice, '静态研究价格带不构成投资建议。'))} ${escapeHTML(quoteNotice)} 行情更新不会移动研究区间，也不会触发交易。</p>`;
+      disclosure.innerHTML = `<strong>区间与行情边界</strong><p>每个百分比区间由当前行情分别对照对应价格带的上、下限计算；例如现价高于整段价格带时，显示高于区间上限至下限的幅度范围。表头排序仍以相对激进区间上限的距离为统一口径。${escapeHTML(textValue(snapshot.notice, '静态研究价格带不构成投资建议。'))} ${escapeHTML(quoteNotice)} 行情更新不会移动研究区间，也不会触发交易。</p>`;
     }
   }
 

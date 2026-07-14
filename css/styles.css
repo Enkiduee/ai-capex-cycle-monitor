@@ -1097,7 +1097,7 @@ tbody tr:hover {
 
 .buy-zones-table {
   width: 100%;
-  min-width: 1180px;
+  min-width: 1240px;
   border-collapse: collapse;
   font-size: 11px;
 }
@@ -1369,9 +1369,9 @@ a.buy-zone-reference:focus-visible {
 
 .buy-zone-distance-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(92px, 1fr));
+  grid-template-columns: repeat(3, minmax(112px, 1fr));
   gap: 5px;
-  min-width: 305px;
+  min-width: 365px;
   margin-top: 7px;
 }
 
@@ -1441,6 +1441,10 @@ a.buy-zone-reference:focus-visible {
 
 .buy-zone-distance.is-at strong {
   color: var(--text-secondary);
+}
+
+.buy-zone-distance.is-within strong {
+  text-shadow: 0 0 8px currentColor;
 }
 
 .buy-zones-disclosure {
