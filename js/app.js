@@ -594,12 +594,13 @@
     const amount = toFiniteNumber(value);
     if (amount === null || amount <= 0) return '—';
     const units = [
-      { threshold: 1e12, suffix: 'T' },
-      { threshold: 1e9, suffix: 'B' },
-      { threshold: 1e6, suffix: 'M' },
-      { threshold: 1e3, suffix: 'K' }
+      { threshold: 1e12, suffix: '万亿' },
+      { threshold: 1e11, suffix: '千亿' },
+      { threshold: 1e10, suffix: '百亿' },
+      { threshold: 1e8, suffix: '亿' },
+      { threshold: 1e4, suffix: '万' }
     ];
-    const unit = units.find((item) => amount >= item.threshold) || { threshold: 1, suffix: '' };
+    const unit = units.find((item) => amount >= item.threshold) || { threshold: 1, suffix: '元' };
     const scaled = amount / unit.threshold;
     const decimals = scaled >= 100 ? 1 : 2;
     const symbol = currency === 'CNY' ? '¥' : '$';
