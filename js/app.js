@@ -36,6 +36,9 @@
     valuation: {
       ticker: 'NVDA'
     },
+    buyZones: {
+      sortDirection: 'desc'
+    },
     events: {
       sentiment: 'all',
       entity: 'all'
@@ -603,9 +606,8 @@
       return { label: '进入激进区间', className: 'is-aggressive' };
     }
     if (referencePrice > Number(aggressive.high)) {
-      const premium = (referencePrice / Number(aggressive.high) - 1) * 100;
       return {
-        label: `高于激进上限 ${formatNumber(premium, 1, '%')}`,
+        label: '高于激进区间',
         className: 'is-wait'
       };
     }
@@ -613,6 +615,40 @@
       return { label: '低于安全区间 · 先复核', className: 'is-review' };
     }
     return { label: '处于区间空档', className: 'is-between' };
+  }
+
+  function buyZoneDistanceMetrics(company, price) {
+    const referencePrice = toFiniteNumber(price);
+    return [
+      { key: 'safety', label: '安全上限', range: company && company.safety },
+      { key: 'reasonable', label: '合理上限', range: company && company.reasonable },
+      { key: 'aggressive', label: '激进上限', range: company && company.aggressive }
+    ].map((metric) => {
+      const upperBound = toFiniteNumber(metric.range && metric.range.high);
+      const distance = referencePrice !== null && upperBound !== null && upperBound > 0
+        ? (referencePrice / upperBound - 1) * 100
+        : null;
+      return { ...metric, distance };
+    });
+  }
+
+  function formatBuyZoneDistance(distance) {
+    if (!Number.isFinite(distance)) return '待确认';
+    if (Math.abs(distance) < 0.05) return '持平 0.0%';
+    return `${distance > 0 ? '高于' : '低于'} ${formatNumber(Math.abs(distance), 1, '%')}`;
+  }
+
+  function buyZoneDistanceClass(distance) {
+    if (!Number.isFinite(distance) || Math.abs(distance) < 0.05) return 'is-at';
+    return distance > 0 ? 'is-above' : 'is-below';
+  }
+
+  function buyZoneSortScore(company, price) {
+    const aggressiveMetric = buyZoneDistanceMetrics(company, price)
+      .find((metric) => metric.key === 'aggressive');
+    return aggressiveMetric && Number.isFinite(aggressiveMetric.distance)
+      ? aggressiveMetric.distance
+      : null;
   }
 
   function renderBuyZones(data) {
@@ -628,7 +664,40 @@
       throw new Error('买入区间速览缺少有效公司数据。');
     }
 
-    body.innerHTML = companies.map((company) => {
+    const sortDirection = state.buyZones.sortDirection === 'asc' ? 'asc' : 'desc';
+    const sortedCompanies = companies.map((company, index) => {
+      const quote = marketQuoteForTicker(company.ticker);
+      const shownPrice = quote ? quote.price : company.referencePrice;
+      return {
+        company,
+        index,
+        score: buyZoneSortScore(company, shownPrice)
+      };
+    }).sort((left, right) => {
+      if (left.score === null && right.score === null) return left.index - right.index;
+      if (left.score === null) return 1;
+      if (right.score === null) return -1;
+      const difference = sortDirection === 'desc'
+        ? right.score - left.score
+        : left.score - right.score;
+      return difference || left.index - right.index;
+    }).map((item) => item.company);
+
+    const sortHeading = byId('buy-zones-status-heading');
+    const sortButton = byId('buy-zones-sort-button');
+    const sortIndicator = byId('buy-zones-sort-indicator');
+    const directionLabel = sortDirection === 'desc' ? '从高到低' : '从低到高';
+    if (sortHeading) sortHeading.setAttribute('aria-sort', sortDirection === 'desc' ? 'descending' : 'ascending');
+    if (sortButton) {
+      sortButton.setAttribute(
+        'aria-label',
+        `行情所处区间，当前按相对激进区间上限的距离${directionLabel}排序；点击切换排序方向`
+      );
+      sortButton.title = `按相对激进区间上限的距离${directionLabel}排列，点击切换`;
+    }
+    if (sortIndicator) sortIndicator.textContent = sortDirection === 'desc' ? '高→低' : '低→高';
+
+    body.innerHTML = sortedCompanies.map((company) => {
       const ticker = textValue(company.ticker, '—');
       const name = textValue(company.name, ticker);
       const market = textValue(company.market, '待分类');
@@ -637,6 +706,13 @@
       const quote = marketQuoteForTicker(ticker);
       const status = getBuyZoneStatus({ ...company, referencePrice: quote ? quote.price : company.referencePrice });
       const shownPrice = quote ? quote.price : company.referencePrice;
+      const distanceMetrics = buyZoneDistanceMetrics(company, shownPrice);
+      const distanceMarkup = distanceMetrics.map((metric) => `
+        <span class="buy-zone-distance ${escapeHTML(buyZoneDistanceClass(metric.distance))}">
+          <em>${escapeHTML(metric.label)}</em>
+          <strong>${escapeHTML(formatBuyZoneDistance(metric.distance))}</strong>
+        </span>
+      `).join('');
       const referencePrice = `${!quote && company.referencePriceApproximate === true ? '约 ' : ''}${formatBuyZonePrice(shownPrice, currency, 2)}`;
       const change = quoteChangeMeta(quote);
       const quoteUrl = safeExternalUrl(quote && quote.sourceUrl);
@@ -664,6 +740,7 @@
           <td><span class="buy-zone-range is-aggressive">${escapeHTML(formatBuyZoneRange(company.aggressive, currency))}</span></td>
           <td>
             <span class="buy-zone-status ${escapeHTML(status.className)}">${escapeHTML(status.label)}</span>
+            <span class="buy-zone-distance-grid" aria-label="当前行情相对三档区间上限的百分比距离">${distanceMarkup}</span>
             <span class="buy-zone-note">${escapeHTML(textValue(company.view, '等待补充研究备注。'))}</span>
           </td>
         </tr>
@@ -709,7 +786,7 @@
         state.data.marketQuotes && state.data.marketQuotes.source && state.data.marketQuotes.source.dataNotice,
         '自动行情可能延迟或暂时不可用。'
       );
-      disclosure.innerHTML = `<strong>区间与行情边界</strong><p>${escapeHTML(textValue(snapshot.notice, '静态研究价格带不构成投资建议。'))} ${escapeHTML(quoteNotice)} 行情更新不会移动研究区间，也不会触发交易。</p>`;
+      disclosure.innerHTML = `<strong>区间与行情边界</strong><p>每行百分比分别表示当前行情高于或低于安全、合理、激进区间上限的幅度；表头排序以相对激进上限的距离为统一口径。${escapeHTML(textValue(snapshot.notice, '静态研究价格带不构成投资建议。'))} ${escapeHTML(quoteNotice)} 行情更新不会移动研究区间，也不会触发交易。</p>`;
     }
   }
 
@@ -1570,6 +1647,17 @@
         renderSupplyTable();
       });
     });
+    const buyZoneSortButton = byId('buy-zones-sort-button');
+    if (buyZoneSortButton) {
+      buyZoneSortButton.addEventListener('click', () => {
+        state.buyZones.sortDirection = state.buyZones.sortDirection === 'desc' ? 'asc' : 'desc';
+        try {
+          renderBuyZones(state.data.valuation);
+        } catch (error) {
+          renderSectionError('valuation', DATA_SOURCES.valuation, error);
+        }
+      });
+    }
     byId('sentiment-filter').addEventListener('change', (event) => {
       state.events.sentiment = event.target.value;
       renderEventTimeline();

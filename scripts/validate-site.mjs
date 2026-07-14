@@ -84,13 +84,18 @@ assert(app.includes('&gt; ${escapeHTML(bullPrice)} 不列入买入区'), '估值
 assert(app.includes('formatValuationPrice'), '估值页面必须保留价格阈值的两位小数精度');
 assert(html.includes('研究区间 + P/E 情景'), '估值工具栏必须说明人工研究与 P/E 两类口径');
 assert(html.includes('id="buy-zones-body"'), '供应链视图必须包含买入区间速览表');
+assert(html.includes('id="buy-zones-sort-button"'), '买入区间速览必须提供高低方向排序按钮');
 assert(app.includes('renderBuyZones(data)'), '估值页面必须从统一数据源渲染买入区间速览');
+assert(app.includes('buyZoneDistanceMetrics'), '买入区间速览必须计算相对三档上限的百分比距离');
+assert(app.includes("state.buyZones.sortDirection === 'desc' ? 'asc' : 'desc'"), '买入区间速览必须支持从高到低与从低到高切换');
+assert(app.includes("sortHeading.setAttribute('aria-sort'"), '买入区间排序必须同步无障碍排序状态');
 assert(app.includes("marketQuotes: { path: './data/market-quotes.json'"), '前端必须加载独立的自动行情快照');
 assert(app.includes('marketQuoteForTicker'), '买入区间表必须用自动行情快照对照价格带');
 assert(app.includes('referencePrice: quote ? quote.price : company.referencePrice'), '自动行情缺失时必须回退到研究参考价');
 assert(html.includes('自动行情 + 静态区间'), '买入区间表必须明确区分自动行情与静态研究区间');
 assert(styles.includes('.buy-zone-quote-meta'), 'CSS 缺少自动行情时间与涨跌样式');
 assert(styles.includes('.buy-zone-range.is-safety'), 'CSS 缺少买入区间安全档样式');
+assert(styles.includes('.buy-zone-distance-grid'), 'CSS 缺少三档上限百分比对照样式');
 assert(html.includes('安全边际再对熊市价值折价 20%'), '方法页必须解释安全边际公式');
 assert(styles.includes('.route-view[hidden]'), 'CSS 必须可靠隐藏非当前视图');
 assert(styles.includes(':root[data-initial-route] .route-view'), 'CSS 必须在主脚本执行前隐藏非当前视图');
