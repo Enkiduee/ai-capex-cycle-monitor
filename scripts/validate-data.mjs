@@ -70,6 +70,9 @@ for (const entry of manualEntries) {
   assert(typeof entry.segment === 'string' && entry.segment.trim(), `${ticker}.segment 不能为空`);
   assert(['USD', 'CNY'].includes(entry.currency), `${ticker}.currency 必须是 USD 或 CNY`);
   assert(/^(?:NASDAQ|NYSE|SZSE):(?:[A-Z][A-Z0-9.-]{0,9}|\d{6})$/.test(String(entry.tradingViewSymbol || '')), `${ticker}.tradingViewSymbol 无效`);
+  if (entry.marketCapSymbol !== undefined) {
+    assert(/^(?:NASDAQ|NYSE|SZSE):(?:[A-Z][A-Z0-9.-]{0,9}|\d{6})$/.test(String(entry.marketCapSymbol || '')), `${ticker}.marketCapSymbol 无效`);
+  }
   assert(Number.isFinite(Number(entry.referencePrice)) && Number(entry.referencePrice) > 0, `${ticker}.referencePrice 必须大于 0`);
   const safetyLow = Number(entry.safety && entry.safety.low);
   const safetyHigh = Number(entry.safety && entry.safety.high);
@@ -108,7 +111,11 @@ for (const entry of manualEntries) {
   }
 }
 
-assert(marketQuotes.version === 1, 'market-quotes.version 必须为 1');
+assert(marketQuotes.version === 2, 'market-quotes.version 必须为 2');
+assert(marketQuotes.fx && marketQuotes.fx.pair === 'USD/CNY', 'market-quotes.fx.pair 必须为 USD/CNY');
+assert(Number.isFinite(Number(marketQuotes.fx && marketQuotes.fx.rate)) && Number(marketQuotes.fx.rate) > 0, 'market-quotes.fx.rate 必须大于 0');
+assert(validIso(marketQuotes.fx && marketQuotes.fx.quoteTime), 'market-quotes.fx.quoteTime 无效');
+assert(validIso(marketQuotes.fx && marketQuotes.fx.fetchedAt), 'market-quotes.fx.fetchedAt 无效');
 assert(marketQuotes.fetchedAt === null || validIso(marketQuotes.fetchedAt), 'market-quotes.fetchedAt 必须为 null 或 ISO UTC 时间');
 assert(marketQuotes.source && typeof marketQuotes.source.label === 'string' && marketQuotes.source.label.trim(), 'market-quotes.source.label 不能为空');
 assert(marketQuotes.source && typeof marketQuotes.source.dataNotice === 'string' && marketQuotes.source.dataNotice.trim(), 'market-quotes.source.dataNotice 不能为空');
@@ -134,6 +141,7 @@ for (const marketId of ['cn', 'us']) {
 
 const quoteRows = Array.isArray(marketQuotes.quotes) ? marketQuotes.quotes : [];
 assert(Array.isArray(marketQuotes.quotes), 'market-quotes.quotes 必须是数组');
+assert(quoteRows.length === manualEntries.length, 'market-quotes 必须覆盖全部重点标的');
 if (quoteRows.length) {
   assert(validIso(marketQuotes.fetchedAt), '有行情记录时 market-quotes.fetchedAt 必须是有效 ISO UTC 时间');
 }
@@ -162,6 +170,9 @@ for (const quote of quoteRows) {
   assert(previousClose === null || (Number.isFinite(previousClose) && previousClose > 0), `${ticker}.previousClose 必须为 null 或大于 0`);
   assert(change === null || Number.isFinite(change), `${ticker}.change 必须为 null 或有限数值`);
   assert(changePercent === null || Number.isFinite(changePercent), `${ticker}.changePercent 必须为 null 或有限数值`);
+  assert(Number.isFinite(Number(quote.marketCap)) && Number(quote.marketCap) > 0, `${ticker}.marketCap 必须大于 0`);
+  assert(['USD', 'CNY'].includes(quote.marketCapCurrency), `${ticker}.marketCapCurrency 必须是 USD 或 CNY`);
+  assert(validIso(quote.marketCapFetchedAt), `${ticker}.marketCapFetchedAt 无效`);
   assert(validIso(quote.quoteTime), `${ticker}.quoteTime 无效`);
   assert(validDate(quote.quoteDate), `${ticker}.quoteDate 无效`);
   assert(validIso(quote.fetchedAt), `${ticker}.fetchedAt 无效`);
@@ -170,6 +181,12 @@ for (const quote of quoteRows) {
     assert(sourceUrl.protocol === 'https:', `${ticker}.sourceUrl 必须使用 HTTPS`);
   } catch (error) {
     errors.push(`${ticker}.sourceUrl 无效`);
+  }
+  try {
+    const marketCapSourceUrl = new URL(quote.marketCapSourceUrl);
+    assert(marketCapSourceUrl.protocol === 'https:', `${ticker}.marketCapSourceUrl 必须使用 HTTPS`);
+  } catch (error) {
+    errors.push(`${ticker}.marketCapSourceUrl 无效`);
   }
 }
 

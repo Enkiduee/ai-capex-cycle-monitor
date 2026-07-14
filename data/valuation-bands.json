@@ -51,6 +51,7 @@
         "segment": "HBM / 存储",
         "currency": "USD",
         "tradingViewSymbol": "NYSE:SKHY",
+        "marketCapSymbol": "NASDAQ:SKHY",
         "referencePrice": 155,
         "referencePriceApproximate": true,
         "aggressive": {

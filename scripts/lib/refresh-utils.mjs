@@ -113,7 +113,9 @@ export async function fetchJson(url, options = {}) {
     let response;
     try {
       response = await fetch(url, {
+        method: options.method || 'GET',
         headers,
+        body: options.body,
         signal: AbortSignal.timeout(timeoutMs)
       });
       if (response.ok) return await response.json();

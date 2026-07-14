@@ -590,6 +590,53 @@
     };
   }
 
+  function formatCompactMarketCap(value, currency) {
+    const amount = toFiniteNumber(value);
+    if (amount === null || amount <= 0) return '—';
+    const units = [
+      { threshold: 1e12, suffix: 'T' },
+      { threshold: 1e9, suffix: 'B' },
+      { threshold: 1e6, suffix: 'M' },
+      { threshold: 1e3, suffix: 'K' }
+    ];
+    const unit = units.find((item) => amount >= item.threshold) || { threshold: 1, suffix: '' };
+    const scaled = amount / unit.threshold;
+    const decimals = scaled >= 100 ? 1 : 2;
+    const symbol = currency === 'CNY' ? '¥' : '$';
+    return `${currency} ${symbol}${formatNumber(scaled, decimals)}${unit.suffix}`;
+  }
+
+  function marketCapCurrencyValues(quote) {
+    const marketCap = toFiniteNumber(quote && quote.marketCap);
+    const marketCapCurrency = textValue(quote && quote.marketCapCurrency, '').toUpperCase();
+    const usdCnyRate = toFiniteNumber(state.data.marketQuotes && state.data.marketQuotes.fx && state.data.marketQuotes.fx.rate);
+    if (marketCap === null || marketCap <= 0 || usdCnyRate === null || usdCnyRate <= 0) return null;
+    if (marketCapCurrency === 'USD') {
+      return { usd: marketCap, cny: marketCap * usdCnyRate, usdCnyRate };
+    }
+    if (marketCapCurrency === 'CNY') {
+      return { usd: marketCap / usdCnyRate, cny: marketCap, usdCnyRate };
+    }
+    return null;
+  }
+
+  function buyZoneMarketCapMarkup(quote) {
+    const values = marketCapCurrencyValues(quote);
+    if (!values) return '<span class="buy-zone-market-cap is-missing">总市值待更新</span>';
+    const usd = formatCompactMarketCap(values.usd, 'USD');
+    const cny = formatCompactMarketCap(values.cny, 'CNY');
+    const sourceUrl = safeExternalUrl(quote && quote.marketCapSourceUrl);
+    const label = `公司总市值：${usd}，${cny}；USD/CNY ${formatNumber(values.usdCnyRate, 4)}`;
+    const content = `
+      <span class="buy-zone-market-cap-label">总市值</span>
+      <strong class="is-usd">${escapeHTML(usd)}</strong>
+      <strong class="is-cny">${escapeHTML(cny)}</strong>
+    `;
+    return sourceUrl
+      ? `<a class="buy-zone-market-cap" href="${escapeHTML(sourceUrl)}" target="_blank" rel="noopener noreferrer nofollow" aria-label="${escapeHTML(label)}；打开市值来源" title="${escapeHTML(label)}">${content}</a>`
+      : `<span class="buy-zone-market-cap" aria-label="${escapeHTML(label)}" title="${escapeHTML(label)}">${content}</span>`;
+  }
+
   function getBuyZoneStatus(company) {
     const referencePrice = toFiniteNumber(company && company.referencePrice);
     const safety = company && company.safety ? company.safety : {};
@@ -754,6 +801,7 @@
             >${escapeHTML(ticker)}</button>
             <strong>${escapeHTML(name)}</strong>
             <span class="buy-zone-company-meta">${escapeHTML(market)} · ${escapeHTML(segment)}</span>
+            ${buyZoneMarketCapMarkup(quote)}
           </th>
           <td>${priceMarkup}${quoteMeta}</td>
           <td><span class="buy-zone-range is-safety">${escapeHTML(formatBuyZoneRange(company.safety, currency))}</span></td>
@@ -807,7 +855,7 @@
         state.data.marketQuotes && state.data.marketQuotes.source && state.data.marketQuotes.source.dataNotice,
         '自动行情可能延迟或暂时不可用。'
       );
-      disclosure.innerHTML = `<strong>区间与行情边界</strong><p>每个百分比区间由当前行情分别对照对应价格带的上、下限计算；例如现价高于整段价格带时，显示高于区间上限至下限的幅度范围。表头排序仍以相对激进区间上限的距离为统一口径。${escapeHTML(textValue(snapshot.notice, '静态研究价格带不构成投资建议。'))} ${escapeHTML(quoteNotice)} 行情更新不会移动研究区间，也不会触发交易。</p>`;
+      disclosure.innerHTML = `<strong>区间与行情边界</strong><p>每个百分比区间由当前行情分别对照对应价格带的上、下限计算；表头排序仍以相对激进区间上限的距离为统一口径。总市值采用 TradingView 公司层面口径，ADR 也按对应公司的整体市值显示；USD 与 CNY 双币值使用自动 USD/CNY 汇率换算。${escapeHTML(textValue(snapshot.notice, '静态研究价格带不构成投资建议。'))} ${escapeHTML(quoteNotice)} 行情更新不会移动研究区间，也不会触发交易。</p>`;
     }
   }
 

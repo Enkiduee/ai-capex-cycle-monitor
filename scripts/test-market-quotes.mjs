@@ -1,5 +1,12 @@
 import assert from 'node:assert/strict';
-import { marketPhase, normalizeQuote, yahooSymbol } from './refresh-market-quotes.mjs';
+import {
+  marketCapSymbol,
+  marketPhase,
+  normalizeMarketCaps,
+  normalizeQuote,
+  normalizeUsdCnyFx,
+  yahooSymbol
+} from './refresh-market-quotes.mjs';
 
 assert.deepEqual(
   marketPhase(new Date('2026-07-14T01:31:00.000Z'), 'cn'),
@@ -17,6 +24,7 @@ assert.equal(yahooSymbol({ tradingViewSymbol: 'NASDAQ:AAOI' }), 'AAOI');
 assert.equal(yahooSymbol({ tradingViewSymbol: 'SZSE:002436' }), '002436.SZ');
 assert.equal(yahooSymbol({ tradingViewSymbol: 'SSE:688981' }), '688981.SS');
 assert.equal(yahooSymbol({ marketDataSymbol: 'CUSTOM', tradingViewSymbol: 'NASDAQ:AAOI' }), 'CUSTOM');
+assert.equal(marketCapSymbol({ marketCapSymbol: 'NASDAQ:SKHY', tradingViewSymbol: 'NYSE:SKHY' }), 'NASDAQ:SKHY');
 
 const quote = normalizeQuote({
   chart: {
@@ -46,4 +54,28 @@ assert.equal(quote.changePercent, 5);
 assert.equal(quote.quoteDate, '2026-07-14');
 assert.equal(quote.quoteTime, '2026-07-14T19:45:00.000Z');
 
-console.log('validated market windows, daylight-saving handling, symbols, and quote normalization');
+const marketCaps = normalizeMarketCaps({
+  data: [
+    { s: 'NASDAQ:AAOI', d: ['AAOI', 105, 7_000_000_000, 'USD'] },
+    { s: 'SZSE:002436', d: ['002436', 40, 65_000_000_000, 'CNY'] }
+  ]
+}, [
+  { ticker: 'AAOI', tradingViewSymbol: 'NASDAQ:AAOI' },
+  { ticker: '002436', tradingViewSymbol: 'SZSE:002436' }
+], '2026-07-14T19:46:00.000Z');
+assert.equal(marketCaps.length, 2);
+assert.equal(marketCaps[0].marketCap, 7_000_000_000);
+assert.equal(marketCaps[0].marketCapCurrency, 'USD');
+assert.equal(marketCaps[1].marketCapCurrency, 'CNY');
+
+const fx = normalizeUsdCnyFx({
+  chart: {
+    result: [{ meta: { regularMarketPrice: 6.7695, regularMarketTime: 1_784_041_131 } }],
+    error: null
+  }
+}, '2026-07-14T19:46:00.000Z');
+assert.equal(fx.pair, 'USD/CNY');
+assert.equal(fx.rate, 6.7695);
+assert.equal(fx.quoteTime, '2026-07-14T14:58:51.000Z');
+
+console.log('validated market windows, symbols, quotes, company market caps, and USD/CNY normalization');

@@ -1238,6 +1238,59 @@ tbody tr:hover {
   line-height: 1.45;
 }
 
+.buy-zone-market-cap {
+  display: grid;
+  width: max-content;
+  max-width: 100%;
+  grid-template-columns: 38px minmax(86px, 1fr);
+  gap: 2px 7px;
+  margin-top: 8px;
+  padding: 6px 8px;
+  border: 1px solid #3b4e61;
+  border-radius: 7px;
+  background: #101c27;
+  font-family: var(--font-mono);
+  line-height: 1.35;
+  text-decoration: none;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+a.buy-zone-market-cap:hover,
+a.buy-zone-market-cap:focus-visible {
+  border-color: var(--accent);
+  background: #142635;
+  text-decoration: none;
+}
+
+.buy-zone-market-cap-label {
+  grid-row: 1 / span 2;
+  align-self: center;
+  color: var(--text-muted);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.buy-zone-market-cap strong {
+  font-size: 9px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.buy-zone-market-cap strong.is-usd {
+  color: var(--accent-strong);
+}
+
+.buy-zone-market-cap strong.is-cny {
+  color: var(--buy-zone-aggressive);
+}
+
+.buy-zone-market-cap.is-missing {
+  display: inline-block;
+  color: var(--text-muted);
+  font-size: 8px;
+}
+
 .buy-zone-reference,
 .buy-zone-range {
   font-family: var(--font-mono);

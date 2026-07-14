@@ -42,7 +42,7 @@ AI CapEx Cycle Monitor 将分散的产业信号整理为统一的风险研究框
 - CapEx 增速与云收入增速对比：自动判断两者差值并生成提示
 - 供应链风险：排序、产业链环节筛选、风险等级筛选与移动端横向滚动
 - 12 只重点股票买入区间速览：集中展示 AAOI、SKHY、LITE、兴森科技、深南电路、通富微电、AXTI、ASTS、Intel、Nebius、CoreWeave 与 Corning 的“安全边际、合理主买、激进试仓”研究区间；逐项计算行情相对三档价格带上下限的百分比区间，并支持按相对激进上限的距离从高到低或从低到高排序；点击代码可进入对应详情和行情图
-- 重点标的自动行情：A 股与美股在各自盘中每 30 分钟抓取一次，并在收盘后补抓一次；页面用行情快照判断当前落在哪一档，抓取失败时回退到研究参考价
+- 重点标的自动行情与市值：A 股与美股在各自盘中每 30 分钟抓取一次，并在收盘后补抓一次；每只股票同步显示 TradingView 公司层面总市值，并按自动 USD/CNY 汇率换算为美元和人民币；行情抓取失败时回退到最近有效快照或研究参考价
 - 供应链公司估值观察：以规范化摊薄 EPS × 熊 / 基准 / 牛市 P/E 计算“安全边际、合理买入、激进买入”三档研究价格，并嵌入 TradingView Mini Chart
 - P/E 适用性护栏：亏损或一次性非经营收益主导的公司不会硬算买入价，而会说明原因、替代估值口径与重新启用条件
 - 自动数据巡检：每天 09:23（上海时间）记录 SEC 巡检状态，计划每 4 小时检查一次财报与重大事项申报
@@ -123,7 +123,7 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 | `data/risk-score.json` | 更新时间、周期阶段、综合判断、手动分数与五项风险分数 |
 | `data/hyperscalers.json` | 云巨头季度 CapEx、合计 CapEx 增速与云收入增速 |
 | `data/supply-chain.json` | 供应链公司、经营趋势、资产负债风险与综合等级 |
-| `data/market-quotes.json` | 12 只重点标的最近一次自动行情快照、涨跌幅、行情时间、抓取时间与分市场刷新状态 |
+| `data/market-quotes.json` | 12 只重点标的自动行情、公司层面总市值、USD/CNY 汇率、双市场刷新时间与状态 |
 | `data/valuation-bands.json` | 12 只重点股票的人工研究区间，以及供应链公司的 EPS 口径、熊 / 基准 / 牛市 P/E、适用性判断、假设与来源 |
 | `data/sec-filings-state.json` | SEC accession number 去重状态；避免同一披露被重复加入事件流 |
 | `data/macro.json` | 宏观指标、变化方向、风险等级与周期影响 |
@@ -137,6 +137,7 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 
 - `ticker`、`name`、`segment`：公司与产业链标识
 - `tradingViewSymbol`：TradingView 使用的 `交易所:代码`，例如 `NASDAQ:NVDA`
+- `marketCapSymbol`：仅在市值扫描代码与图表代码不一致时填写覆盖值，例如 SKHY 使用 `NASDAQ:SKHY`
 - `currency`：价格带采用的货币
 - `valuationModel.kind`：使用 `pe` 或 `pe-not-meaningful`，后者不会生成买入价格
 - `valuationModel.eps`：记录 EPS 数值、`accountingBasis`、`periodType`、四季覆盖证据、财务期末、计算过程和 GAAP 对照

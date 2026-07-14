@@ -31,6 +31,17 @@ export const MARKET_CONFIG = Object.freeze({
   }
 });
 
+const MARKET_CAP_COLUMNS = Object.freeze(['name', 'close', 'market_cap_basic', 'currency']);
+const MARKET_DATA_SOURCE = Object.freeze({
+  label: 'Yahoo Finance Chart',
+  homepage: 'https://finance.yahoo.com/',
+  marketCapLabel: 'TradingView Stock Screener',
+  marketCapHomepage: 'https://www.tradingview.com/screener/',
+  fxLabel: 'Yahoo Finance USD/CNY',
+  fxHomepage: 'https://finance.yahoo.com/quote/CNY=X/',
+  dataNotice: '第三方自动行情、市值与汇率可能延迟、缺失或暂时不可用，仅用于与静态研究区间对照，不是实时成交依据。'
+});
+
 function zonedParts(value, timezone) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: timezone,
@@ -84,6 +95,59 @@ function marketIdForEntry(entry) {
   const tradingViewSymbol = String(entry.tradingViewSymbol || '');
   if (entry.currency === 'CNY' || /^(?:SZSE|SSE):/.test(tradingViewSymbol)) return 'cn';
   return 'us';
+}
+
+export function marketCapSymbol(entry) {
+  return String(entry.marketCapSymbol || entry.tradingViewSymbol || '').trim().toUpperCase();
+}
+
+function marketCapRegion(marketId) {
+  if (marketId === 'cn') return 'china';
+  if (marketId === 'us') return 'america';
+  throw new Error(`市值扫描不支持市场：${marketId}`);
+}
+
+export function normalizeMarketCaps(payload, entries, fetchedAt) {
+  const entryBySymbol = new Map(entries.map((entry) => [marketCapSymbol(entry), entry]));
+  const rows = payload && Array.isArray(payload.data) ? payload.data : [];
+  return rows.flatMap((row) => {
+    const symbol = String(row && row.s || '').trim().toUpperCase();
+    const entry = entryBySymbol.get(symbol);
+    const values = row && Array.isArray(row.d) ? row.d : [];
+    const marketCap = Number(values[2]);
+    const currency = String(values[3] || '').toUpperCase();
+    if (!entry || !Number.isFinite(marketCap) || marketCap <= 0 || !['USD', 'CNY'].includes(currency)) {
+      return [];
+    }
+    return [{
+      ticker: entry.ticker,
+      marketCap: Math.round(marketCap),
+      marketCapCurrency: currency,
+      marketCapFetchedAt: fetchedAt,
+      marketCapSourceUrl: `https://www.tradingview.com/symbols/${encodeURIComponent(symbol.replace(':', '-'))}/`
+    }];
+  });
+}
+
+export function normalizeUsdCnyFx(payload, fetchedAt) {
+  const chart = payload && payload.chart;
+  if (chart && chart.error) {
+    throw new Error(`USD/CNY 汇率接口错误：${chart.error.description || chart.error.code || 'unknown'}`);
+  }
+  const result = chart && Array.isArray(chart.result) ? chart.result[0] : null;
+  const meta = result && result.meta;
+  const rate = Number(meta && meta.regularMarketPrice);
+  const quoteEpoch = Number(meta && meta.regularMarketTime);
+  if (!Number.isFinite(rate) || rate <= 0 || !Number.isFinite(quoteEpoch) || quoteEpoch <= 0) {
+    throw new Error('USD/CNY 汇率或时间无效');
+  }
+  return {
+    pair: 'USD/CNY',
+    rate: round(rate, 4),
+    quoteTime: new Date(quoteEpoch * 1000).toISOString(),
+    fetchedAt,
+    sourceUrl: 'https://finance.yahoo.com/quote/CNY=X/'
+  };
 }
 
 export function normalizeQuote(payload, entry, fetchedAt) {
@@ -153,12 +217,69 @@ async function loadPayload(entry, fixtureDirectory) {
   });
 }
 
+async function loadMarketCaps(entries, fixtureDirectory, fetchedAt) {
+  const grouped = new Map();
+  entries.forEach((entry) => {
+    const marketId = marketIdForEntry(entry);
+    const group = grouped.get(marketId) || [];
+    group.push(entry);
+    grouped.set(marketId, group);
+  });
+
+  const normalized = [];
+  for (const [marketId, marketEntries] of grouped) {
+    let payload;
+    if (fixtureDirectory) {
+      payload = JSON.parse(await readFile(path.join(fixtureDirectory, `${marketId}-market-caps.json`), 'utf8'));
+    } else {
+      payload = await fetchJson(`https://scanner.tradingview.com/${marketCapRegion(marketId)}/scan`, {
+        method: 'POST',
+        body: JSON.stringify({
+          symbols: {
+            tickers: marketEntries.map(marketCapSymbol),
+            query: { types: [] }
+          },
+          columns: MARKET_CAP_COLUMNS
+        }),
+        retries: 3,
+        timeoutMs: 20000,
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'Mozilla/5.0 (compatible; AI-CapEx-Cycle-Monitor/1.0)'
+        }
+      });
+    }
+    normalized.push(...normalizeMarketCaps(payload, marketEntries, fetchedAt));
+  }
+  return normalized;
+}
+
+async function loadUsdCnyFx(fixtureDirectory, fetchedAt) {
+  let payload;
+  if (fixtureDirectory) {
+    payload = JSON.parse(await readFile(path.join(fixtureDirectory, 'USD-CNY-chart.json'), 'utf8'));
+  } else {
+    payload = await fetchJson('https://query1.finance.yahoo.com/v8/finance/chart/CNY=X?interval=1m&range=1d', {
+      retries: 3,
+      timeoutMs: 20000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; AI-CapEx-Cycle-Monitor/1.0)',
+        'Accept-Language': 'en-US,en;q=0.8'
+      }
+    });
+  }
+  return normalizeUsdCnyFx(payload, fetchedAt);
+}
+
 function quoteChanged(previous, next) {
   if (!previous) return true;
   return previous.quoteTime !== next.quoteTime
     || previous.price !== next.price
     || previous.previousClose !== next.previousClose
-    || previous.currency !== next.currency;
+    || previous.currency !== next.currency
+    || previous.marketCap !== next.marketCap
+    || previous.marketCapCurrency !== next.marketCapCurrency
+    || previous.marketCapFetchedAt !== next.marketCapFetchedAt;
 }
 
 export async function refreshMarketQuotes(options = {}) {
@@ -186,6 +307,21 @@ export async function refreshMarketQuotes(options = {}) {
   const targetEntries = entries.filter((entry) => targetIds.has(marketIdForEntry(entry)));
   if (!targetEntries.length) throw new Error('没有找到需要刷新的重点标的行情配置。');
 
+  const existingByTicker = new Map((current.quotes || []).map((quote) => [quote.ticker, quote]));
+  let marketCaps = [];
+  try {
+    marketCaps = await loadMarketCaps(targetEntries, fixtureDirectory, checkedAt);
+  } catch (error) {
+    console.warn(`[refresh] 市值抓取失败，继续使用最近有效快照：${error.message}`);
+  }
+  const marketCapByTicker = new Map(marketCaps.map((item) => [item.ticker, item]));
+  let fxSnapshot = current.fx;
+  try {
+    fxSnapshot = await loadUsdCnyFx(fixtureDirectory, checkedAt);
+  } catch (error) {
+    console.warn(`[refresh] USD/CNY 汇率抓取失败，继续使用最近有效快照：${error.message}`);
+  }
+
   const failures = [];
   const stale = [];
   const incoming = [];
@@ -193,6 +329,18 @@ export async function refreshMarketQuotes(options = {}) {
     try {
       const payload = await loadPayload(entry, fixtureDirectory);
       const quote = normalizeQuote(payload, entry, checkedAt);
+      const marketCap = marketCapByTicker.get(entry.ticker) || existingByTicker.get(entry.ticker);
+      if (
+        marketCap
+        && Number.isFinite(Number(marketCap.marketCap))
+        && Number(marketCap.marketCap) > 0
+        && ['USD', 'CNY'].includes(marketCap.marketCapCurrency)
+      ) {
+        quote.marketCap = Number(marketCap.marketCap);
+        quote.marketCapCurrency = marketCap.marketCapCurrency;
+        quote.marketCapFetchedAt = marketCap.marketCapFetchedAt;
+        quote.marketCapSourceUrl = marketCap.marketCapSourceUrl;
+      }
       const target = targets.find((item) => item.marketId === quote.market);
       if (!force && quote.quoteDate !== target.sessionDate) {
         stale.push(entry.ticker);
@@ -215,9 +363,12 @@ export async function refreshMarketQuotes(options = {}) {
     quote.fetchedAt = completedAt;
   });
 
-  const existingByTicker = new Map((current.quotes || []).map((quote) => [quote.ticker, quote]));
   const updates = incoming.filter((quote) => quoteChanged(existingByTicker.get(quote.ticker), quote));
-  if (!updates.length) {
+  const fxChanged = !current.fx
+    || !fxSnapshot
+    || current.fx.rate !== fxSnapshot.rate
+    || current.fx.quoteTime !== fxSnapshot.quoteTime;
+  if (!updates.length && !fxChanged) {
     await setActionOutput('changed', false);
     await setActionOutput('markets', targets.map((target) => target.marketId).join(','));
     await setActionOutput('updated_tickers', '');
@@ -228,8 +379,11 @@ export async function refreshMarketQuotes(options = {}) {
   updates.forEach((quote) => existingByTicker.set(quote.ticker, quote));
   const entryOrder = new Map(entries.map((entry, index) => [entry.ticker, index]));
   const next = structuredClone(current);
+  next.version = 2;
   next.updatedAt = dateOnly(completedAt);
   next.fetchedAt = completedAt;
+  next.source = { ...next.source, ...MARKET_DATA_SOURCE };
+  next.fx = fxSnapshot;
   next.quotes = Array.from(existingByTicker.values()).sort(
     (left, right) => (entryOrder.get(left.ticker) ?? 999) - (entryOrder.get(right.ticker) ?? 999)
   );
