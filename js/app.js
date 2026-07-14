@@ -708,7 +708,7 @@
       const shownPrice = quote ? quote.price : company.referencePrice;
       const distanceMetrics = buyZoneDistanceMetrics(company, shownPrice);
       const distanceMarkup = distanceMetrics.map((metric) => `
-        <span class="buy-zone-distance ${escapeHTML(buyZoneDistanceClass(metric.distance))}">
+        <span class="buy-zone-distance is-${escapeHTML(metric.key)}-tier ${escapeHTML(buyZoneDistanceClass(metric.distance))}">
           <em>${escapeHTML(metric.label)}</em>
           <strong>${escapeHTML(formatBuyZoneDistance(metric.distance))}</strong>
         </span>

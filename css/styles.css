@@ -1033,6 +1033,15 @@ tbody tr:hover {
 }
 
 .buy-zones-card {
+  --buy-zone-safety: #7ef1c1;
+  --buy-zone-safety-border: #3fd4a2;
+  --buy-zone-safety-bg: #102e29;
+  --buy-zone-reasonable: #b9a8ff;
+  --buy-zone-reasonable-border: #8f73f4;
+  --buy-zone-reasonable-bg: #241f3d;
+  --buy-zone-aggressive: #ff9dcc;
+  --buy-zone-aggressive-border: #ec6fab;
+  --buy-zone-aggressive-bg: #3a1d31;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -1121,15 +1130,15 @@ tbody tr:hover {
 }
 
 .buy-zones-table thead .zone-safety-heading {
-  color: var(--green);
+  color: var(--buy-zone-safety);
 }
 
 .buy-zones-table thead .zone-reasonable-heading {
-  color: var(--accent-strong);
+  color: var(--buy-zone-reasonable);
 }
 
 .buy-zones-table thead .zone-aggressive-heading {
-  color: var(--yellow);
+  color: var(--buy-zone-aggressive);
 }
 
 .buy-zone-sort-button {
@@ -1297,21 +1306,24 @@ a.buy-zone-reference:focus-visible {
 }
 
 .buy-zone-range.is-safety {
-  border-color: #285c48;
-  background: var(--green-bg);
-  color: var(--green);
+  border-color: var(--buy-zone-safety-border);
+  background: var(--buy-zone-safety-bg);
+  color: var(--buy-zone-safety);
+  box-shadow: 0 0 14px rgb(63 212 162 / 10%), inset 0 1px rgb(255 255 255 / 7%);
 }
 
 .buy-zone-range.is-reasonable {
-  border-color: #2c646a;
-  background: var(--accent-muted);
-  color: var(--accent-strong);
+  border-color: var(--buy-zone-reasonable-border);
+  background: var(--buy-zone-reasonable-bg);
+  color: var(--buy-zone-reasonable);
+  box-shadow: 0 0 14px rgb(143 115 244 / 12%), inset 0 1px rgb(255 255 255 / 7%);
 }
 
 .buy-zone-range.is-aggressive {
-  border-color: #715e2d;
-  background: var(--yellow-bg);
-  color: var(--yellow);
+  border-color: var(--buy-zone-aggressive-border);
+  background: var(--buy-zone-aggressive-bg);
+  color: var(--buy-zone-aggressive);
+  box-shadow: 0 0 14px rgb(236 111 171 / 12%), inset 0 1px rgb(255 255 255 / 7%);
 }
 
 .buy-zone-status {
@@ -1330,22 +1342,22 @@ a.buy-zone-reference:focus-visible {
 }
 
 .buy-zone-status.is-safety {
-  border-color: #285c48;
-  background: var(--green-bg);
-  color: var(--green);
+  border-color: var(--buy-zone-safety-border);
+  background: var(--buy-zone-safety-bg);
+  color: var(--buy-zone-safety);
 }
 
 .buy-zone-status.is-reasonable {
-  border-color: #2c646a;
-  background: var(--accent-muted);
-  color: var(--accent-strong);
+  border-color: var(--buy-zone-reasonable-border);
+  background: var(--buy-zone-reasonable-bg);
+  color: var(--buy-zone-reasonable);
 }
 
 .buy-zone-status.is-aggressive,
 .buy-zone-status.is-between {
-  border-color: #715e2d;
-  background: var(--yellow-bg);
-  color: var(--yellow);
+  border-color: var(--buy-zone-aggressive-border);
+  background: var(--buy-zone-aggressive-bg);
+  color: var(--buy-zone-aggressive);
 }
 
 .buy-zone-status.is-wait,
@@ -1386,20 +1398,49 @@ a.buy-zone-reference:focus-visible {
   font-weight: 800;
 }
 
-.buy-zone-distance.is-above {
-  border-color: #7a4931;
-  background: var(--orange-bg);
-  color: #ffbd86;
+.buy-zone-distance.is-safety-tier {
+  border-color: var(--buy-zone-safety-border);
+  background: var(--buy-zone-safety-bg);
+  color: var(--buy-zone-safety);
+  box-shadow: 0 0 14px rgb(63 212 162 / 10%), inset 0 1px rgb(255 255 255 / 7%);
+}
+
+.buy-zone-distance.is-reasonable-tier {
+  border-color: var(--buy-zone-reasonable-border);
+  background: var(--buy-zone-reasonable-bg);
+  color: var(--buy-zone-reasonable);
+  box-shadow: 0 0 14px rgb(143 115 244 / 12%), inset 0 1px rgb(255 255 255 / 7%);
+}
+
+.buy-zone-distance.is-aggressive-tier {
+  border-color: var(--buy-zone-aggressive-border);
+  background: var(--buy-zone-aggressive-bg);
+  color: var(--buy-zone-aggressive);
+  box-shadow: 0 0 14px rgb(236 111 171 / 12%), inset 0 1px rgb(255 255 255 / 7%);
+}
+
+.buy-zone-distance.is-safety-tier em {
+  color: #b8f9df;
+}
+
+.buy-zone-distance.is-reasonable-tier em {
+  color: #d7ceff;
+}
+
+.buy-zone-distance.is-aggressive-tier em {
+  color: #ffc7e2;
+}
+
+.buy-zone-distance.is-above strong {
+  text-shadow: 0 0 9px currentColor;
 }
 
 .buy-zone-distance.is-below {
-  border-color: #285c48;
-  background: var(--green-bg);
-  color: var(--green);
+  filter: saturate(0.82);
 }
 
-.buy-zone-distance.is-at {
-  color: var(--gray);
+.buy-zone-distance.is-at strong {
+  color: var(--text-secondary);
 }
 
 .buy-zones-disclosure {
