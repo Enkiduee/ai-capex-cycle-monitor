@@ -320,7 +320,7 @@
     "valuationRangeMode": "P/E 情景仅在财报与重大事件后人工复核更新",
     "lastDailyCheckAt": "2026-07-17T04:30:57.316Z",
     "lastDailySecCheckAt": "2026-07-17T04:30:57.316Z",
-    "lastEventDetectedAt": "2026-07-17T16:03:12.606Z"
+    "lastEventDetectedAt": "2026-07-17T23:36:41.003Z"
   },
   "companies": [
     {
@@ -902,7 +902,7 @@
       "reviewedAt": "2026-07-12",
       "reviewedBy": "项目估值研究",
       "reviewEvidenceUrl": "https://assets.nebius.com/assets/6fc0ea6c-0884-4a1f-bed8-1f797eb9628f/Financial%20results_Q1%202026.pdf",
-      "reviewReason": "发现新的 SEC 6-K 披露（2026-07-17），现有 EPS 与 P/E 情景已标记为待人工复核。",
+      "reviewReason": "发现新的 SEC 6-K/A 披露（2026-07-17），现有 EPS 与 P/E 情景已标记为待人工复核。",
       "currency": "USD",
       "confidence": "not_assessed",
       "valuationModel": {
@@ -945,10 +945,10 @@
         }
       ],
       "latestSecFiling": {
-        "form": "6-K",
+        "form": "6-K/A",
         "filingDate": "2026-07-17",
-        "accessionNumber": "0001104659-26-084452",
-        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000110465926084452/0001104659-26-084452-index.html"
+        "accessionNumber": "0001104659-26-084606",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000110465926084606/0001104659-26-084606-index.html"
       }
     }
   ]

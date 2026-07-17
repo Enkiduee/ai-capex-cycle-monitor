@@ -6,6 +6,27 @@
   "riskScoreChangeMeaning": "正数表示风险上升，负数表示风险下降。",
   "events": [
     {
+      "id": "sec-nbis-0001104659-26-084606",
+      "date": "2026-07-17",
+      "entity": "Nebius Group",
+      "title": "Nebius Group 提交 6-K/A 境外发行人披露",
+      "type": "境外发行人披露",
+      "sentiment": "neutral",
+      "affectedSegments": [
+        "Neocloud"
+      ],
+      "riskScoreChange": 0,
+      "description": "SEC EDGAR 于 2026-07-17 收录 6-K/A。系统仅记录官方披露并将 EPS 与 P/E 情景标记为待复核，不自动判断利好利空，也不自动调整风险分数或估值价格。",
+      "sourceName": "SEC EDGAR 官方披露 · 6-K/A",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000110465926084606/0001104659-26-084606-index.html",
+      "isAutomated": true,
+      "filingKind": "disclosure",
+      "form": "6-K/A",
+      "accessionNumber": "0001104659-26-084606",
+      "acceptedAt": "2026-07-17T16:01:04.000Z",
+      "secItems": []
+    },
+    {
       "id": "sec-nbis-0001104659-26-084452",
       "date": "2026-07-17",
       "entity": "Nebius Group",
@@ -225,5 +246,5 @@
       "sourceUrl": "https://investors.broadcom.com/"
     }
   ],
-  "lastAutomatedEventAt": "2026-07-17T16:03:12.606Z"
+  "lastAutomatedEventAt": "2026-07-17T23:36:41.003Z"
 }
