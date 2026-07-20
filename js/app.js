@@ -593,18 +593,10 @@
   function formatCompactMarketCap(value, currency) {
     const amount = toFiniteNumber(value);
     if (amount === null || amount <= 0) return '—';
-    const units = [
-      { threshold: 1e12, suffix: '万亿' },
-      { threshold: 1e11, suffix: '千亿' },
-      { threshold: 1e10, suffix: '百亿' },
-      { threshold: 1e8, suffix: '亿' },
-      { threshold: 1e4, suffix: '万' }
-    ];
-    const unit = units.find((item) => amount >= item.threshold) || { threshold: 1, suffix: '元' };
-    const scaled = amount / unit.threshold;
-    const decimals = scaled >= 100 ? 1 : 2;
+    const scaled = amount / 1e8;
+    const decimals = scaled >= 100 ? 0 : scaled >= 10 ? 1 : 2;
     const symbol = currency === 'CNY' ? '¥' : '$';
-    return `${currency} ${symbol}${formatNumber(scaled, decimals)}${unit.suffix}`;
+    return `${currency} ${symbol}${formatNumber(scaled, decimals)}亿`;
   }
 
   function marketCapCurrencyValues(quote) {
@@ -663,6 +655,57 @@
       return { label: '低于安全区间 · 先复核', className: 'is-review' };
     }
     return { label: '处于区间空档', className: 'is-between' };
+  }
+
+  function buyZoneDailyMarker(company, price) {
+    const currentPrice = toFiniteNumber(price);
+    if (currentPrice === null || currentPrice <= 0) return null;
+    const tiers = [
+      {
+        key: 'safety',
+        label: '高安全边际价内',
+        shortLabel: '高安全边际',
+        image: './assets/buy-zone-safety.png',
+        range: company && company.safety
+      },
+      {
+        key: 'reasonable',
+        label: '合理主买价内',
+        shortLabel: '合理主买',
+        image: './assets/buy-zone-reasonable.png',
+        range: company && company.reasonable
+      },
+      {
+        key: 'aggressive',
+        label: '激进试仓价内',
+        shortLabel: '激进试仓',
+        image: './assets/buy-zone-aggressive.png',
+        range: company && company.aggressive
+      }
+    ];
+    return tiers.find((tier) => {
+      const upperBound = toFiniteNumber(tier.range && tier.range.high);
+      return upperBound !== null && upperBound > 0 && currentPrice <= upperBound;
+    }) || null;
+  }
+
+  function buyZoneDailyMarkerMarkup(company, price) {
+    const marker = buyZoneDailyMarker(company, price);
+    if (!marker) return '';
+    const upperBound = toFiniteNumber(marker.range && marker.range.high);
+    const currency = safeCurrency(company && company.currency, 'USD');
+    const detail = `当前价不高于${marker.shortLabel}上限 ${formatBuyZonePrice(upperBound, currency, 2)}`;
+    const accessibleLabel = `每日价格图案：${marker.label}；${detail}；仅作研究区间提示`;
+    return `
+      <span class="buy-zone-daily-marker is-${escapeHTML(marker.key)}" aria-label="${escapeHTML(accessibleLabel)}">
+        <img src="${escapeHTML(marker.image)}" alt="" width="56" height="56" loading="lazy" decoding="async" aria-hidden="true">
+        <span class="buy-zone-daily-marker-copy">
+          <em>每日价格图案</em>
+          <strong>${escapeHTML(marker.label)}</strong>
+          <small>${escapeHTML(detail)}</small>
+        </span>
+      </span>
+    `;
   }
 
   function buyZoneDistanceMetrics(company, price) {
@@ -809,6 +852,7 @@
           <td><span class="buy-zone-range is-reasonable">${escapeHTML(formatBuyZoneRange(company.reasonable, currency))}</span></td>
           <td><span class="buy-zone-range is-aggressive">${escapeHTML(formatBuyZoneRange(company.aggressive, currency))}</span></td>
           <td>
+            ${buyZoneDailyMarkerMarkup(company, quote && quote.price)}
             <span class="buy-zone-status ${escapeHTML(status.className)}">${escapeHTML(status.label)}</span>
             <span class="buy-zone-distance-grid" aria-label="当前行情相对三档价格区间两端的百分比区间">${distanceMarkup}</span>
             <span class="buy-zone-note">${escapeHTML(textValue(company.view, '等待补充研究备注。'))}</span>
@@ -856,7 +900,7 @@
         state.data.marketQuotes && state.data.marketQuotes.source && state.data.marketQuotes.source.dataNotice,
         '自动行情可能延迟或暂时不可用。'
       );
-      disclosure.innerHTML = `<strong>区间与行情边界</strong><p>每个百分比区间由当前行情分别对照对应价格带的上、下限计算；表头排序仍以相对激进区间上限的距离为统一口径。总市值采用 TradingView 公司层面口径，ADR 也按对应公司的整体市值显示；USD 与 CNY 双币值使用自动 USD/CNY 汇率换算。${escapeHTML(textValue(snapshot.notice, '静态研究价格带不构成投资建议。'))} ${escapeHTML(quoteNotice)} 行情更新不会移动研究区间，也不会触发交易。</p>`;
+      disclosure.innerHTML = `<strong>区间与行情边界</strong><p>每日价格图案按当前价不高于安全、合理或激进区间上限分档，只显示当前满足的最保守一档；低于安全区间下限时仍须先复核基本面。每个百分比区间由当前行情分别对照对应价格带的上、下限计算；表头排序仍以相对激进区间上限的距离为统一口径。总市值采用 TradingView 公司层面口径，ADR 也按对应公司的整体市值显示；USD 与 CNY 双币值使用自动 USD/CNY 汇率换算。${escapeHTML(textValue(snapshot.notice, '静态研究价格带不构成投资建议。'))} ${escapeHTML(quoteNotice)} 行情更新不会移动研究区间，也不会触发交易。</p>`;
     }
   }
 
@@ -1399,6 +1443,13 @@
 
   function compareSupplyRows(left, right, key) {
     const riskKeys = ['inventoryRisk', 'receivablesRisk', 'debtRisk', 'customerConcentration', 'overallRisk'];
+    if (key === 'latestQuarterGrossMargin') {
+      const leftMargin = latestQuarterGrossMargin(left);
+      const rightMargin = latestQuarterGrossMargin(right);
+      if (leftMargin === null) return rightMargin === null ? 0 : -1;
+      if (rightMargin === null) return 1;
+      return leftMargin - rightMargin;
+    }
     if (key === 'overallRisk') {
       return Number(left.riskScore || 0) - Number(right.riskScore || 0);
     }
@@ -1413,6 +1464,51 @@
       return String(left[key] || '').localeCompare(String(right[key] || ''));
     }
     return String(left[key] || '').localeCompare(String(right[key] || ''), 'zh-CN', { numeric: true });
+  }
+
+  function latestQuarterGrossMargin(company) {
+    const quarter = company && company.latestQuarter;
+    const grossProfit = toFiniteNumber(quarter && quarter.grossProfitUsdMillions);
+    const revenue = toFiniteNumber(quarter && quarter.revenueUsdMillions);
+    if (grossProfit === null || revenue === null || revenue <= 0) return null;
+    return (grossProfit / revenue) * 100;
+  }
+
+  function formatUsdMillionsAsYi(value) {
+    const usdMillions = toFiniteNumber(value);
+    if (usdMillions === null) return '—';
+    const yiUsd = usdMillions / 100;
+    const absoluteValue = Math.abs(yiUsd);
+    const decimals = absoluteValue >= 100 ? 0 : absoluteValue >= 10 ? 1 : absoluteValue >= 1 ? 2 : 3;
+    return `${formatNumber(yiUsd, decimals)} 亿美元`;
+  }
+
+  function renderLatestQuarterGrossMargin(company) {
+    const quarter = company && company.latestQuarter;
+    const margin = latestQuarterGrossMargin(company);
+    if (!quarter || margin === null) {
+      return '<span class="financial-metric is-unavailable">—<small>待披露</small></span>';
+    }
+
+    const fiscalPeriod = textValue(quarter.fiscalPeriod, '最新季度');
+    const periodEnd = textValue(quarter.periodEnd, '');
+    const grossProfit = toFiniteNumber(quarter.grossProfitUsdMillions);
+    const revenue = toFiniteNumber(quarter.revenueUsdMillions);
+    const basis = textValue(quarter.basis, '毛利润 ÷ 营收');
+    const form = textValue(quarter.form, '财报');
+    const filedAt = textValue(quarter.filedAt, '');
+    const sourceUrl = textValue(quarter.sourceUrl, '');
+    const filingDetail = filedAt ? `；SEC ${form} 申报于 ${formatDate(filedAt)}` : `；SEC ${form}`;
+    const detail = `毛利率 ${formatNumber(margin, 1, '%')}；${basis}；毛利润 ${formatUsdMillionsAsYi(grossProfit)} / 营收 ${formatUsdMillionsAsYi(revenue)}${filingDetail}`;
+    const periodMarkup = periodEnd
+      ? `${escapeHTML(fiscalPeriod)} · <time datetime="${escapeHTML(periodEnd)}">${escapeHTML(formatDate(periodEnd))}</time>`
+      : escapeHTML(fiscalPeriod);
+    const content = `<strong>${escapeHTML(formatNumber(margin, 1, '%'))}</strong><small>${periodMarkup}</small>`;
+
+    if (!/^https:\/\//.test(sourceUrl)) {
+      return `<span class="financial-metric" title="${escapeHTML(detail)}">${content}</span>`;
+    }
+    return `<a class="financial-metric" href="${escapeHTML(sourceUrl)}" target="_blank" rel="noopener noreferrer" title="${escapeHTML(detail)}" aria-label="${escapeHTML(`${company.name} ${fiscalPeriod} 毛利率 ${formatNumber(margin, 1, '%')}，打开 SEC 财报`)}">${content}</a>`;
   }
 
   function updateSortHeaders() {
@@ -1450,7 +1546,7 @@
     updateSortHeaders();
 
     if (rows.length === 0) {
-      byId('supply-chain-body').innerHTML = '<tr><td colspan="11" class="table-empty">当前筛选条件下没有公司，请调整筛选器。</td></tr>';
+      byId('supply-chain-body').innerHTML = '<tr><td colspan="12" class="table-empty">当前筛选条件下没有公司，请调整筛选器。</td></tr>';
       return;
     }
 
@@ -1461,6 +1557,7 @@
         <td>${escapeHTML(company.segment)}</td>
         <td><span class="${trendClass(company.revenueTrend)}">${escapeHTML(company.revenueTrend)}</span></td>
         <td><span class="${trendClass(company.grossMarginTrend)}">${escapeHTML(company.grossMarginTrend)}</span></td>
+        <td>${renderLatestQuarterGrossMargin(company)}</td>
         <td>${renderRiskBadge(company.inventoryRisk)}</td>
         <td>${renderRiskBadge(company.receivablesRisk)}</td>
         <td>${renderRiskBadge(company.debtRisk)}</td>
@@ -1631,7 +1728,7 @@
       }
       byId('growth-diagnostic').innerHTML = `<span class="diagnostic-icon">!</span><div><strong>增速诊断不可用</strong><p>${escapeHTML(message)}</p></div>`;
     } else if (key === 'supplyChain') {
-      byId('supply-chain-body').innerHTML = `<tr><td colspan="11" class="table-empty">${escapeHTML(message)}</td></tr>`;
+      byId('supply-chain-body').innerHTML = `<tr><td colspan="12" class="table-empty">${escapeHTML(message)}</td></tr>`;
       api.renderSectionError('supply-chain-heatmap', message);
     } else if (key === 'marketQuotes') {
       // 行情快照失败时，估值模块会自动回退到研究参考价。
@@ -1712,7 +1809,7 @@
           state.supply.sortDirection = state.supply.sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
           state.supply.sortKey = key;
-          state.supply.sortDirection = ['overallRisk', 'inventoryRisk', 'receivablesRisk', 'debtRisk', 'customerConcentration', 'updatedAt'].includes(key) ? 'desc' : 'asc';
+          state.supply.sortDirection = ['latestQuarterGrossMargin', 'overallRisk', 'inventoryRisk', 'receivablesRisk', 'debtRisk', 'customerConcentration', 'updatedAt'].includes(key) ? 'desc' : 'asc';
         }
         renderSupplyTable();
       });

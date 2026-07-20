@@ -161,7 +161,7 @@
               <p class="panel-kicker">Quarterly capital expenditure</p>
               <h2>云巨头季度资本开支趋势</h2>
             </div>
-            <span class="unit-label">单位：十亿美元</span>
+            <span class="unit-label">单位：亿美元</span>
           </div>
           <div
             id="capex-chart"
@@ -210,7 +210,7 @@
             <h1 id="supply-chain-title" tabindex="-1">供应链风险与估值</h1>
             <p>从订单、毛利率、库存、应收、杠杆与客户集中度观察脆弱环节。</p>
           </div>
-          <span class="demo-chip">风险表：演示 · 估值：财报复核</span>
+          <span class="demo-chip">风险趋势：演示 · 最新季毛利率：SEC</span>
         </div>
 
         <article class="table-card">
@@ -237,7 +237,7 @@
 
           <div class="table-scroll" tabindex="0" aria-label="可横向滚动的供应链风险表">
             <table>
-              <caption>AI 基础设施供应链风险监测表（演示数据）</caption>
+              <caption>AI 基础设施供应链风险监测表；风险趋势为演示数据，最新季度毛利率来自 SEC 财报</caption>
               <thead>
                 <tr>
                   <th scope="col"><button class="sort-button" type="button" data-sort="ticker">代码<span aria-hidden="true">↕</span></button></th>
@@ -245,6 +245,7 @@
                   <th scope="col"><button class="sort-button" type="button" data-sort="segment">产业链环节<span aria-hidden="true">↕</span></button></th>
                   <th scope="col"><button class="sort-button" type="button" data-sort="revenueTrend">收入趋势<span aria-hidden="true">↕</span></button></th>
                   <th scope="col"><button class="sort-button" type="button" data-sort="grossMarginTrend">毛利率趋势<span aria-hidden="true">↕</span></button></th>
+                  <th scope="col"><button class="sort-button" type="button" data-sort="latestQuarterGrossMargin">最新季毛利率<span aria-hidden="true">↕</span></button></th>
                   <th scope="col"><button class="sort-button" type="button" data-sort="inventoryRisk">库存<span aria-hidden="true">↕</span></button></th>
                   <th scope="col"><button class="sort-button" type="button" data-sort="receivablesRisk">应收<span aria-hidden="true">↕</span></button></th>
                   <th scope="col"><button class="sort-button" type="button" data-sort="debtRisk">负债<span aria-hidden="true">↕</span></button></th>
@@ -254,10 +255,13 @@
                 </tr>
               </thead>
               <tbody id="supply-chain-body">
-                <tr><td colspan="11" class="table-empty">正在加载供应链数据…</td></tr>
+                <tr><td colspan="12" class="table-empty">正在加载供应链数据…</td></tr>
               </tbody>
             </table>
           </div>
+          <p class="table-footnote">
+            最新季毛利率 = GAAP 毛利润 ÷ 营收；未单列毛利润时以（营收 − 营收成本）÷ 营收推导。财年季度以公司口径为准，点击数值可核验 SEC 原始财报。
+          </p>
         </article>
 
         <div class="subsection-heading valuation-heading">
@@ -274,6 +278,11 @@
               <p class="panel-kicker">Conversation research snapshot</p>
               <h3>12 只 AI 产业链股票买入区间速览</h3>
               <p id="buy-zones-summary">正在读取关联研究对话中的价格带…</p>
+              <div class="buy-zone-marker-legend" aria-label="每日价格图案说明">
+                <span class="is-safety"><img src="./assets/buy-zone-safety.png" alt="" width="30" height="30" decoding="async" aria-hidden="true">高安全边际</span>
+                <span class="is-reasonable"><img src="./assets/buy-zone-reasonable.png" alt="" width="30" height="30" decoding="async" aria-hidden="true">合理主买</span>
+                <span class="is-aggressive"><img src="./assets/buy-zone-aggressive.png" alt="" width="30" height="30" decoding="async" aria-hidden="true">激进试仓</span>
+              </div>
             </div>
             <div class="buy-zones-meta" aria-label="区间数据状态">
               <span class="demo-chip">自动行情 + 静态区间</span>
@@ -312,7 +321,7 @@
 
           <aside id="buy-zones-disclosure" class="buy-zones-disclosure" role="note">
             <strong>区间与行情边界</strong>
-            <p>每个百分比区间分别对照价格带的上、下限；总市值采用公司层面口径，并按自动 USD/CNY 汇率同时显示美元和人民币。区间、行情、市值及汇率均可能存在口径差异或延迟。</p>
+            <p>三种卡通图案分别代表当前价不高于安全、合理或激进区间上限，仅显示最保守一档，不构成个性化投资建议。每个百分比区间分别对照价格带的上、下限；总市值采用公司层面口径，并按自动 USD/CNY 汇率同时显示美元和人民币。区间、行情、市值及汇率均可能存在口径差异或延迟。</p>
           </aside>
         </article>
 

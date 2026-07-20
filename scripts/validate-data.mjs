@@ -12,6 +12,7 @@ const files = [
 
 const payloads = Object.fromEntries(await Promise.all(files.map(async (file) => [file, await readJson(file)])));
 const supply = payloads['data/supply-chain.json'];
+const hyperscalers = payloads['data/hyperscalers.json'];
 const marketQuotes = payloads['data/market-quotes.json'];
 const valuation = payloads['data/valuation-bands.json'];
 const events = payloads['data/events.json'];
@@ -38,10 +39,38 @@ for (const [file, payload] of Object.entries(payloads)) {
   assert(validDate(payload.updatedAt), `${file}.updatedAt 必须是 YYYY-MM-DD`);
 }
 
+assert(hyperscalers.units && hyperscalers.units.capex === '亿美元', '云巨头 CapEx 必须以亿美元为单位');
+assert(!/(?:十|百|千|万)亿|(?:十|百|千)万/.test(JSON.stringify(payloads)), '数据文本不能使用复合中文数量级');
+
 const supplyTickers = (supply.companies || []).map((company) => company.ticker);
 const valuationTickers = (valuation.companies || []).map((company) => company.ticker);
 assert(JSON.stringify(supplyTickers) === JSON.stringify(valuationTickers), '供应链与估值公司的 ticker/顺序必须完全一致');
 assert(new Set(valuationTickers).size === valuationTickers.length, '估值 ticker 不能重复');
+for (const company of supply.companies || []) {
+  const ticker = String(company && company.ticker || '');
+  const quarter = company && company.latestQuarter;
+  assert(quarter && typeof quarter === 'object' && !Array.isArray(quarter), `${ticker}.latestQuarter 必须是对象`);
+  assert(typeof (quarter && quarter.fiscalPeriod) === 'string' && quarter.fiscalPeriod.trim(), `${ticker}.latestQuarter.fiscalPeriod 不能为空`);
+  assert(validDate(quarter && quarter.periodEnd), `${ticker}.latestQuarter.periodEnd 无效`);
+  assert(validDate(quarter && quarter.filedAt), `${ticker}.latestQuarter.filedAt 无效`);
+  assert(String(quarter && quarter.filedAt) >= String(quarter && quarter.periodEnd), `${ticker}.latestQuarter.filedAt 不能早于财季截止日`);
+  assert(String(quarter && quarter.filedAt) <= String(supply.updatedAt), `${ticker}.latestQuarter.filedAt 不能晚于数据更新时间`);
+  assert(['10-Q', '10-K', '6-K', '20-F'].includes(quarter && quarter.form), `${ticker}.latestQuarter.form 无效`);
+  const grossProfit = Number(quarter && quarter.grossProfitUsdMillions);
+  const revenue = Number(quarter && quarter.revenueUsdMillions);
+  assert(Number.isFinite(grossProfit), `${ticker}.latestQuarter.grossProfitUsdMillions 必须是有限数值`);
+  assert(Number.isFinite(revenue) && revenue > 0, `${ticker}.latestQuarter.revenueUsdMillions 必须大于 0`);
+  const grossMargin = (grossProfit / revenue) * 100;
+  assert(Number.isFinite(grossMargin) && grossMargin <= 100 && grossMargin > -500, `${ticker} 最新季度毛利率超出合理校验范围`);
+  assert(typeof (quarter && quarter.basis) === 'string' && quarter.basis.trim(), `${ticker}.latestQuarter.basis 不能为空`);
+  try {
+    const sourceUrl = new URL(quarter && quarter.sourceUrl);
+    assert(sourceUrl.protocol === 'https:' && sourceUrl.hostname === 'www.sec.gov', `${ticker}.latestQuarter.sourceUrl 必须指向 SEC HTTPS 页面`);
+    assert(sourceUrl.pathname.startsWith('/Archives/edgar/data/'), `${ticker}.latestQuarter.sourceUrl 必须指向 SEC EDGAR 申报文件`);
+  } catch (error) {
+    errors.push(`${ticker}.latestQuarter.sourceUrl 无效`);
+  }
+}
 assert(valuation.methodologyVersion === 'pe-cycle-v1', '估值方法版本必须为 pe-cycle-v1');
 const safetyDiscount = Number(valuation.methodology && valuation.methodology.safetyDiscount);
 assert(Number.isFinite(safetyDiscount) && safetyDiscount > 0 && safetyDiscount < 1, '估值安全边际折扣必须在 0..1 之间');

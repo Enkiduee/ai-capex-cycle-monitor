@@ -914,7 +914,7 @@
           "periodEnd": "2026-03-31",
           "periodType": "Q",
           "calculation": "公司披露 Q1 2026 GAAP 摊薄 EPS 2.11",
-          "gaapComparison": "Q1 投资重估收益 780.6 百万美元高于 621.2 百万美元净利润；调整后净亏损 100.3 百万美元。"
+          "gaapComparison": "Q1 投资重估收益 7.806 亿美元高于 6.212 亿美元净利润；调整后净亏损 1.003 亿美元。"
         },
         "notMeaningfulReason": "表面 EPS 为正，但利润被不可重复的非经营投资重估主导，P/E 在经济上失真。",
         "alternativeMetric": "采用 AI 云前瞻 EV/Sales，并对现金、债务、租赁和非经营投资做分部估值与折价。",

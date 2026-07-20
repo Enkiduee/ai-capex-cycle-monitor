@@ -122,7 +122,7 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 | --- | --- |
 | `data/risk-score.json` | 更新时间、周期阶段、综合判断、手动分数与五项风险分数 |
 | `data/hyperscalers.json` | 云巨头季度 CapEx、合计 CapEx 增速与云收入增速 |
-| `data/supply-chain.json` | 供应链公司、经营趋势、资产负债风险与综合等级 |
+| `data/supply-chain.json` | 供应链公司、经营趋势、资产负债风险、综合等级，以及由 SEC 财报行项目计算的最新季度毛利率 |
 | `data/market-quotes.json` | 12 只重点标的自动行情、公司层面总市值、USD/CNY 汇率、双市场刷新时间与状态 |
 | `data/valuation-bands.json` | 12 只重点股票的人工研究区间，以及供应链公司的 EPS 口径、熊 / 基准 / 牛市 P/E、适用性判断、假设与来源 |
 | `data/sec-filings-state.json` | SEC accession number 去重状态；避免同一披露被重复加入事件流 |
@@ -130,6 +130,8 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 | `data/events.json` | 重大事件、情绪、影响环节、风险分数变化与来源 |
 
 风险、CapEx、宏观等首版 JSON 仍包含 `"isDemoData": true`；估值文件已使用 `"isDemoData": false`，但其中 P/E 倍数依然是带主观判断的研究情景。更新任何数据时都应维护 `updatedAt` 和来源信息。不要将需要保密的 API Key 或凭证写入 JSON、JavaScript 或 Git 历史。
+
+`data/supply-chain.json` 中的风险趋势仍是演示判断，但每家公司 `latestQuarter` 下的 `grossProfitUsdMillions`、`revenueUsdMillions`、财季和 SEC 链接来自最新已披露财报。前端按 `grossProfitUsdMillions / revenueUsdMillions` 计算毛利率；若财报未直接列示毛利润，则 JSON 的 `basis` 必须说明由营收与营收成本推导，或由全年与累计季度数据相减推导。
 
 ### 🎯 编辑估值观察数据
 

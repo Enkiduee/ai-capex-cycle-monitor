@@ -404,7 +404,7 @@
   }
 
   function buildCapexOption(data, quarters, companies) {
-    const unit = getUnit(data, 'capex', '十亿美元');
+    const unit = getUnit(data, 'capex', '亿美元');
     const series = companies.map(function (company, index) {
       return Object.assign(commonSeriesStyle(CAPEX_COLORS[index % CAPEX_COLORS.length]), {
         name: company.name,
