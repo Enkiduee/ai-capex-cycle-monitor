@@ -1160,6 +1160,11 @@ a.financial-metric:focus-visible strong {
   color: var(--buy-zone-aggressive);
 }
 
+.buy-zone-marker-legend .is-wait {
+  border-color: #d9aa3f;
+  color: #ffd36a;
+}
+
 .buy-zones-meta {
   display: flex;
   align-items: center;
@@ -1567,6 +1572,12 @@ a.buy-zone-reference:focus-visible {
   border-color: var(--buy-zone-aggressive-border);
   background: linear-gradient(120deg, var(--buy-zone-aggressive-bg), #101c27 76%);
   color: var(--buy-zone-aggressive);
+}
+
+.buy-zone-daily-marker.is-wait {
+  border-color: #d9aa3f;
+  background: linear-gradient(120deg, #342b13, #101c27 76%);
+  color: #ffd36a;
 }
 
 .buy-zone-distance-grid {

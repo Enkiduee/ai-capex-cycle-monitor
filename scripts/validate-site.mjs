@@ -93,9 +93,9 @@ assert(html.includes('id="buy-zones-sort-button"'), '买入区间速览必须提
 assert(app.includes('renderBuyZones(data)'), '估值页面必须从统一数据源渲染买入区间速览');
 assert(app.includes('buyZoneDistanceMetrics'), '买入区间速览必须计算相对三档价格区间两端的百分比距离');
 assert(app.includes('buyZoneDailyMarkerMarkup(company, quote && quote.price)'), '每只股票必须按自动行情显示每日价格图案');
-assert(app.includes("image: './assets/buy-zone-safety.png'") && app.includes("image: './assets/buy-zone-reasonable.png'") && app.includes("image: './assets/buy-zone-aggressive.png'"), '三档每日价格图案资产缺失');
-assert(html.includes('class="buy-zone-marker-legend"'), '买入区间表必须提供三种图案图例');
-assert(styles.includes('.buy-zone-daily-marker.is-safety') && styles.includes('.buy-zone-daily-marker.is-reasonable') && styles.includes('.buy-zone-daily-marker.is-aggressive'), '三档每日价格图案必须使用不同颜色');
+assert(app.includes("image: './assets/buy-zone-safety.png'") && app.includes("image: './assets/buy-zone-reasonable.png'") && app.includes("image: './assets/buy-zone-aggressive.png'") && app.includes("image: './assets/buy-zone-wait.png'"), '四档每日价格图案资产缺失');
+assert(html.includes('class="buy-zone-marker-legend"') && html.includes('高于激进 · 等待'), '买入区间表必须提供四种图案图例');
+assert(styles.includes('.buy-zone-daily-marker.is-safety') && styles.includes('.buy-zone-daily-marker.is-reasonable') && styles.includes('.buy-zone-daily-marker.is-aggressive') && styles.includes('.buy-zone-daily-marker.is-wait'), '四档每日价格图案必须使用不同颜色');
 assert(app.includes('distanceToUpper') && app.includes('distanceToLower'), '买入区间速览必须同时对照价格区间上下限');
 assert(app.includes('formatBuyZoneDistanceRange'), '买入区间速览必须把两个端点结果显示为比例区间');
 assert(app.includes("state.buyZones.sortDirection === 'desc' ? 'asc' : 'desc'"), '买入区间速览必须支持从高到低与从低到高切换');

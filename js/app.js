@@ -683,10 +683,23 @@
         range: company && company.aggressive
       }
     ];
-    return tiers.find((tier) => {
+    const matchedTier = tiers.find((tier) => {
       const upperBound = toFiniteNumber(tier.range && tier.range.high);
       return upperBound !== null && upperBound > 0 && currentPrice <= upperBound;
-    }) || null;
+    });
+    if (matchedTier) return matchedTier;
+    const aggressiveRange = company && company.aggressive;
+    const aggressiveUpper = toFiniteNumber(aggressiveRange && aggressiveRange.high);
+    if (aggressiveUpper !== null && aggressiveUpper > 0 && currentPrice > aggressiveUpper) {
+      return {
+        key: 'wait',
+        label: '高于激进区间 · 等待',
+        shortLabel: '激进试仓',
+        image: './assets/buy-zone-wait.png',
+        range: aggressiveRange
+      };
+    }
+    return null;
   }
 
   function buyZoneDailyMarkerMarkup(company, price) {
@@ -694,7 +707,9 @@
     if (!marker) return '';
     const upperBound = toFiniteNumber(marker.range && marker.range.high);
     const currency = safeCurrency(company && company.currency, 'USD');
-    const detail = `当前价不高于${marker.shortLabel}上限 ${formatBuyZonePrice(upperBound, currency, 2)}`;
+    const detail = marker.key === 'wait'
+      ? `当前价高于${marker.shortLabel}上限 ${formatBuyZonePrice(upperBound, currency, 2)} · 不追价`
+      : `当前价不高于${marker.shortLabel}上限 ${formatBuyZonePrice(upperBound, currency, 2)}`;
     const accessibleLabel = `每日价格图案：${marker.label}；${detail}；仅作研究区间提示`;
     return `
       <span class="buy-zone-daily-marker is-${escapeHTML(marker.key)}" aria-label="${escapeHTML(accessibleLabel)}">
@@ -900,7 +915,7 @@
         state.data.marketQuotes && state.data.marketQuotes.source && state.data.marketQuotes.source.dataNotice,
         '自动行情可能延迟或暂时不可用。'
       );
-      disclosure.innerHTML = `<strong>区间与行情边界</strong><p>每日价格图案按当前价不高于安全、合理或激进区间上限分档，只显示当前满足的最保守一档；低于安全区间下限时仍须先复核基本面。每个百分比区间由当前行情分别对照对应价格带的上、下限计算；表头排序仍以相对激进区间上限的距离为统一口径。总市值采用 TradingView 公司层面口径，ADR 也按对应公司的整体市值显示；USD 与 CNY 双币值使用自动 USD/CNY 汇率换算。${escapeHTML(textValue(snapshot.notice, '静态研究价格带不构成投资建议。'))} ${escapeHTML(quoteNotice)} 行情更新不会移动研究区间，也不会触发交易。</p>`;
+      disclosure.innerHTML = `<strong>区间与行情边界</strong><p>每日价格图案按当前价不高于安全、合理或激进区间上限分档，只显示当前满足的最保守一档；高于激进区间上限时显示黄色等待图案，低于安全区间下限时仍须先复核基本面。每个百分比区间由当前行情分别对照对应价格带的上、下限计算；表头排序仍以相对激进区间上限的距离为统一口径。总市值采用 TradingView 公司层面口径，ADR 也按对应公司的整体市值显示；USD 与 CNY 双币值使用自动 USD/CNY 汇率换算。${escapeHTML(textValue(snapshot.notice, '静态研究价格带不构成投资建议。'))} ${escapeHTML(quoteNotice)} 行情更新不会移动研究区间，也不会触发交易。</p>`;
     }
   }
 
