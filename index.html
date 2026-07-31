@@ -264,6 +264,65 @@
           </p>
         </article>
 
+        <div class="subsection-heading stock-watchlist-heading">
+          <div>
+            <p class="eyebrow">Market watchlist</p>
+            <h2 id="stock-watchlist-title">股票观察池</h2>
+          </div>
+          <p>截图行情与重点研究标的分开记录，并按沪深、港股和美股独立查看。</p>
+        </div>
+
+        <article class="stock-watchlist-card" aria-labelledby="stock-watchlist-title" aria-describedby="stock-watchlist-notice">
+          <div class="stock-watchlist-toolbar">
+            <div>
+              <p class="panel-kicker">Grouped market snapshot</p>
+              <h3>按市场分类查看股票信息</h3>
+              <p id="stock-watchlist-summary" class="stock-watchlist-summary">正在整理股票观察池…</p>
+            </div>
+            <label class="stock-watchlist-search" for="stock-watchlist-search">
+              <span>搜索当前市场</span>
+              <input id="stock-watchlist-search" type="search" placeholder="输入名称或代码" autocomplete="off">
+            </label>
+          </div>
+
+          <div id="stock-market-tabs" class="market-tabs" role="tablist" aria-label="股票市场分类">
+            <button type="button" role="tab" data-stock-market="cn" aria-selected="true">
+              沪深 <span id="stock-market-count-cn">0</span>
+            </button>
+            <button type="button" role="tab" data-stock-market="hk" aria-selected="false">
+              港股 <span id="stock-market-count-hk">0</span>
+            </button>
+            <button type="button" role="tab" data-stock-market="us" aria-selected="false">
+              美股 <span id="stock-market-count-us">0</span>
+            </button>
+          </div>
+
+          <div class="stock-watchlist-table-scroll" tabindex="0" aria-label="可横向滚动的分类股票观察表">
+            <table class="stock-watchlist-table">
+              <caption>按沪深、港股和美股分类展示的股票行情观察池</caption>
+              <thead>
+                <tr>
+                  <th scope="col">标的</th>
+                  <th scope="col">最新价</th>
+                  <th scope="col">当日涨跌</th>
+                  <th scope="col">成交量</th>
+                  <th scope="col">总市值</th>
+                  <th scope="col">阶段表现</th>
+                  <th scope="col">数据状态</th>
+                </tr>
+              </thead>
+              <tbody id="stock-watchlist-body">
+                <tr><td colspan="7" class="table-empty">正在加载股票观察池…</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <aside id="stock-watchlist-notice" class="stock-watchlist-notice" role="note">
+            <strong>数据口径</strong>
+            <p>截图中的数值按原样录入，不是实时行情；美股重点标的优先显示现有自动行情快照。截图未展示最后一列的明确时间范围，因此统一标为“阶段表现”。</p>
+          </aside>
+        </article>
+
         <div class="subsection-heading valuation-heading">
           <div>
             <p class="eyebrow">Price &amp; valuation watch</p>
@@ -276,8 +335,19 @@
           <div class="buy-zones-head">
             <div>
               <p class="panel-kicker">Conversation research snapshot</p>
-              <h3>12 只 AI 产业链股票买入区间速览</h3>
+              <h3>AI 产业链股票买入区间速览</h3>
               <p id="buy-zones-summary">正在读取关联研究对话中的价格带…</p>
+              <div id="buy-zone-market-tabs" class="market-tabs market-tabs-compact" role="tablist" aria-label="买入区间市场分类">
+                <button type="button" role="tab" data-buy-zone-market="cn" aria-selected="true">
+                  沪深 <span id="buy-zone-market-count-cn">0</span>
+                </button>
+                <button type="button" role="tab" data-buy-zone-market="hk" aria-selected="false">
+                  港股 <span id="buy-zone-market-count-hk">0</span>
+                </button>
+                <button type="button" role="tab" data-buy-zone-market="us" aria-selected="false">
+                  美股 <span id="buy-zone-market-count-us">0</span>
+                </button>
+              </div>
               <div class="buy-zone-marker-legend" aria-label="每日价格图案说明">
                 <span class="is-safety"><img src="./assets/buy-zone-safety.png" alt="" width="30" height="30" decoding="async" aria-hidden="true">高安全边际</span>
                 <span class="is-reasonable"><img src="./assets/buy-zone-reasonable.png" alt="" width="30" height="30" decoding="async" aria-hidden="true">合理主买</span>
@@ -293,7 +363,7 @@
 
           <div class="buy-zones-table-scroll" tabindex="0" aria-label="可横向滚动的股票买入区间表">
             <table class="buy-zones-table">
-              <caption>AAOI、SKHY、LITE、兴森科技、深南电路、通富微电、AXTI、ASTS、Intel、Nebius、CoreWeave 与 Corning 的三档研究价格带</caption>
+              <caption>按沪深、港股和美股分类展示的三档研究价格带</caption>
               <thead>
                 <tr>
                   <th scope="col">标的</th>
