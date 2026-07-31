@@ -4,6 +4,9 @@ const files = [
   'data/risk-score.json',
   'data/hyperscalers.json',
   'data/supply-chain.json',
+  'data/stock-watchlist.json',
+  'data/hk-watchlist.json',
+  'data/us-watchlist.json',
   'data/market-quotes.json',
   'data/valuation-bands.json',
   'data/macro.json',
@@ -13,6 +16,9 @@ const files = [
 const payloads = Object.fromEntries(await Promise.all(files.map(async (file) => [file, await readJson(file)])));
 const supply = payloads['data/supply-chain.json'];
 const hyperscalers = payloads['data/hyperscalers.json'];
+const stockWatchlist = payloads['data/stock-watchlist.json'];
+const hkWatchlist = payloads['data/hk-watchlist.json'];
+const usWatchlist = payloads['data/us-watchlist.json'];
 const marketQuotes = payloads['data/market-quotes.json'];
 const valuation = payloads['data/valuation-bands.json'];
 const events = payloads['data/events.json'];
@@ -41,6 +47,136 @@ for (const [file, payload] of Object.entries(payloads)) {
 
 assert(hyperscalers.units && hyperscalers.units.capex === '亿美元', '云巨头 CapEx 必须以亿美元为单位');
 assert(!/(?:十|百|千|万)亿|(?:十|百|千)万/.test(JSON.stringify(payloads)), '数据文本不能使用复合中文数量级');
+
+assert(stockWatchlist.version === 1, 'stock-watchlist.version 必须为 1');
+assert(validDate(stockWatchlist.snapshotDate), 'stock-watchlist.snapshotDate 必须是 YYYY-MM-DD');
+assert(stockWatchlist.source && typeof stockWatchlist.source.label === 'string' && stockWatchlist.source.label.trim(), 'stock-watchlist.source.label 不能为空');
+assert(stockWatchlist.source && typeof stockWatchlist.source.notice === 'string' && stockWatchlist.source.notice.trim(), 'stock-watchlist.source.notice 不能为空');
+const stockMarkets = Array.isArray(stockWatchlist.markets) ? stockWatchlist.markets : [];
+assert(
+  JSON.stringify(stockMarkets.map((market) => market.id)) === JSON.stringify(['cn', 'hk', 'us']),
+  '股票观察池必须按 cn、hk、us 定义沪深、港股和美股分类'
+);
+const stockEntries = Array.isArray(stockWatchlist.entries) ? stockWatchlist.entries : [];
+assert(stockEntries.length === 87, '用户截图观察池必须包含 87 个沪深标的');
+const stockEntryKeys = new Set();
+for (const entry of stockEntries) {
+  const key = `${entry.exchange}:${entry.ticker}`;
+  assert(!stockEntryKeys.has(key), `股票观察池标的重复：${key}`);
+  stockEntryKeys.add(key);
+  assert(/^\d{6}$/.test(String(entry.ticker || '')), `${key}.ticker 必须是 6 位数字`);
+  assert(typeof entry.name === 'string' && entry.name.trim(), `${key}.name 不能为空`);
+  assert(['SH', 'SZ'].includes(entry.exchange), `${key}.exchange 必须是 SH 或 SZ`);
+  assert(entry.market === 'cn', `${key}.market 必须是 cn`);
+  assert(['stock', 'etf', 'index'].includes(entry.type), `${key}.type 无效`);
+  assert(entry.currency === 'CNY', `${key}.currency 必须是 CNY`);
+  assert(Number.isFinite(Number(entry.price)) && Number(entry.price) > 0, `${key}.price 必须大于 0`);
+  assert(Number.isFinite(Number(entry.change)), `${key}.change 必须是有限数值`);
+  assert(Number.isFinite(Number(entry.changePercent)), `${key}.changePercent 必须是有限数值`);
+  assert(typeof entry.volume === 'string' && entry.volume.trim(), `${key}.volume 不能为空`);
+  assert(Number.isFinite(Number(entry.marketCapCnyYi)) && Number(entry.marketCapCnyYi) > 0, `${key}.marketCapCnyYi 必须大于 0`);
+  assert(Number.isFinite(Number(entry.periodChangePercent)), `${key}.periodChangePercent 必须是有限数值`);
+}
+
+assert(hkWatchlist.version === 1, 'hk-watchlist.version 必须为 1');
+assert(validDate(hkWatchlist.snapshotDate), 'hk-watchlist.snapshotDate 必须是 YYYY-MM-DD');
+assert(hkWatchlist.source && typeof hkWatchlist.source.label === 'string' && hkWatchlist.source.label.trim(), 'hk-watchlist.source.label 不能为空');
+assert(hkWatchlist.source && typeof hkWatchlist.source.notice === 'string' && hkWatchlist.source.notice.trim(), 'hk-watchlist.source.notice 不能为空');
+const hkEntries = Array.isArray(hkWatchlist.entries) ? hkWatchlist.entries : [];
+const expectedHkTickers = [
+  '07709', '07747', '02513', '09903', '00100', '00992', '01879', '06082', '01021', '03986', '06809',
+  '09880', '06869', '89988', '02013', '03454', '09866', '00005', '09988', '00981', '00020', '01347',
+  '00853', '00700', 'BK2526', '09626', '02512', '01093', '09992', '01211', '02015', '01768', '01810', '06880'
+];
+assert(hkEntries.length === 34, '港股截图观察池必须包含 34 个不重复标的');
+assert(
+  JSON.stringify(hkEntries.map((entry) => entry.ticker)) === JSON.stringify(expectedHkTickers),
+  '港股截图观察池必须包含指定标的并保持截图顺序'
+);
+const hkEntryKeys = new Set();
+for (const entry of hkEntries) {
+  const ticker = String(entry && entry.ticker || '');
+  assert(/^(?:\d{5}|BK\d{4})$/.test(ticker), `港股观察池 ticker 无效：${ticker}`);
+  assert(!hkEntryKeys.has(ticker), `港股观察池标的重复：${ticker}`);
+  hkEntryKeys.add(ticker);
+  assert(typeof entry.name === 'string' && entry.name.trim(), `${ticker}.name 不能为空`);
+  assert(entry.market === 'hk', `${ticker}.market 必须是 hk`);
+  assert(['股票', 'ETF', '杠杆产品', '人民币柜台', '行业板块'].includes(entry.securityType), `${ticker}.securityType 无效`);
+  assert(typeof entry.category === 'string' && entry.category.trim(), `${ticker}.category 不能为空`);
+  assert(['HKD', 'CNY'].includes(entry.currency), `${ticker}.currency 必须是 HKD 或 CNY`);
+  assert(Number.isFinite(Number(entry.price)) && Number(entry.price) > 0, `${ticker}.price 必须大于 0`);
+  assert(Number.isFinite(Number(entry.change)), `${ticker}.change 必须是有限数值`);
+  assert(Number.isFinite(Number(entry.changePercent)), `${ticker}.changePercent 必须是有限数值`);
+  assert(typeof entry.volumeLabel === 'string' && entry.volumeLabel.trim(), `${ticker}.volumeLabel 不能为空`);
+  assert(typeof entry.marketCapLabel === 'string' && entry.marketCapLabel.trim(), `${ticker}.marketCapLabel 不能为空`);
+  assert(Number.isFinite(Number(entry.performancePercent)), `${ticker}.performancePercent 必须是有限数值`);
+  assert(typeof entry.delayed === 'boolean', `${ticker}.delayed 必须是布尔值`);
+  if (entry.sourceUrl !== undefined) {
+    try {
+      const sourceUrl = new URL(entry.sourceUrl);
+      assert(sourceUrl.protocol === 'https:', `${ticker}.sourceUrl 必须使用 HTTPS`);
+    } catch (error) {
+      errors.push(`${ticker}.sourceUrl 无效`);
+    }
+  }
+}
+
+assert(usWatchlist.version === 1, 'us-watchlist.version 必须为 1');
+assert(validDate(usWatchlist.snapshotDate), 'us-watchlist.snapshotDate 必须是 YYYY-MM-DD');
+assert(usWatchlist.source && typeof usWatchlist.source.label === 'string' && usWatchlist.source.label.trim(), 'us-watchlist.source.label 不能为空');
+assert(usWatchlist.source && typeof usWatchlist.source.notice === 'string' && usWatchlist.source.notice.trim(), 'us-watchlist.source.notice 不能为空');
+const usEntries = Array.isArray(usWatchlist.entries) ? usWatchlist.entries : [];
+const expectedUsTickers = [
+  'IREN', 'NBIS', 'AXTI', 'BE', 'SNDK', 'CRWV', 'ALAB', 'SIVEF', 'CBRS', 'MU', 'LRCX', 'AAOI', 'SKHY', 'DRAM', 'MSFT',
+  'WDC', 'LITE', 'ONTO', 'CRDO', 'SMR', 'AMD', 'RGTI', 'MRVL', 'COHR', 'XE', 'OKLO', 'STX', 'INTC', 'QBTS', 'RKLB',
+  'ASTS', 'DELL', 'LAZR', 'GLW', 'SFTBY', 'NOK', 'TSM', 'LUNR', 'ARM', 'LAR', 'LAC', 'ASML', 'MRNA', 'KLAC', 'UBSFY',
+  'SNOW', 'LAES', 'NET', 'AVGO', 'CRCL', 'BIRD', 'VST', 'AMZN', 'TSLA', 'ALB', '.NDX', 'SLV', '.IXIC', 'NVDA', 'BK1582',
+  'CEG', 'NIO', 'NVAX', 'FGDL', 'SQM', 'WSE', 'BABA', 'BRK.B', 'NEE-U', 'SPCX', 'SNPS', 'PLTR', 'GOOG', 'GOOGL', 'PFE',
+  'PDD', 'AZN', 'PYPL', 'LNVGY', 'AAPL', 'IBM', 'XIACY', 'LI', 'QCOM', 'WMT', 'HOOD', 'META'
+];
+assert(usEntries.length === 87, '美股截图观察池必须包含 87 个不重复标的');
+assert(
+  JSON.stringify(usEntries.map((entry) => entry.ticker)) === JSON.stringify(expectedUsTickers),
+  '美股截图观察池必须包含指定标的并保持截图顺序'
+);
+const usEntryKeys = new Set();
+for (const entry of usEntries) {
+  const ticker = String(entry && entry.ticker || '');
+  assert(/^(?:[A-Z][A-Z0-9.-]{0,9}|\.[A-Z0-9]{2,9})$/.test(ticker), `美股观察池 ticker 无效：${ticker}`);
+  assert(!usEntryKeys.has(ticker), `美股观察池标的重复：${ticker}`);
+  usEntryKeys.add(ticker);
+  assert(typeof entry.name === 'string' && entry.name.trim(), `${ticker}.name 不能为空`);
+  assert(['NASDAQ', 'NYSE', 'OTC', 'NYSEARCA', 'THEME'].includes(entry.exchange), `${ticker}.exchange 无效`);
+  assert(entry.market === 'us', `${ticker}.market 必须是 us`);
+  assert(['股票', 'ADR', 'ETF', '指数', '主题板块'].includes(entry.securityType), `${ticker}.securityType 无效`);
+  assert(typeof entry.category === 'string' && entry.category.trim(), `${ticker}.category 不能为空`);
+  assert(entry.currency === 'USD', `${ticker}.currency 必须是 USD`);
+  assert(Number.isFinite(Number(entry.price)) && Number(entry.price) > 0, `${ticker}.price 必须大于 0`);
+  assert(Number.isFinite(Number(entry.change)), `${ticker}.change 必须是有限数值`);
+  assert(Number.isFinite(Number(entry.changePercent)), `${ticker}.changePercent 必须是有限数值`);
+  assert(typeof entry.volumeLabel === 'string' && entry.volumeLabel.trim(), `${ticker}.volumeLabel 不能为空`);
+  assert(typeof entry.marketCapLabel === 'string' && entry.marketCapLabel.trim(), `${ticker}.marketCapLabel 不能为空`);
+  assert(Number.isFinite(Number(entry.performancePercent)), `${ticker}.performancePercent 必须是有限数值`);
+  const premarketValues = [entry.premarketPrice, entry.premarketChange, entry.premarketChangePercent];
+  const providedPremarketValues = premarketValues.filter((value) => value !== undefined);
+  assert(
+    providedPremarketValues.length === 0 || providedPremarketValues.length === premarketValues.length,
+    `${ticker} 盘前价格、涨跌额和涨跌幅必须同时提供`
+  );
+  if (providedPremarketValues.length) {
+    assert(Number.isFinite(Number(entry.premarketPrice)) && Number(entry.premarketPrice) > 0, `${ticker}.premarketPrice 必须大于 0`);
+    assert(Number.isFinite(Number(entry.premarketChange)), `${ticker}.premarketChange 必须是有限数值`);
+    assert(Number.isFinite(Number(entry.premarketChangePercent)), `${ticker}.premarketChangePercent 必须是有限数值`);
+  }
+  if (entry.sourceUrl !== undefined) {
+    try {
+      const sourceUrl = new URL(entry.sourceUrl);
+      assert(sourceUrl.protocol === 'https:', `${ticker}.sourceUrl 必须使用 HTTPS`);
+    } catch (error) {
+      errors.push(`${ticker}.sourceUrl 无效`);
+    }
+  }
+}
 
 const supplyTickers = (supply.companies || []).map((company) => company.ticker);
 const valuationTickers = (valuation.companies || []).map((company) => company.ticker);

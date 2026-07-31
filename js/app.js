@@ -5,6 +5,9 @@
     risk: { path: './data/risk-score.json', label: '风险评分' },
     hyperscalers: { path: './data/hyperscalers.json', label: '云巨头 CapEx' },
     supplyChain: { path: './data/supply-chain.json', label: '供应链风险' },
+    stockWatchlist: { path: './data/stock-watchlist.json', label: '分类股票观察池' },
+    hkWatchlist: { path: './data/hk-watchlist.json', label: '港股行情截图' },
+    usWatchlist: { path: './data/us-watchlist.json', label: '美股行情截图' },
     marketQuotes: { path: './data/market-quotes.json', label: '自动行情快照' },
     valuation: { path: './data/valuation-bands.json', label: '价格与估值观察' },
     macro: { path: './data/macro.json', label: '宏观环境' },
@@ -37,7 +40,12 @@
       ticker: 'NVDA'
     },
     buyZones: {
-      sortDirection: 'desc'
+      sortDirection: 'desc',
+      market: 'cn'
+    },
+    stocks: {
+      market: 'cn',
+      query: ''
     },
     events: {
       sentiment: 'all',
@@ -778,6 +786,308 @@
       : null;
   }
 
+  function marketGroup(value, currency) {
+    const market = textValue(value, '').toLowerCase();
+    const currencyCode = safeCurrency(currency, 'USD');
+    if (market === 'hk' || market.includes('港股') || currencyCode === 'HKD') return 'hk';
+    if (market === 'cn' || market.includes('a 股') || market.includes('沪') || market.includes('深') || currencyCode === 'CNY') {
+      return 'cn';
+    }
+    return 'us';
+  }
+
+  function marketGroupLabel(value) {
+    return { cn: '沪深', hk: '港股', us: '美股' }[value] || '待分类';
+  }
+
+  function normalizedExchange(value) {
+    const exchange = textValue(value, '').toUpperCase();
+    if (exchange === 'SSE') return 'SH';
+    if (exchange === 'SZSE') return 'SZ';
+    if (exchange === 'HKEX') return 'HK';
+    return exchange || '—';
+  }
+
+  function exchangeFromTradingViewSymbol(value) {
+    return normalizedExchange(textValue(value, '').split(':')[0]);
+  }
+
+  function watchlistRowKey(row) {
+    const market = textValue(row.market, '');
+    const ticker = textValue(row.ticker, '');
+    return market === 'us' ? `${market}:${ticker}` : `${market}:${normalizedExchange(row.exchange)}:${ticker}`;
+  }
+
+  function stockWatchlistUniverse() {
+    const snapshot = state.data.stockWatchlist;
+    const hkSnapshot = state.data.hkWatchlist;
+    const usSnapshot = state.data.usWatchlist;
+    const valuation = state.data.valuation;
+    const rows = [];
+    const seen = new Set();
+    const addRow = (row) => {
+      if (!row || !textValue(row.ticker, '') || !textValue(row.name, '')) return;
+      const key = watchlistRowKey(row);
+      if (seen.has(key)) return;
+      seen.add(key);
+      rows.push({ ...row, order: rows.length });
+    };
+
+    (snapshot && Array.isArray(snapshot.entries) ? snapshot.entries : []).forEach((entry) => {
+      const exchange = normalizedExchange(entry.exchange);
+      addRow({
+        ticker: textValue(entry.ticker, ''),
+        name: textValue(entry.name, ''),
+        exchange,
+        market: 'cn',
+        typeLabel: { stock: '股票', etf: 'ETF', index: '指数' }[entry.type] || '证券',
+        currency: safeCurrency(entry.currency, 'CNY'),
+        price: toFiniteNumber(entry.price),
+        change: toFiniteNumber(entry.change),
+        changePercent: toFiniteNumber(entry.changePercent),
+        volumeLabel: textValue(entry.volume, '—'),
+        marketCapLabel: Number.isFinite(Number(entry.marketCapCnyYi))
+          ? `${formatNumber(Number(entry.marketCapCnyYi), 2)} 亿元`
+          : '—',
+        periodChangePercent: toFiniteNumber(entry.periodChangePercent),
+        sourceKind: 'screenshot',
+        delayed: false,
+        sourceUrl: `https://www.tradingview.com/symbols/${exchange === 'SH' ? 'SSE' : 'SZSE'}-${encodeURIComponent(entry.ticker)}/`
+      });
+    });
+
+    (hkSnapshot && Array.isArray(hkSnapshot.entries) ? hkSnapshot.entries : []).forEach((entry) => {
+      addRow({
+        ticker: textValue(entry.ticker, ''),
+        name: textValue(entry.name, ''),
+        exchange: 'HK',
+        market: 'hk',
+        typeLabel: textValue(entry.securityType, '证券'),
+        category: textValue(entry.category, ''),
+        currency: safeCurrency(entry.currency, 'HKD'),
+        price: toFiniteNumber(entry.price),
+        change: toFiniteNumber(entry.change),
+        changePercent: toFiniteNumber(entry.changePercent),
+        volumeLabel: textValue(entry.volumeLabel, '—'),
+        marketCapLabel: `${safeCurrency(entry.currency, 'HKD')} ${textValue(entry.marketCapLabel, '—')}`,
+        periodChangePercent: toFiniteNumber(entry.performancePercent),
+        sourceKind: 'screenshot',
+        delayed: entry.delayed === true,
+        sourceUrl: safeExternalUrl(entry.sourceUrl)
+      });
+    });
+
+    (usSnapshot && Array.isArray(usSnapshot.entries) ? usSnapshot.entries : []).forEach((entry) => {
+      const ticker = textValue(entry.ticker, '');
+      const exchange = normalizedExchange(entry.exchange);
+      const quote = marketQuoteForTicker(ticker);
+      const marketCap = quote && toFiniteNumber(quote.marketCap);
+      const tradingViewExchange = ['NASDAQ', 'NYSE', 'NYSEARCA', 'AMEX', 'OTC'].includes(exchange)
+        ? exchange
+        : '';
+      const sourceUrl = safeExternalUrl(quote && quote.sourceUrl)
+        || (tradingViewExchange
+          ? `https://www.tradingview.com/symbols/${tradingViewExchange}-${encodeURIComponent(ticker.replace(/^\./, ''))}/`
+          : '');
+      addRow({
+        ticker,
+        name: textValue(entry.name, ''),
+        exchange,
+        market: 'us',
+        typeLabel: textValue(entry.securityType, '证券'),
+        category: textValue(entry.category, ''),
+        currency: safeCurrency(entry.currency, 'USD'),
+        price: quote ? quote.price : toFiniteNumber(entry.price),
+        change: quote ? toFiniteNumber(quote.change) : toFiniteNumber(entry.change),
+        changePercent: quote ? toFiniteNumber(quote.changePercent) : toFiniteNumber(entry.changePercent),
+        premarketPrice: toFiniteNumber(entry.premarketPrice),
+        premarketChange: toFiniteNumber(entry.premarketChange),
+        premarketChangePercent: toFiniteNumber(entry.premarketChangePercent),
+        volumeLabel: textValue(entry.volumeLabel, '—'),
+        marketCapLabel: marketCap === null
+          ? `USD ${textValue(entry.marketCapLabel, '—')}`
+          : formatCompactMarketCap(marketCap, safeCurrency(quote.marketCapCurrency, entry.currency)),
+        periodChangePercent: toFiniteNumber(entry.performancePercent),
+        sourceKind: quote ? 'auto' : 'screenshot',
+        delayed: false,
+        sourceUrl
+      });
+    });
+
+    const manualEntries = valuation && valuation.manualBuyZones && Array.isArray(valuation.manualBuyZones.entries)
+      ? valuation.manualBuyZones.entries
+      : [];
+    manualEntries.forEach((entry) => {
+      const group = marketGroup(entry.market, entry.currency);
+      const exchange = exchangeFromTradingViewSymbol(entry.tradingViewSymbol);
+      const quote = marketQuoteForTicker(entry.ticker);
+      const marketCap = quote && toFiniteNumber(quote.marketCap);
+      const sourceUrl = safeExternalUrl(quote && quote.sourceUrl)
+        || `https://www.tradingview.com/symbols/${textValue(entry.tradingViewSymbol, '').replace(':', '-')}/`;
+      addRow({
+        ticker: textValue(entry.ticker, ''),
+        name: textValue(entry.name, ''),
+        exchange,
+        market: group,
+        typeLabel: textValue(entry.market, '').includes('ADR') ? 'ADR' : '股票',
+        category: textValue(entry.segment, ''),
+        currency: safeCurrency(entry.currency, group === 'cn' ? 'CNY' : 'USD'),
+        price: quote ? quote.price : toFiniteNumber(entry.referencePrice),
+        change: quote ? toFiniteNumber(quote.change) : null,
+        changePercent: quote ? toFiniteNumber(quote.changePercent) : null,
+        volumeLabel: '—',
+        marketCapLabel: marketCap === null
+          ? '—'
+          : formatCompactMarketCap(marketCap, safeCurrency(quote.marketCapCurrency, entry.currency)),
+        periodChangePercent: null,
+        sourceKind: quote ? 'auto' : 'research',
+        delayed: false,
+        sourceUrl
+      });
+    });
+
+    return rows;
+  }
+
+  function stockMoveMeta(value) {
+    const percent = toFiniteNumber(value);
+    return {
+      className: percent === null || percent === 0 ? 'is-flat' : percent > 0 ? 'is-up' : 'is-down',
+      text: percent === null ? '—' : `${percent > 0 ? '+' : ''}${formatNumber(percent, 2, '%')}`
+    };
+  }
+
+  function formatStockWatchlistPrice(value, currency) {
+    const number = toFiniteNumber(value);
+    if (number === null) return '—';
+    const decimals = Math.abs(number) < 1 || Math.abs(number * 100 - Math.round(number * 100)) > 0.0001 ? 3 : 2;
+    const symbol = { CNY: '¥', HKD: 'HK$', USD: '$' }[safeCurrency(currency, 'USD')] || `${currency} `;
+    return `${symbol}${formatNumber(number, decimals)}`;
+  }
+
+  function formatStockWatchlistChange(change, percent) {
+    const amount = toFiniteNumber(change);
+    const percentValue = toFiniteNumber(percent);
+    if (amount === null || percentValue === null) return { amount: '—', percent: '涨跌待更新' };
+    const decimals = Math.abs(amount) < 0.01 ? 3 : 2;
+    return {
+      amount: `${amount > 0 ? '+' : ''}${formatNumber(amount, decimals)}`,
+      percent: `${percentValue > 0 ? '+' : ''}${formatNumber(percentValue, 2, '%')}`
+    };
+  }
+
+  function updateMarketTabs(selector, dataAttribute, activeMarket, counts) {
+    document.querySelectorAll(selector).forEach((button) => {
+      const market = button.dataset[dataAttribute];
+      const isActive = market === activeMarket;
+      button.setAttribute('aria-selected', String(isActive));
+      button.tabIndex = isActive ? 0 : -1;
+      const count = button.querySelector('span');
+      if (count) count.textContent = String(counts[market] || 0);
+    });
+  }
+
+  function renderStockWatchlistTable() {
+    const body = byId('stock-watchlist-body');
+    if (!body) return;
+    const universe = stockWatchlistUniverse();
+    const counts = { cn: 0, hk: 0, us: 0 };
+    universe.forEach((row) => {
+      if (Object.prototype.hasOwnProperty.call(counts, row.market)) counts[row.market] += 1;
+    });
+    updateMarketTabs('[data-stock-market]', 'stockMarket', state.stocks.market, counts);
+
+    const query = state.stocks.query.trim().toLocaleLowerCase('zh-CN');
+    const marketRows = universe.filter((row) => row.market === state.stocks.market);
+    const rows = marketRows.filter((row) => {
+      if (!query) return true;
+      return [row.name, row.ticker, row.exchange, row.typeLabel, row.category]
+        .some((value) => String(value || '').toLocaleLowerCase('zh-CN').includes(query));
+    });
+    const marketLabel = marketGroupLabel(state.stocks.market);
+    const summary = byId('stock-watchlist-summary');
+    if (summary) {
+      const snapshotByMarket = {
+        cn: state.data.stockWatchlist,
+        hk: state.data.hkWatchlist,
+        us: state.data.usWatchlist
+      };
+      const snapshotDate = snapshotByMarket[state.stocks.market] && snapshotByMarket[state.stocks.market].snapshotDate;
+      summary.textContent = `${marketLabel}显示 ${rows.length} / ${marketRows.length} 个标的 · 全部市场共 ${universe.length} 个 · 截图 ${formatDate(snapshotDate)}`;
+    }
+
+    if (!rows.length) {
+      const message = marketRows.length
+        ? '当前搜索没有匹配标的，请换一个名称或代码。'
+        : `${marketLabel}暂未录入标的。`;
+      body.innerHTML = `<tr><td colspan="7" class="table-empty">${escapeHTML(message)}</td></tr>`;
+      return;
+    }
+
+    body.innerHTML = rows.map((row) => {
+      const move = stockMoveMeta(row.changePercent);
+      const change = formatStockWatchlistChange(row.change, row.changePercent);
+      const premarketMove = stockMoveMeta(row.premarketChangePercent);
+      const premarketChange = formatStockWatchlistChange(row.premarketChange, row.premarketChangePercent);
+      const hasPremarket = toFiniteNumber(row.premarketPrice) !== null;
+      const period = stockMoveMeta(row.periodChangePercent);
+      const sourceUrl = safeExternalUrl(row.sourceUrl);
+      const name = escapeHTML(row.name);
+      const companyName = sourceUrl
+        ? `<a href="${escapeHTML(sourceUrl)}" target="_blank" rel="noopener noreferrer nofollow">${name} ↗</a>`
+        : name;
+      const statusLabel = row.sourceKind === 'auto'
+        ? '自动行情'
+        : row.delayed
+          ? '截图延时'
+          : row.sourceKind === 'research'
+            ? '研究参考价'
+            : '截图快照';
+      return `
+        <tr>
+          <th scope="row">
+            <span class="stock-watchlist-company">
+              <strong>${companyName}</strong>
+              <span class="stock-watchlist-company-meta">
+                <span>${escapeHTML(row.exchange)}${escapeHTML(row.ticker)}</span>
+                <span class="stock-instrument-tag">${escapeHTML(row.typeLabel)}</span>
+                ${row.category ? `<span>${escapeHTML(row.category)}</span>` : ''}
+              </span>
+            </span>
+          </th>
+          <td>
+            <span class="stock-price-cell">
+              <span class="stock-price">${escapeHTML(formatStockWatchlistPrice(row.price, row.currency))}</span>
+              ${hasPremarket ? `<small class="stock-premarket-price">截图盘前 ${escapeHTML(formatStockWatchlistPrice(row.premarketPrice, row.currency))}</small>` : ''}
+            </span>
+          </td>
+          <td>
+            <span class="stock-move-cell">
+              <span class="stock-move ${escapeHTML(move.className)}">
+                <span>${escapeHTML(change.amount)}</span>
+                <small>${escapeHTML(change.percent)}</small>
+              </span>
+              ${hasPremarket ? `
+                <small class="stock-premarket-move ${escapeHTML(premarketMove.className)}">
+                  盘前 ${escapeHTML(premarketChange.amount)} (${escapeHTML(premarketChange.percent)})
+                </small>
+              ` : ''}
+            </span>
+          </td>
+          <td><span class="stock-volume">${escapeHTML(row.volumeLabel)}</span></td>
+          <td><span class="stock-market-cap">${escapeHTML(row.marketCapLabel)}</span></td>
+          <td><span class="stock-move ${escapeHTML(period.className)}">${escapeHTML(period.text)}</span></td>
+          <td><span class="stock-data-status ${row.sourceKind === 'auto' ? 'is-auto' : ''}">${escapeHTML(statusLabel)}</span></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function renderStockWatchlist(data) {
+    state.data.stockWatchlist = data;
+    renderStockWatchlistTable();
+  }
+
   function renderBuyZones(data) {
     const body = byId('buy-zones-body');
     const summary = byId('buy-zones-summary');
@@ -786,10 +1096,17 @@
     const snapshot = data && data.manualBuyZones && typeof data.manualBuyZones === 'object'
       ? data.manualBuyZones
       : {};
-    const companies = Array.isArray(snapshot.entries) ? snapshot.entries : [];
-    if (!body || !companies.length) {
+    const allCompanies = Array.isArray(snapshot.entries) ? snapshot.entries : [];
+    if (!body || !allCompanies.length) {
       throw new Error('买入区间速览缺少有效公司数据。');
     }
+    const counts = { cn: 0, hk: 0, us: 0 };
+    allCompanies.forEach((company) => {
+      const group = marketGroup(company.market, company.currency);
+      counts[group] += 1;
+    });
+    updateMarketTabs('[data-buy-zone-market]', 'buyZoneMarket', state.buyZones.market, counts);
+    const companies = allCompanies.filter((company) => marketGroup(company.market, company.currency) === state.buyZones.market);
 
     const sortDirection = state.buyZones.sortDirection === 'asc' ? 'asc' : 'desc';
     const sortedCompanies = companies.map((company, index) => {
@@ -824,7 +1141,7 @@
     }
     if (sortIndicator) sortIndicator.textContent = sortDirection === 'desc' ? '高→低' : '低→高';
 
-    body.innerHTML = sortedCompanies.map((company) => {
+    body.innerHTML = sortedCompanies.length ? sortedCompanies.map((company) => {
       const ticker = textValue(company.ticker, '—');
       const name = textValue(company.name, ticker);
       const market = textValue(company.market, '待分类');
@@ -874,7 +1191,7 @@
           </td>
         </tr>
       `;
-    }).join('');
+    }).join('') : `<tr><td colspan="6" class="table-empty">${escapeHTML(`${marketGroupLabel(state.buyZones.market)}暂未录入买入区间研究。`)}</td></tr>`;
 
     body.querySelectorAll('[data-valuation-ticker]').forEach((button) => {
       button.addEventListener('click', () => {
@@ -900,8 +1217,8 @@
       const quoteCount = companies.filter((company) => marketQuoteForTicker(company.ticker)).length;
       const marketSnapshot = state.data.marketQuotes;
       summary.textContent = quoteCount
-        ? `${companies.length} 只标的 · ${quoteCount} 只已接入自动行情快照 · 最近抓取 ${formatMarketQuoteTime(marketSnapshot.fetchedAt, 'cn')}（上海）`
-        : `${companies.length} 只标的 · 暂用研究参考价 · 等待首次自动行情刷新`;
+        ? `${marketGroupLabel(state.buyZones.market)} ${companies.length} 只（全部 ${allCompanies.length} 只）· ${quoteCount} 只已接入自动行情快照 · 最近抓取 ${formatMarketQuoteTime(marketSnapshot.fetchedAt, state.buyZones.market)}`
+        : `${marketGroupLabel(state.buyZones.market)} ${companies.length} 只（全部 ${allCompanies.length} 只）· 暂用研究参考价`;
     }
     if (updatedAt) {
       const fetchedAt = state.data.marketQuotes && state.data.marketQuotes.fetchedAt;
@@ -1745,6 +2062,11 @@
     } else if (key === 'supplyChain') {
       byId('supply-chain-body').innerHTML = `<tr><td colspan="12" class="table-empty">${escapeHTML(message)}</td></tr>`;
       api.renderSectionError('supply-chain-heatmap', message);
+    } else if (key === 'stockWatchlist') {
+      const body = byId('stock-watchlist-body');
+      if (body) body.innerHTML = `<tr><td colspan="7" class="table-empty">${escapeHTML(message)}</td></tr>`;
+      const summary = byId('stock-watchlist-summary');
+      if (summary) summary.textContent = message;
     } else if (key === 'marketQuotes') {
       // 行情快照失败时，估值模块会自动回退到研究参考价。
     } else if (key === 'valuation') {
@@ -1806,6 +2128,31 @@
       state.supply.risk = event.target.value;
       renderSupplyTable();
     });
+    const stockSearch = byId('stock-watchlist-search');
+    if (stockSearch) {
+      stockSearch.addEventListener('input', (event) => {
+        state.stocks.query = event.target.value;
+        renderStockWatchlistTable();
+      });
+    }
+    const stockMarketButtons = Array.from(document.querySelectorAll('[data-stock-market]'));
+    stockMarketButtons.forEach((button, index) => {
+      button.addEventListener('click', () => {
+        state.stocks.market = button.dataset.stockMarket;
+        renderStockWatchlistTable();
+      });
+      button.addEventListener('keydown', (event) => {
+        if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        const nextIndex = event.key === 'Home'
+          ? 0
+          : event.key === 'End'
+            ? stockMarketButtons.length - 1
+            : (index + (event.key === 'ArrowRight' ? 1 : -1) + stockMarketButtons.length) % stockMarketButtons.length;
+        stockMarketButtons[nextIndex].click();
+        stockMarketButtons[nextIndex].focus();
+      });
+    });
     const valuationSelect = byId('valuation-company-select');
     if (valuationSelect) {
       valuationSelect.addEventListener('change', (event) => {
@@ -1840,6 +2187,28 @@
         }
       });
     }
+    const buyZoneMarketButtons = Array.from(document.querySelectorAll('[data-buy-zone-market]'));
+    buyZoneMarketButtons.forEach((button, index) => {
+      button.addEventListener('click', () => {
+        state.buyZones.market = button.dataset.buyZoneMarket;
+        try {
+          renderBuyZones(state.data.valuation);
+        } catch (error) {
+          renderSectionError('valuation', DATA_SOURCES.valuation, error);
+        }
+      });
+      button.addEventListener('keydown', (event) => {
+        if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        const nextIndex = event.key === 'Home'
+          ? 0
+          : event.key === 'End'
+            ? buyZoneMarketButtons.length - 1
+            : (index + (event.key === 'ArrowRight' ? 1 : -1) + buyZoneMarketButtons.length) % buyZoneMarketButtons.length;
+        buyZoneMarketButtons[nextIndex].click();
+        buyZoneMarketButtons[nextIndex].focus();
+      });
+    });
     byId('sentiment-filter').addEventListener('change', (event) => {
       state.events.sentiment = event.target.value;
       renderEventTimeline();
@@ -1883,6 +2252,9 @@
       risk: renderOverview,
       hyperscalers: renderHyperscalers,
       supplyChain: renderSupplyChain,
+      stockWatchlist: renderStockWatchlist,
+      hkWatchlist: () => {},
+      usWatchlist: () => {},
       marketQuotes: () => {},
       valuation: renderValuation,
       macro: renderMacro,
