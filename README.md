@@ -42,7 +42,7 @@ AI CapEx Cycle Monitor 将分散的产业信号整理为统一的风险研究框
 - CapEx 增速与云收入增速对比：自动判断两者差值并生成提示
 - 供应链风险：排序、产业链环节筛选、风险等级筛选与移动端横向滚动
 - 股票资料目录：根据用户提供的代码录入 87 个沪深标的、34 个港股/主题标的和 87 个美股/指数/主题标的，共 208 个；按市场分类展示名称、代码、交易所、证券类型、已有分类和交易币种，并支持在当前市场搜索
-- 208 只股票估值与买入区间速览：股票资料目录中的沪深、港股和美股标的全部进入估值表并支持搜索；其中 AAOI、SKHY、LITE、兴森科技、深南电路、通富微电、AXTI、ASTS、Intel、Nebius、CoreWeave 与 Corning 已有“安全边际、合理主买、激进试仓”研究区间，其余 196 只明确显示为“待评估”，不生成或暗示买入价
+- 208 只股票估值与买入区间速览：股票资料目录中的沪深、港股和美股标的全部建立三档区间并支持搜索；AAOI、SKHY、LITE、兴森科技、深南电路、通富微电、AXTI、ASTS、Intel、Nebius、CoreWeave 与 Corning 使用财报与业务研究区间，其余 196 只使用近一年价格分布或低置信度参考价阶梯，并显示方法、样本量和置信度
 - 重点标的自动行情与市值：A 股与美股在各自盘中每 30 分钟抓取一次，并在收盘后补抓一次；每只股票同步显示 TradingView 公司层面总市值，并按自动 USD/CNY 汇率换算为美元和人民币；行情抓取失败时回退到最近有效快照或研究参考价
 - 供应链公司估值观察：以规范化摊薄 EPS × 熊 / 基准 / 牛市 P/E 计算“安全边际、合理买入、激进买入”三档研究价格，并嵌入 TradingView Mini Chart
 - P/E 适用性护栏：亏损或一次性非经营收益主导的公司不会硬算买入价，而会说明原因、替代估值口径与重新启用条件
@@ -127,6 +127,7 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 | `data/stock-watchlist.json` | 用户指定的 87 个沪深股票、ETF 与指数基础资料，以及沪深、港股、美股三类展示配置 |
 | `data/hk-watchlist.json` | 用户指定的 34 个港股、ETF、杠杆产品、人民币柜台与主题板块基础资料 |
 | `data/us-watchlist.json` | 用户指定的 87 个美股、ADR、ETF、指数与主题板块基础资料 |
+| `data/valuation-coverage.json` | 196 个非重点标的的量化三档区间、参考价、历史样本量、方法和置信度 |
 | `data/market-quotes.json` | 12 只重点标的自动行情、公司层面总市值、USD/CNY 汇率、双市场刷新时间与状态 |
 | `data/valuation-bands.json` | 12 只重点股票的人工研究区间，以及供应链公司的 EPS 口径、熊 / 基准 / 牛市 P/E、适用性判断、假设与来源 |
 | `data/sec-filings-state.json` | SEC accession number 去重状态；避免同一披露被重复加入事件流 |
@@ -139,7 +140,7 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 
 ### 🎯 编辑估值观察数据
 
-`data/valuation-bands.json` 的 `manualBuyZones.entries` 维护已完成人工研究的重点标的区间；每项包含 `aggressive`、`reasonable`、`safety` 三个互不重叠的价格范围、分析参考价、币种、市场和简短判断。前端会把股票资料目录的 208 个标的全部合并到估值表：有人工研究的显示三档区间，其余显示“待评估”。`companies` 数组则按股票代码维护可复算的详细估值卡。编辑时请保留现有对象结构，重点字段包括：
+`data/valuation-bands.json` 的 `manualBuyZones.entries` 维护 12 个已完成人工研究的重点标的区间；`data/valuation-coverage.json` 维护其余 196 个标的的量化区间。两者都包含 `aggressive`、`reasonable`、`safety` 三个互不重叠的价格范围、参考价、币种、市场和简短判断，前端合并为完整的 208 标的估值表。`companies` 数组按股票代码维护可复算的详细估值卡。编辑时请保留现有对象结构，重点字段包括：
 
 - `ticker`、`name`、`segment`：公司与产业链标识
 - `tradingViewSymbol`：TradingView 使用的 `交易所:代码`，例如 `NASDAQ:NVDA`
@@ -214,6 +215,7 @@ node scripts/validate-data.mjs
 node scripts/validate-site.mjs
 node scripts/test-sec-monitor.mjs
 node scripts/test-market-quotes.mjs
+node scripts/build-valuation-coverage.mjs
 node scripts/refresh-market-quotes.mjs --market all --force --dry-run
 node scripts/check-sec-filings.mjs --mode events --dry-run
 ```

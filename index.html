@@ -323,7 +323,7 @@
             <p class="eyebrow">Price &amp; valuation watch</p>
             <h2 id="buy-zones-title">买入区间与估值观察</h2>
           </div>
-          <p>股票资料目录全部纳入；已有研究显示三档区间，其余明确标记为待评估。</p>
+          <p>股票资料目录全部建立三档区间；重点标的采用财报研究，其余采用价格分布量化方法。</p>
         </div>
 
         <article class="buy-zones-card" aria-labelledby="buy-zones-title" aria-describedby="buy-zones-disclosure">
@@ -331,7 +331,7 @@
             <div>
               <p class="panel-kicker">Valuation coverage</p>
               <h3>股票估值与买入区间速览</h3>
-              <p id="buy-zones-summary">正在合并股票资料与研究区间…</p>
+              <p id="buy-zones-summary">正在合并财报研究与全目录量化区间…</p>
               <label class="stock-watchlist-search buy-zone-search" for="buy-zones-search">
                 <span>搜索当前市场</span>
                 <input id="buy-zones-search" type="search" placeholder="输入名称或代码" autocomplete="off">
@@ -347,7 +347,7 @@
                   美股 <span id="buy-zone-market-count-us">0</span>
                 </button>
               </div>
-              <div class="buy-zone-marker-legend" aria-label="每日价格图案说明">
+              <div class="buy-zone-marker-legend" aria-label="参考价格位置图案说明">
                 <span class="is-safety"><img src="./assets/buy-zone-safety.png" alt="" width="30" height="30" decoding="async" aria-hidden="true">高安全边际</span>
                 <span class="is-reasonable"><img src="./assets/buy-zone-reasonable.png" alt="" width="30" height="30" decoding="async" aria-hidden="true">合理主买</span>
                 <span class="is-aggressive"><img src="./assets/buy-zone-aggressive.png" alt="" width="30" height="30" decoding="async" aria-hidden="true">激进试仓</span>
@@ -355,7 +355,7 @@
               </div>
             </div>
             <div class="buy-zones-meta" aria-label="区间数据状态">
-              <span class="demo-chip">208 标的 · 区间逐步补充</span>
+              <span class="demo-chip">208 标的 · 12 研究 + 196 量化</span>
               <time id="buy-zones-updated-at" datetime="">加载中…</time>
             </div>
           </div>
@@ -366,7 +366,7 @@
               <thead>
                 <tr>
                   <th scope="col">标的</th>
-                  <th scope="col">最新行情 / 研究价</th>
+                  <th scope="col">参考价 / 最新行情</th>
                   <th scope="col" class="zone-safety-heading">高安全边际</th>
                   <th scope="col" class="zone-reasonable-heading">合理主买</th>
                   <th scope="col" class="zone-aggressive-heading">激进试仓</th>
@@ -375,23 +375,23 @@
                       type="button"
                       id="buy-zones-sort-button"
                       class="buy-zone-sort-button"
-                      title="按当前行情相对激进区间上限的距离排序"
+                      title="按参考价相对激进区间上限的距离排序"
                     >
-                      <span>行情所处区间</span>
+                      <span>参考价所处区间</span>
                       <span id="buy-zones-sort-indicator" class="buy-zone-sort-indicator" aria-hidden="true">高→低</span>
                     </button>
                   </th>
                 </tr>
               </thead>
               <tbody id="buy-zones-body">
-                <tr><td colspan="6" class="table-empty">正在合并股票资料与研究区间…</td></tr>
+                <tr><td colspan="6" class="table-empty">正在合并财报研究与全目录量化区间…</td></tr>
               </tbody>
             </table>
           </div>
 
           <aside id="buy-zones-disclosure" class="buy-zones-disclosure" role="note">
             <strong>区间与行情边界</strong>
-            <p>股票资料目录中的 208 个标的全部纳入；仅已有研究依据的标的显示三档价格带，其余明确标记为“待评估”，不会生成或暗示买入价。已有区间的百分比计算分别对照价格带的上、下限；区间与行情均不构成个性化投资建议。</p>
+            <p>股票资料目录中的 208 个标的均已建立三档区间：12 个重点标的采用财报与业务研究，196 个采用近一年价格分布或低置信度参考价阶梯。当前参考价的百分比距离分别对照价格带的上、下限计算。量化价格带用于建立买入纪律，不等同于公司内在价值；历史表现不保证未来结果，也不构成个性化投资建议。</p>
           </aside>
         </article>
 
@@ -590,7 +590,7 @@
           </article>
           <article class="method-card method-formula">
             <span class="method-number">04</span>
-            <h2>两类价格带</h2>
+            <h2>财报研究与 P/E 价格带</h2>
             <p>盈利稳定公司使用同口径规范化摊薄 EPS × 熊 / 基准 / 牛市 P/E；重点标的的人工区间综合上一季度财报、管理层指引、前瞻盈利与特有风险。安全边际再对熊市价值折价 20%。</p>
             <div class="formula" aria-label="估值价格带公式">
               <code>Safety ≤ EPS × Bear P/E × 80% · Reasonable ≤ EPS × Base P/E · Aggressive ≤ EPS × Bull P/E</code>
@@ -598,8 +598,16 @@
           </article>
           <article class="method-card">
             <span class="method-number">05</span>
-            <h2>对话区间与财务模型分层</h2>
-            <p>区间速览保留关联研究对话的静态判断；财务模型则按统一 EPS 与 P/E 规则复算。两者分别展示，避免把主观区间误标为自动估值结果。</p>
+            <h2>全目录量化区间</h2>
+            <p>未完成财报研究的普通股票按近一年复权日线收盘价的分位数建立三档区间；ETF、指数、主题板块和杠杆产品使用单独的分位范围。历史不足或无法取得日线的特殊证券统一标为低置信度。</p>
+            <div class="formula" aria-label="普通股票量化价格带公式">
+              <code>Safety P8–P22 · Reasonable P32–P47 · Aggressive P58–P74</code>
+            </div>
+          </article>
+          <article class="method-card">
+            <span class="method-number">06</span>
+            <h2>研究区间与量化区间分层</h2>
+            <p>财报研究区间用于表达对盈利、估值与特有风险的判断；量化区间用于提供一致的价格纪律，不等同于内在价值。两者明确标注来源、样本量和置信度，避免混为同一口径。</p>
           </article>
         </div>
 

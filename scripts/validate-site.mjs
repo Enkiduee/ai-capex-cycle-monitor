@@ -91,6 +91,7 @@ assert(html.includes('id="stock-watchlist-search"'), '股票观察池必须支�
 assert(app.includes("stockWatchlist: { path: './data/stock-watchlist.json'"), '前端必须加载独立的股票资料目录');
 assert(app.includes("hkWatchlist: { path: './data/hk-watchlist.json'"), '前端必须加载港股资料目录');
 assert(app.includes("usWatchlist: { path: './data/us-watchlist.json'"), '前端必须加载美股资料目录');
+assert(app.includes("valuationCoverage: { path: './data/valuation-coverage.json'"), '前端必须加载全目录量化估值区间');
 assert(app.includes('stockWatchlistUniverse'), '前端必须合并三地股票资料目录');
 assert(app.includes('state.data.hkWatchlist'), '分类观察池必须合并港股资料');
 assert(app.includes('state.data.usWatchlist'), '分类观察池必须合并美股资料');
@@ -110,10 +111,10 @@ assert(html.includes('data-buy-zone-market="cn"') && html.includes('data-buy-zon
 assert(app.includes("state.buyZones.market"), '买入区间速览必须保存当前市场分类');
 assert(app.includes('renderBuyZones(data)'), '估值页面必须从统一数据源渲染买入区间速览');
 assert(app.includes('function buyZoneUniverse(data)') && app.includes('return stockWatchlistUniverse().map'), '估值买入区间必须覆盖股票资料目录中的全部标的');
-assert(app.includes("researchStatus: 'pending'") && html.includes('其余明确标记为“待评估”'), '尚未研究的目录标的必须明确显示为待评估');
-assert(html.includes('股票资料目录中的 208 个标的全部纳入'), '页面必须说明 208 个目录标的全部进入估值买入区间');
+assert(app.includes("researchStatus: 'quantitative'") && app.includes('coverageByKey'), '非重点标的必须合并量化三档区间');
+assert(html.includes('股票资料目录中的 208 个标的均已建立三档区间'), '页面必须说明 208 个目录标的均已建立估值买入区间');
 assert(app.includes('buyZoneDistanceMetrics'), '买入区间速览必须计算相对三档价格区间两端的百分比距离');
-assert(app.includes('buyZoneDailyMarkerMarkup(company, quote && quote.price)'), '每只股票必须按自动行情显示每日价格图案');
+assert(app.includes('buyZoneDailyMarkerMarkup(company, shownPrice)'), '每只股票必须按行情或量化参考价显示价格图案');
 assert(app.includes("image: './assets/buy-zone-safety.png'") && app.includes("image: './assets/buy-zone-reasonable.png'") && app.includes("image: './assets/buy-zone-aggressive.png'") && app.includes("image: './assets/buy-zone-wait.png'"), '四档每日价格图案资产缺失');
 assert(html.includes('class="buy-zone-marker-legend"') && html.includes('高于激进 · 等待'), '买入区间表必须提供四种图案图例');
 assert(styles.includes('.buy-zone-daily-marker.is-safety') && styles.includes('.buy-zone-daily-marker.is-reasonable') && styles.includes('.buy-zone-daily-marker.is-aggressive') && styles.includes('.buy-zone-daily-marker.is-wait'), '四档每日价格图案必须使用不同颜色');
@@ -134,7 +135,7 @@ assert(!app.includes("suffix: 'B'") && !app.includes("suffix: 'T'"), '市值不�
 assert(!/(?:十|百|千|万)亿|(?:十|百|千)万/.test(`${html}\n${app}\n${charts}`), '页面数值不能显示复合中文数量级');
 assert(html.includes('单位：亿美元') && charts.includes("getUnit(data, 'capex', '亿美元')"), '云巨头 CapEx 图表必须统一显示亿美元');
 assert(app.includes('referencePrice: quote ? quote.price : company.referencePrice'), '自动行情缺失时必须回退到研究参考价');
-assert(html.includes('208 标的 · 区间逐步补充'), '买入区间表必须说明全部标的已经纳入且区间逐步补充');
+assert(html.includes('208 标的 · 12 研究 + 196 量化'), '买入区间表必须说明全部标的均已建立区间');
 assert(styles.includes('.buy-zone-quote-meta'), 'CSS 缺少自动行情时间与涨跌样式');
 assert(styles.includes('.buy-zone-market-cap strong.is-usd'), 'CSS 缺少 USD 市值样式');
 assert(styles.includes('.buy-zone-market-cap strong.is-cny'), 'CSS 缺少 CNY 市值样式');

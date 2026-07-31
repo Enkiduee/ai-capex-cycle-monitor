@@ -8,6 +8,7 @@ const files = [
   'data/hk-watchlist.json',
   'data/us-watchlist.json',
   'data/market-quotes.json',
+  'data/valuation-coverage.json',
   'data/valuation-bands.json',
   'data/macro.json',
   'data/events.json'
@@ -20,6 +21,7 @@ const stockWatchlist = payloads['data/stock-watchlist.json'];
 const hkWatchlist = payloads['data/hk-watchlist.json'];
 const usWatchlist = payloads['data/us-watchlist.json'];
 const marketQuotes = payloads['data/market-quotes.json'];
+const valuationCoverage = payloads['data/valuation-coverage.json'];
 const valuation = payloads['data/valuation-bands.json'];
 const events = payloads['data/events.json'];
 const risk = payloads['data/risk-score.json'];
@@ -243,6 +245,111 @@ for (const entry of manualEntries) {
     }
   }
 }
+
+assert(valuationCoverage.version === 1, 'valuation-coverage.version 必须为 1');
+assert(validIso(valuationCoverage.generatedAt), 'valuation-coverage.generatedAt 必须为 ISO UTC 时间');
+for (const key of ['label', 'coverage', 'stockBands', 'pooledBands', 'leveragedBands', 'fallbackBands', 'notice']) {
+  assert(
+    typeof (valuationCoverage.methodology && valuationCoverage.methodology[key]) === 'string'
+      && valuationCoverage.methodology[key].trim(),
+    `valuation-coverage.methodology.${key} 不能为空`
+  );
+}
+assert(
+  valuationCoverage.source
+    && typeof valuationCoverage.source.label === 'string'
+    && valuationCoverage.source.label.trim(),
+  'valuation-coverage.source.label 不能为空'
+);
+try {
+  const coverageHomepage = new URL(valuationCoverage.source && valuationCoverage.source.homepage);
+  assert(coverageHomepage.protocol === 'https:', 'valuation-coverage.source.homepage 必须使用 HTTPS');
+} catch (error) {
+  errors.push('valuation-coverage.source.homepage 无效');
+}
+const coverageEntries = Array.isArray(valuationCoverage.entries) ? valuationCoverage.entries : [];
+assert(coverageEntries.length === 196, '全目录量化区间必须包含 196 个非重点标的');
+const directoryKeys = new Set([
+  ...stockEntries.map((entry) => `cn:${entry.exchange}:${entry.ticker}`),
+  ...hkEntries.map((entry) => `hk:${entry.exchange}:${entry.ticker}`),
+  ...usEntries.map((entry) => `us:${entry.exchange}:${entry.ticker}`)
+]);
+const manualDirectoryKeys = new Set();
+for (const entry of manualEntries) {
+  const market = entry.currency === 'CNY' ? 'cn' : entry.currency === 'HKD' ? 'hk' : 'us';
+  const matches = [...directoryKeys].filter((key) => key.startsWith(`${market}:`) && key.endsWith(`:${entry.ticker}`));
+  assert(matches.length === 1, `重点标的必须唯一匹配股票资料目录：${entry.ticker}`);
+  if (matches[0]) manualDirectoryKeys.add(matches[0]);
+}
+const coverageKeys = new Set();
+const coverageMethods = new Set([
+  'price-distribution-stock-v1',
+  'price-distribution-pooled-v1',
+  'price-distribution-leveraged-v1',
+  'limited-history-v1',
+  'reference-ladder-v1'
+]);
+for (const entry of coverageEntries) {
+  const ticker = String(entry && entry.ticker || '');
+  const key = `${entry.market}:${entry.exchange}:${ticker}`;
+  assert(directoryKeys.has(key), `量化区间标的未录入股票资料目录：${key}`);
+  assert(!coverageKeys.has(key), `量化区间标的重复：${key}`);
+  assert(!manualDirectoryKeys.has(key), `量化区间不得覆盖重点研究标的：${key}`);
+  coverageKeys.add(key);
+  assert(typeof entry.name === 'string' && entry.name.trim(), `${key}.name 不能为空`);
+  assert(['cn', 'hk', 'us'].includes(entry.market), `${key}.market 无效`);
+  assert(typeof entry.exchange === 'string' && entry.exchange.trim(), `${key}.exchange 不能为空`);
+  assert(typeof entry.segment === 'string' && entry.segment.trim(), `${key}.segment 不能为空`);
+  assert(typeof entry.securityType === 'string' && entry.securityType.trim(), `${key}.securityType 不能为空`);
+  assert(['CNY', 'HKD', 'USD'].includes(entry.currency), `${key}.currency 无效`);
+  assert(Number.isFinite(Number(entry.referencePrice)) && Number(entry.referencePrice) > 0, `${key}.referencePrice 必须大于 0`);
+  assert(validDate(entry.referencePriceDate), `${key}.referencePriceDate 无效`);
+  assert(typeof entry.referencePriceApproximate === 'boolean', `${key}.referencePriceApproximate 必须是布尔值`);
+  assert(Number.isInteger(entry.observationCount) && entry.observationCount >= 0, `${key}.observationCount 必须是非负整数`);
+  assert(coverageMethods.has(entry.method), `${key}.method 无效`);
+  assert(['medium', 'low'].includes(entry.confidence), `${key}.confidence 必须是 medium 或 low`);
+  const priceValues = [
+    Number(entry.safety && entry.safety.low),
+    Number(entry.safety && entry.safety.high),
+    Number(entry.reasonable && entry.reasonable.low),
+    Number(entry.reasonable && entry.reasonable.high),
+    Number(entry.aggressive && entry.aggressive.low),
+    Number(entry.aggressive && entry.aggressive.high)
+  ];
+  assert(
+    priceValues.every(Number.isFinite)
+      && priceValues[0] > 0
+      && priceValues.every((value, index) => index === 0 || value > priceValues[index - 1]),
+    `${key} 三档量化区间必须是严格递增的正数`
+  );
+  assert(typeof entry.view === 'string' && entry.view.trim(), `${key}.view 不能为空`);
+  assert(typeof entry.sourceLabel === 'string' && entry.sourceLabel.trim(), `${key}.sourceLabel 不能为空`);
+  if (entry.method === 'reference-ladder-v1') {
+    assert(entry.observationCount === 0, `${key} 参考价阶梯不得伪造历史样本`);
+    assert(entry.referencePriceApproximate === true, `${key} 参考价阶梯必须标为近似值`);
+  } else {
+    assert(entry.observationCount >= 5, `${key} 历史分布至少需要 5 个交易日`);
+    assert(validDate(entry.historyStart) && validDate(entry.historyEnd), `${key} 历史区间日期无效`);
+    assert(typeof entry.marketDataSymbol === 'string' && entry.marketDataSymbol.trim(), `${key}.marketDataSymbol 不能为空`);
+    try {
+      const sourceUrl = new URL(entry.sourceUrl);
+      assert(sourceUrl.protocol === 'https:', `${key}.sourceUrl 必须使用 HTTPS`);
+    } catch (error) {
+      errors.push(`${key}.sourceUrl 无效`);
+    }
+  }
+  assert(entry.metrics && typeof entry.metrics === 'object' && !Array.isArray(entry.metrics), `${key}.metrics 必须是对象`);
+  for (const metric of ['percentile20', 'percentile50', 'percentile80', 'sma50', 'sma200', 'annualizedVolatility']) {
+    const value = entry.metrics && entry.metrics[metric];
+    assert(value === null || Number.isFinite(Number(value)), `${key}.metrics.${metric} 必须是数值或 null`);
+  }
+}
+const allValuationKeys = new Set([...manualDirectoryKeys, ...coverageKeys]);
+assert(allValuationKeys.size === 208, '估值买入区间必须完整覆盖 208 个股票资料目录标的');
+assert(
+  [...directoryKeys].every((key) => allValuationKeys.has(key)),
+  '股票资料目录存在未建立估值买入区间的标的'
+);
 
 assert(marketQuotes.version === 2, 'market-quotes.version 必须为 2');
 assert(marketQuotes.fx && marketQuotes.fx.pair === 'USD/CNY', 'market-quotes.fx.pair 必须为 USD/CNY');
