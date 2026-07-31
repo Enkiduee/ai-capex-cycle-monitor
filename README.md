@@ -41,7 +41,7 @@ AI CapEx Cycle Monitor 将分散的产业信号整理为统一的风险研究框
 - 云巨头 CapEx 趋势：Microsoft、Amazon、Alphabet、Meta 与 Oracle 的季度演示数据
 - CapEx 增速与云收入增速对比：自动判断两者差值并生成提示
 - 供应链风险：排序、产业链环节筛选、风险等级筛选与移动端横向滚动
-- 分类股票观察池：录入用户截图中的 87 个沪深标的、34 个港股/主题标的和 87 个美股/指数/主题标的，共 208 个；沪深、港股、美股通过独立分类切换，支持在当前市场按名称或代码搜索。港股截图包含 29 只股票，以及 ETF、杠杆产品、人民币柜台和行业板块；美股截图保留盘前行情，重点研究标的匹配时优先显示自动行情
+- 股票资料目录：根据用户提供的代码录入 87 个沪深标的、34 个港股/主题标的和 87 个美股/指数/主题标的，共 208 个；按市场分类展示名称、代码、交易所、证券类型、已有分类和交易币种，并支持在当前市场搜索
 - 12 只重点股票买入区间速览：集中展示 AAOI、SKHY、LITE、兴森科技、深南电路、通富微电、AXTI、ASTS、Intel、Nebius、CoreWeave 与 Corning 的“安全边际、合理主买、激进试仓”研究区间；按沪深、港股、美股分别查看，逐项计算行情相对三档价格带上下限的百分比区间，并支持按相对激进上限的距离从高到低或从低到高排序；点击代码可进入对应详情和行情图
 - 重点标的自动行情与市值：A 股与美股在各自盘中每 30 分钟抓取一次，并在收盘后补抓一次；每只股票同步显示 TradingView 公司层面总市值，并按自动 USD/CNY 汇率换算为美元和人民币；行情抓取失败时回退到最近有效快照或研究参考价
 - 供应链公司估值观察：以规范化摊薄 EPS × 熊 / 基准 / 牛市 P/E 计算“安全边际、合理买入、激进买入”三档研究价格，并嵌入 TradingView Mini Chart
@@ -124,9 +124,9 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 | `data/risk-score.json` | 更新时间、周期阶段、综合判断、手动分数与五项风险分数 |
 | `data/hyperscalers.json` | 云巨头季度 CapEx、合计 CapEx 增速与云收入增速 |
 | `data/supply-chain.json` | 供应链公司、经营趋势、资产负债风险、综合等级，以及由 SEC 财报行项目计算的最新季度毛利率 |
-| `data/stock-watchlist.json` | 用户截图中的 87 个沪深股票、ETF 与指数行情快照，以及沪深、港股、美股三类展示配置 |
-| `data/hk-watchlist.json` | 用户本次截图中的 34 个港股、ETF、杠杆产品、人民币柜台与主题板块行情快照 |
-| `data/us-watchlist.json` | 用户本次截图中的 87 个美股、ADR、ETF、指数与主题板块行情快照（含截图展示的盘前行情） |
+| `data/stock-watchlist.json` | 用户指定的 87 个沪深股票、ETF 与指数基础资料，以及沪深、港股、美股三类展示配置 |
+| `data/hk-watchlist.json` | 用户指定的 34 个港股、ETF、杠杆产品、人民币柜台与主题板块基础资料 |
+| `data/us-watchlist.json` | 用户指定的 87 个美股、ADR、ETF、指数与主题板块基础资料 |
 | `data/market-quotes.json` | 12 只重点标的自动行情、公司层面总市值、USD/CNY 汇率、双市场刷新时间与状态 |
 | `data/valuation-bands.json` | 12 只重点股票的人工研究区间，以及供应链公司的 EPS 口径、熊 / 基准 / 牛市 P/E、适用性判断、假设与来源 |
 | `data/sec-filings-state.json` | SEC accession number 去重状态；避免同一披露被重复加入事件流 |

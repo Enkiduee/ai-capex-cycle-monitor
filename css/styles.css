@@ -1238,7 +1238,7 @@ a.financial-metric:focus-visible strong {
 
 .stock-watchlist-table {
   width: 100%;
-  min-width: 920px;
+  min-width: 760px;
   border-collapse: collapse;
   font-size: 11px;
 }
@@ -1320,119 +1320,27 @@ a.financial-metric:focus-visible strong {
   line-height: 1;
 }
 
-.stock-price,
-.stock-market-cap,
-.stock-volume,
-.stock-move {
-  font-family: var(--font-mono);
-  white-space: nowrap;
-}
-
-.stock-price-cell,
-.stock-move-cell {
-  display: grid;
-  gap: 3px;
-}
-
-.stock-price {
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 850;
-}
-
-.stock-premarket-price,
-.stock-premarket-move {
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-  font-size: 8px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.stock-premarket-move.is-up {
-  color: #d69a9f;
-}
-
-.stock-premarket-move.is-down {
-  color: #5da77f;
-}
-
-.stock-premarket-move.is-flat {
-  color: var(--text-muted);
-}
-
-.stock-market-cap,
-.stock-volume {
-  color: var(--text-secondary);
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.stock-move {
-  display: grid;
-  gap: 1px;
-  font-size: 10px;
-  font-weight: 850;
-}
-
-.stock-move small {
-  color: currentColor;
-  font-size: 8px;
-}
-
-.stock-move.is-up {
-  color: #ff7d82;
-}
-
-.stock-move.is-down {
-  color: #5de19a;
-}
-
-.stock-move.is-flat {
-  color: var(--text-muted);
-}
-
-.stock-data-status {
-  display: inline-flex;
-  min-height: 24px;
-  align-items: center;
-  padding: 3px 7px;
-  border: 1px solid #3c5062;
-  border-radius: 999px;
-  background: #101c27;
+.stock-directory-value {
   color: var(--text-secondary);
   font-family: var(--font-mono);
-  font-size: 8px;
-  font-weight: 800;
+  font-size: 10px;
+  font-weight: 700;
   white-space: nowrap;
 }
 
-.stock-data-status.is-auto {
-  border-color: #34715c;
-  background: var(--green-bg);
-  color: var(--green);
-}
-
-.stock-watchlist-notice {
-  display: grid;
-  grid-template-columns: 110px minmax(0, 1fr);
-  gap: 16px;
-  margin: 12px;
-  padding: 13px 15px;
-  border: 1px solid #374c5d;
-  border-radius: var(--radius-md);
-  background: #101c26;
-}
-
-.stock-watchlist-notice strong {
+.stock-directory-link {
   color: var(--accent-strong);
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
-.stock-watchlist-notice p {
-  margin: 0;
-  color: var(--text-secondary);
-  font-size: 10px;
+.stock-directory-link:hover,
+.stock-directory-link:focus-visible {
+  color: var(--text);
+  text-decoration: underline;
 }
 
 .buy-zones-card {
@@ -3413,8 +3321,7 @@ a.buy-zone-reference:focus-visible {
   .valuation-disclosure,
   .buy-zones-head,
   .buy-zones-disclosure,
-  .stock-watchlist-toolbar,
-  .stock-watchlist-notice {
+  .stock-watchlist-toolbar {
     align-items: stretch;
     grid-template-columns: 1fr;
     flex-direction: column;

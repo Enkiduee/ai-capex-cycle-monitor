@@ -266,18 +266,18 @@
 
         <div class="subsection-heading stock-watchlist-heading">
           <div>
-            <p class="eyebrow">Market watchlist</p>
-            <h2 id="stock-watchlist-title">股票观察池</h2>
+            <p class="eyebrow">Stock directory</p>
+            <h2 id="stock-watchlist-title">股票资料目录</h2>
           </div>
-          <p>截图行情与重点研究标的分开记录，并按沪深、港股和美股独立查看。</p>
+          <p>根据你提供的股票代码录入对应名称、市场、交易所和证券类型；有分类时一并展示。</p>
         </div>
 
-        <article class="stock-watchlist-card" aria-labelledby="stock-watchlist-title" aria-describedby="stock-watchlist-notice">
+        <article class="stock-watchlist-card" aria-labelledby="stock-watchlist-title">
           <div class="stock-watchlist-toolbar">
             <div>
-              <p class="panel-kicker">Grouped market snapshot</p>
-              <h3>按市场分类查看股票信息</h3>
-              <p id="stock-watchlist-summary" class="stock-watchlist-summary">正在整理股票观察池…</p>
+              <p class="panel-kicker">Grouped stock information</p>
+              <h3>按市场分类查看股票资料</h3>
+              <p id="stock-watchlist-summary" class="stock-watchlist-summary">正在读取股票资料…</p>
             </div>
             <label class="stock-watchlist-search" for="stock-watchlist-search">
               <span>搜索当前市场</span>
@@ -297,30 +297,25 @@
             </button>
           </div>
 
-          <div class="stock-watchlist-table-scroll" tabindex="0" aria-label="可横向滚动的分类股票观察表">
+          <div class="stock-watchlist-table-scroll" tabindex="0" aria-label="可横向滚动的分类股票资料表">
             <table class="stock-watchlist-table">
-              <caption>按沪深、港股和美股分类展示的股票行情观察池</caption>
+              <caption>按沪深、港股和美股分类展示的股票资料目录</caption>
               <thead>
                 <tr>
                   <th scope="col">标的</th>
-                  <th scope="col">最新价</th>
-                  <th scope="col">当日涨跌</th>
-                  <th scope="col">成交量</th>
-                  <th scope="col">总市值</th>
-                  <th scope="col">阶段表现</th>
-                  <th scope="col">数据状态</th>
+                  <th scope="col">市场</th>
+                  <th scope="col">交易所</th>
+                  <th scope="col">证券类型</th>
+                  <th scope="col">分类</th>
+                  <th scope="col">交易币种</th>
+                  <th scope="col">资料</th>
                 </tr>
               </thead>
               <tbody id="stock-watchlist-body">
-                <tr><td colspan="7" class="table-empty">正在加载股票观察池…</td></tr>
+                <tr><td colspan="7" class="table-empty">正在读取股票资料…</td></tr>
               </tbody>
             </table>
           </div>
-
-          <aside id="stock-watchlist-notice" class="stock-watchlist-notice" role="note">
-            <strong>数据口径</strong>
-            <p>截图中的数值按原样录入，不是实时行情；美股重点标的优先显示现有自动行情快照。截图未展示最后一列的明确时间范围，因此统一标为“阶段表现”。</p>
-          </aside>
         </article>
 
         <div class="subsection-heading valuation-heading">

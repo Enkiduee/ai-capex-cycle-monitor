@@ -5,9 +5,9 @@
     risk: { path: './data/risk-score.json', label: '风险评分' },
     hyperscalers: { path: './data/hyperscalers.json', label: '云巨头 CapEx' },
     supplyChain: { path: './data/supply-chain.json', label: '供应链风险' },
-    stockWatchlist: { path: './data/stock-watchlist.json', label: '分类股票观察池' },
-    hkWatchlist: { path: './data/hk-watchlist.json', label: '港股行情截图' },
-    usWatchlist: { path: './data/us-watchlist.json', label: '美股行情截图' },
+    stockWatchlist: { path: './data/stock-watchlist.json', label: '沪深股票资料' },
+    hkWatchlist: { path: './data/hk-watchlist.json', label: '港股资料' },
+    usWatchlist: { path: './data/us-watchlist.json', label: '美股资料' },
     marketQuotes: { path: './data/market-quotes.json', label: '自动行情快照' },
     valuation: { path: './data/valuation-bands.json', label: '价格与估值观察' },
     macro: { path: './data/macro.json', label: '宏观环境' },
@@ -808,10 +808,6 @@
     return exchange || '—';
   }
 
-  function exchangeFromTradingViewSymbol(value) {
-    return normalizedExchange(textValue(value, '').split(':')[0]);
-  }
-
   function watchlistRowKey(row) {
     const market = textValue(row.market, '');
     const ticker = textValue(row.ticker, '');
@@ -822,7 +818,6 @@
     const snapshot = state.data.stockWatchlist;
     const hkSnapshot = state.data.hkWatchlist;
     const usSnapshot = state.data.usWatchlist;
-    const valuation = state.data.valuation;
     const rows = [];
     const seen = new Set();
     const addRow = (row) => {
@@ -841,54 +836,33 @@
         exchange,
         market: 'cn',
         typeLabel: { stock: '股票', etf: 'ETF', index: '指数' }[entry.type] || '证券',
+        category: '',
         currency: safeCurrency(entry.currency, 'CNY'),
-        price: toFiniteNumber(entry.price),
-        change: toFiniteNumber(entry.change),
-        changePercent: toFiniteNumber(entry.changePercent),
-        volumeLabel: textValue(entry.volume, '—'),
-        marketCapLabel: Number.isFinite(Number(entry.marketCapCnyYi))
-          ? `${formatNumber(Number(entry.marketCapCnyYi), 2)} 亿元`
-          : '—',
-        periodChangePercent: toFiniteNumber(entry.periodChangePercent),
-        sourceKind: 'screenshot',
-        delayed: false,
         sourceUrl: `https://www.tradingview.com/symbols/${exchange === 'SH' ? 'SSE' : 'SZSE'}-${encodeURIComponent(entry.ticker)}/`
       });
     });
 
     (hkSnapshot && Array.isArray(hkSnapshot.entries) ? hkSnapshot.entries : []).forEach((entry) => {
+      const ticker = textValue(entry.ticker, '');
+      const sourceTicker = /^\d{5}$/.test(ticker) ? String(Number(ticker)) : '';
       addRow({
-        ticker: textValue(entry.ticker, ''),
+        ticker,
         name: textValue(entry.name, ''),
-        exchange: 'HK',
+        exchange: textValue(entry.exchange, 'HKEX'),
         market: 'hk',
         typeLabel: textValue(entry.securityType, '证券'),
         category: textValue(entry.category, ''),
         currency: safeCurrency(entry.currency, 'HKD'),
-        price: toFiniteNumber(entry.price),
-        change: toFiniteNumber(entry.change),
-        changePercent: toFiniteNumber(entry.changePercent),
-        volumeLabel: textValue(entry.volumeLabel, '—'),
-        marketCapLabel: `${safeCurrency(entry.currency, 'HKD')} ${textValue(entry.marketCapLabel, '—')}`,
-        periodChangePercent: toFiniteNumber(entry.performancePercent),
-        sourceKind: 'screenshot',
-        delayed: entry.delayed === true,
-        sourceUrl: safeExternalUrl(entry.sourceUrl)
+        sourceUrl: sourceTicker ? `https://www.tradingview.com/symbols/HKEX-${sourceTicker}/` : ''
       });
     });
 
     (usSnapshot && Array.isArray(usSnapshot.entries) ? usSnapshot.entries : []).forEach((entry) => {
       const ticker = textValue(entry.ticker, '');
       const exchange = normalizedExchange(entry.exchange);
-      const quote = marketQuoteForTicker(ticker);
-      const marketCap = quote && toFiniteNumber(quote.marketCap);
       const tradingViewExchange = ['NASDAQ', 'NYSE', 'NYSEARCA', 'AMEX', 'OTC'].includes(exchange)
         ? exchange
         : '';
-      const sourceUrl = safeExternalUrl(quote && quote.sourceUrl)
-        || (tradingViewExchange
-          ? `https://www.tradingview.com/symbols/${tradingViewExchange}-${encodeURIComponent(ticker.replace(/^\./, ''))}/`
-          : '');
       addRow({
         ticker,
         name: textValue(entry.name, ''),
@@ -897,83 +871,13 @@
         typeLabel: textValue(entry.securityType, '证券'),
         category: textValue(entry.category, ''),
         currency: safeCurrency(entry.currency, 'USD'),
-        price: quote ? quote.price : toFiniteNumber(entry.price),
-        change: quote ? toFiniteNumber(quote.change) : toFiniteNumber(entry.change),
-        changePercent: quote ? toFiniteNumber(quote.changePercent) : toFiniteNumber(entry.changePercent),
-        premarketPrice: toFiniteNumber(entry.premarketPrice),
-        premarketChange: toFiniteNumber(entry.premarketChange),
-        premarketChangePercent: toFiniteNumber(entry.premarketChangePercent),
-        volumeLabel: textValue(entry.volumeLabel, '—'),
-        marketCapLabel: marketCap === null
-          ? `USD ${textValue(entry.marketCapLabel, '—')}`
-          : formatCompactMarketCap(marketCap, safeCurrency(quote.marketCapCurrency, entry.currency)),
-        periodChangePercent: toFiniteNumber(entry.performancePercent),
-        sourceKind: quote ? 'auto' : 'screenshot',
-        delayed: false,
-        sourceUrl
-      });
-    });
-
-    const manualEntries = valuation && valuation.manualBuyZones && Array.isArray(valuation.manualBuyZones.entries)
-      ? valuation.manualBuyZones.entries
-      : [];
-    manualEntries.forEach((entry) => {
-      const group = marketGroup(entry.market, entry.currency);
-      const exchange = exchangeFromTradingViewSymbol(entry.tradingViewSymbol);
-      const quote = marketQuoteForTicker(entry.ticker);
-      const marketCap = quote && toFiniteNumber(quote.marketCap);
-      const sourceUrl = safeExternalUrl(quote && quote.sourceUrl)
-        || `https://www.tradingview.com/symbols/${textValue(entry.tradingViewSymbol, '').replace(':', '-')}/`;
-      addRow({
-        ticker: textValue(entry.ticker, ''),
-        name: textValue(entry.name, ''),
-        exchange,
-        market: group,
-        typeLabel: textValue(entry.market, '').includes('ADR') ? 'ADR' : '股票',
-        category: textValue(entry.segment, ''),
-        currency: safeCurrency(entry.currency, group === 'cn' ? 'CNY' : 'USD'),
-        price: quote ? quote.price : toFiniteNumber(entry.referencePrice),
-        change: quote ? toFiniteNumber(quote.change) : null,
-        changePercent: quote ? toFiniteNumber(quote.changePercent) : null,
-        volumeLabel: '—',
-        marketCapLabel: marketCap === null
-          ? '—'
-          : formatCompactMarketCap(marketCap, safeCurrency(quote.marketCapCurrency, entry.currency)),
-        periodChangePercent: null,
-        sourceKind: quote ? 'auto' : 'research',
-        delayed: false,
-        sourceUrl
+        sourceUrl: tradingViewExchange
+          ? `https://www.tradingview.com/symbols/${tradingViewExchange}-${encodeURIComponent(ticker.replace(/^\./, ''))}/`
+          : ''
       });
     });
 
     return rows;
-  }
-
-  function stockMoveMeta(value) {
-    const percent = toFiniteNumber(value);
-    return {
-      className: percent === null || percent === 0 ? 'is-flat' : percent > 0 ? 'is-up' : 'is-down',
-      text: percent === null ? '—' : `${percent > 0 ? '+' : ''}${formatNumber(percent, 2, '%')}`
-    };
-  }
-
-  function formatStockWatchlistPrice(value, currency) {
-    const number = toFiniteNumber(value);
-    if (number === null) return '—';
-    const decimals = Math.abs(number) < 1 || Math.abs(number * 100 - Math.round(number * 100)) > 0.0001 ? 3 : 2;
-    const symbol = { CNY: '¥', HKD: 'HK$', USD: '$' }[safeCurrency(currency, 'USD')] || `${currency} `;
-    return `${symbol}${formatNumber(number, decimals)}`;
-  }
-
-  function formatStockWatchlistChange(change, percent) {
-    const amount = toFiniteNumber(change);
-    const percentValue = toFiniteNumber(percent);
-    if (amount === null || percentValue === null) return { amount: '—', percent: '涨跌待更新' };
-    const decimals = Math.abs(amount) < 0.01 ? 3 : 2;
-    return {
-      amount: `${amount > 0 ? '+' : ''}${formatNumber(amount, decimals)}`,
-      percent: `${percentValue > 0 ? '+' : ''}${formatNumber(percentValue, 2, '%')}`
-    };
   }
 
   function updateMarketTabs(selector, dataAttribute, activeMarket, counts) {
@@ -1007,13 +911,7 @@
     const marketLabel = marketGroupLabel(state.stocks.market);
     const summary = byId('stock-watchlist-summary');
     if (summary) {
-      const snapshotByMarket = {
-        cn: state.data.stockWatchlist,
-        hk: state.data.hkWatchlist,
-        us: state.data.usWatchlist
-      };
-      const snapshotDate = snapshotByMarket[state.stocks.market] && snapshotByMarket[state.stocks.market].snapshotDate;
-      summary.textContent = `${marketLabel}显示 ${rows.length} / ${marketRows.length} 个标的 · 全部市场共 ${universe.length} 个 · 截图 ${formatDate(snapshotDate)}`;
+      summary.textContent = `${marketLabel}显示 ${rows.length} / ${marketRows.length} 个标的 · 全部市场共 ${universe.length} 个 · 已按代码录入基础资料`;
     }
 
     if (!rows.length) {
@@ -1025,59 +923,25 @@
     }
 
     body.innerHTML = rows.map((row) => {
-      const move = stockMoveMeta(row.changePercent);
-      const change = formatStockWatchlistChange(row.change, row.changePercent);
-      const premarketMove = stockMoveMeta(row.premarketChangePercent);
-      const premarketChange = formatStockWatchlistChange(row.premarketChange, row.premarketChangePercent);
-      const hasPremarket = toFiniteNumber(row.premarketPrice) !== null;
-      const period = stockMoveMeta(row.periodChangePercent);
       const sourceUrl = safeExternalUrl(row.sourceUrl);
-      const name = escapeHTML(row.name);
-      const companyName = sourceUrl
-        ? `<a href="${escapeHTML(sourceUrl)}" target="_blank" rel="noopener noreferrer nofollow">${name} ↗</a>`
-        : name;
-      const statusLabel = row.sourceKind === 'auto'
-        ? '自动行情'
-        : row.delayed
-          ? '截图延时'
-          : row.sourceKind === 'research'
-            ? '研究参考价'
-            : '截图快照';
       return `
         <tr>
           <th scope="row">
             <span class="stock-watchlist-company">
-              <strong>${companyName}</strong>
+              <strong>${escapeHTML(row.name)}</strong>
               <span class="stock-watchlist-company-meta">
-                <span>${escapeHTML(row.exchange)}${escapeHTML(row.ticker)}</span>
-                <span class="stock-instrument-tag">${escapeHTML(row.typeLabel)}</span>
-                ${row.category ? `<span>${escapeHTML(row.category)}</span>` : ''}
+                <span>${escapeHTML(row.ticker)}</span>
               </span>
             </span>
           </th>
-          <td>
-            <span class="stock-price-cell">
-              <span class="stock-price">${escapeHTML(formatStockWatchlistPrice(row.price, row.currency))}</span>
-              ${hasPremarket ? `<small class="stock-premarket-price">截图盘前 ${escapeHTML(formatStockWatchlistPrice(row.premarketPrice, row.currency))}</small>` : ''}
-            </span>
-          </td>
-          <td>
-            <span class="stock-move-cell">
-              <span class="stock-move ${escapeHTML(move.className)}">
-                <span>${escapeHTML(change.amount)}</span>
-                <small>${escapeHTML(change.percent)}</small>
-              </span>
-              ${hasPremarket ? `
-                <small class="stock-premarket-move ${escapeHTML(premarketMove.className)}">
-                  盘前 ${escapeHTML(premarketChange.amount)} (${escapeHTML(premarketChange.percent)})
-                </small>
-              ` : ''}
-            </span>
-          </td>
-          <td><span class="stock-volume">${escapeHTML(row.volumeLabel)}</span></td>
-          <td><span class="stock-market-cap">${escapeHTML(row.marketCapLabel)}</span></td>
-          <td><span class="stock-move ${escapeHTML(period.className)}">${escapeHTML(period.text)}</span></td>
-          <td><span class="stock-data-status ${row.sourceKind === 'auto' ? 'is-auto' : ''}">${escapeHTML(statusLabel)}</span></td>
+          <td><span class="stock-directory-value">${escapeHTML(marketGroupLabel(row.market))}</span></td>
+          <td><span class="stock-directory-value">${escapeHTML(row.exchange)}</span></td>
+          <td><span class="stock-instrument-tag">${escapeHTML(row.typeLabel)}</span></td>
+          <td><span class="stock-directory-value">${escapeHTML(row.category || '—')}</span></td>
+          <td><span class="stock-directory-value">${escapeHTML(row.currency)}</span></td>
+          <td>${sourceUrl
+            ? `<a class="stock-directory-link" href="${escapeHTML(sourceUrl)}" target="_blank" rel="noopener noreferrer nofollow">查看资料 ↗</a>`
+            : '<span class="stock-directory-value">—</span>'}</td>
         </tr>
       `;
     }).join('');
