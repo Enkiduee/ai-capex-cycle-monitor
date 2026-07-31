@@ -41,7 +41,8 @@
     },
     buyZones: {
       sortDirection: 'desc',
-      market: 'cn'
+      market: 'cn',
+      query: ''
     },
     stocks: {
       market: 'cn',
@@ -639,6 +640,9 @@
   }
 
   function getBuyZoneStatus(company) {
+    if (company && company.researchStatus === 'pending') {
+      return { label: '待建立估值区间', className: 'is-pending' };
+    }
     const referencePrice = toFiniteNumber(company && company.referencePrice);
     const safety = company && company.safety ? company.safety : {};
     const reasonable = company && company.reasonable ? company.reasonable : {};
@@ -880,6 +884,40 @@
     return rows;
   }
 
+  function buyZoneUniverse(data) {
+    const snapshot = data && data.manualBuyZones && typeof data.manualBuyZones === 'object'
+      ? data.manualBuyZones
+      : {};
+    const researchedEntries = Array.isArray(snapshot.entries) ? snapshot.entries : [];
+    const researchedByKey = new Map(researchedEntries.map((entry) => [
+      `${marketGroup(entry.market, entry.currency)}:${textValue(entry.ticker, '')}`,
+      entry
+    ]));
+
+    return stockWatchlistUniverse().map((row) => {
+      const researched = researchedByKey.get(`${row.market}:${row.ticker}`);
+      if (researched) {
+        return {
+          ...row,
+          ...researched,
+          directoryMarket: row.market,
+          researchStatus: 'researched',
+          sourceUrl: row.sourceUrl
+        };
+      }
+      return {
+        ...row,
+        segment: row.category || row.typeLabel,
+        researchStatus: 'pending',
+        referencePrice: null,
+        safety: null,
+        reasonable: null,
+        aggressive: null,
+        view: '已纳入估值观察，等待完成基本面与估值研究。'
+      };
+    });
+  }
+
   function updateMarketTabs(selector, dataAttribute, activeMarket, counts) {
     document.querySelectorAll(selector).forEach((button) => {
       const market = button.dataset[dataAttribute];
@@ -960,7 +998,7 @@
     const snapshot = data && data.manualBuyZones && typeof data.manualBuyZones === 'object'
       ? data.manualBuyZones
       : {};
-    const allCompanies = Array.isArray(snapshot.entries) ? snapshot.entries : [];
+    const allCompanies = buyZoneUniverse(data);
     if (!body || !allCompanies.length) {
       throw new Error('买入区间速览缺少有效公司数据。');
     }
@@ -970,7 +1008,15 @@
       counts[group] += 1;
     });
     updateMarketTabs('[data-buy-zone-market]', 'buyZoneMarket', state.buyZones.market, counts);
-    const companies = allCompanies.filter((company) => marketGroup(company.market, company.currency) === state.buyZones.market);
+    const marketCompanies = allCompanies.filter(
+      (company) => marketGroup(company.market, company.currency) === state.buyZones.market
+    );
+    const query = state.buyZones.query.trim().toLocaleLowerCase('zh-CN');
+    const companies = marketCompanies.filter((company) => {
+      if (!query) return true;
+      return [company.name, company.ticker, company.exchange, company.segment, company.typeLabel]
+        .some((value) => String(value || '').toLocaleLowerCase('zh-CN').includes(query));
+    });
 
     const sortDirection = state.buyZones.sortDirection === 'asc' ? 'asc' : 'desc';
     const sortedCompanies = companies.map((company, index) => {
@@ -1011,10 +1057,11 @@
       const market = textValue(company.market, '待分类');
       const segment = textValue(company.segment, '待分类');
       const currency = safeCurrency(company.currency, 'USD');
+      const isPending = company.researchStatus === 'pending';
       const quote = marketQuoteForTicker(ticker);
       const status = getBuyZoneStatus({ ...company, referencePrice: quote ? quote.price : company.referencePrice });
       const shownPrice = quote ? quote.price : company.referencePrice;
-      const distanceMetrics = buyZoneDistanceMetrics(company, shownPrice);
+      const distanceMetrics = isPending ? [] : buyZoneDistanceMetrics(company, shownPrice);
       const distanceMarkup = distanceMetrics.map((metric) => `
         <span class="buy-zone-distance is-${escapeHTML(metric.key)}-tier ${escapeHTML(buyZoneDistanceClass(metric))}">
           <em>${escapeHTML(metric.label)}</em>
@@ -1024,38 +1071,60 @@
       const referencePrice = `${!quote && company.referencePriceApproximate === true ? '约 ' : ''}${formatBuyZonePrice(shownPrice, currency, 2)}`;
       const change = quoteChangeMeta(quote);
       const quoteUrl = safeExternalUrl(quote && quote.sourceUrl);
-      const priceMarkup = quoteUrl
-        ? `<a class="buy-zone-reference" href="${escapeHTML(quoteUrl)}" target="_blank" rel="noopener noreferrer nofollow">${escapeHTML(referencePrice)} ↗</a>`
-        : `<span class="buy-zone-reference">${escapeHTML(referencePrice)}</span>`;
-      const quoteMeta = quote
-        ? `<span class="buy-zone-quote-meta"><span class="buy-zone-quote-change ${escapeHTML(change.className)}">${escapeHTML(change.text)}</span><span>自动快照 · ${escapeHTML(formatMarketQuoteTime(quote.quoteTime, quote.market))} ${quote.market === 'cn' ? '上海' : '美东'}</span></span><span class="buy-zone-analysis-price">研究价 ${escapeHTML(formatBuyZonePrice(company.referencePrice, currency, 2))}</span>`
-        : '<span class="buy-zone-quote-meta"><span>研究参考价 · 等待自动行情</span></span>';
+      const directoryUrl = safeExternalUrl(company.sourceUrl);
+      const priceMarkup = isPending
+        ? (directoryUrl
+          ? `<a class="buy-zone-reference is-directory" href="${escapeHTML(directoryUrl)}" target="_blank" rel="noopener noreferrer nofollow">查看资料 ↗</a>`
+          : '<span class="buy-zone-reference is-directory">—</span>')
+        : quoteUrl
+          ? `<a class="buy-zone-reference" href="${escapeHTML(quoteUrl)}" target="_blank" rel="noopener noreferrer nofollow">${escapeHTML(referencePrice)} ↗</a>`
+          : `<span class="buy-zone-reference">${escapeHTML(referencePrice)}</span>`;
+      const quoteMeta = isPending
+        ? '<span class="buy-zone-quote-meta"><span>已纳入 · 尚未建立估值参数</span></span>'
+        : quote
+          ? `<span class="buy-zone-quote-meta"><span class="buy-zone-quote-change ${escapeHTML(change.className)}">${escapeHTML(change.text)}</span><span>自动快照 · ${escapeHTML(formatMarketQuoteTime(quote.quoteTime, quote.market))} ${quote.market === 'cn' ? '上海' : '美东'}</span></span><span class="buy-zone-analysis-price">研究价 ${escapeHTML(formatBuyZonePrice(company.referencePrice, currency, 2))}</span>`
+          : '<span class="buy-zone-quote-meta"><span>研究参考价 · 等待自动行情</span></span>';
+      const symbolMarkup = isPending
+        ? `<span class="buy-zone-symbol is-static">${escapeHTML(ticker)}</span>`
+        : `
+          <button
+            class="buy-zone-symbol"
+            type="button"
+            data-valuation-ticker="${escapeHTML(ticker)}"
+            aria-label="查看 ${escapeHTML(name)}（${escapeHTML(ticker)}）的区间详情"
+          >${escapeHTML(ticker)}</button>
+        `;
+      const rangeMarkup = (tier) => isPending
+        ? '<span class="buy-zone-range is-pending">待评估</span>'
+        : `<span class="buy-zone-range is-${tier}">${escapeHTML(formatBuyZoneRange(company[tier], currency))}</span>`;
+      const marketCapMarkup = isPending
+        ? '<span class="buy-zone-market-cap is-missing">估值资料待评估</span>'
+        : buyZoneMarketCapMarkup(quote);
       return `
         <tr>
           <th scope="row">
-            <button
-              class="buy-zone-symbol"
-              type="button"
-              data-valuation-ticker="${escapeHTML(ticker)}"
-              aria-label="查看 ${escapeHTML(name)}（${escapeHTML(ticker)}）的区间详情"
-            >${escapeHTML(ticker)}</button>
+            ${symbolMarkup}
             <strong>${escapeHTML(name)}</strong>
-            <span class="buy-zone-company-meta">${escapeHTML(market)} · ${escapeHTML(segment)}</span>
-            ${buyZoneMarketCapMarkup(quote)}
+            <span class="buy-zone-company-meta">${escapeHTML(marketGroupLabel(marketGroup(market, currency)))} · ${escapeHTML(company.exchange || segment)} · ${escapeHTML(segment)}</span>
+            ${marketCapMarkup}
           </th>
           <td>${priceMarkup}${quoteMeta}</td>
-          <td><span class="buy-zone-range is-safety">${escapeHTML(formatBuyZoneRange(company.safety, currency))}</span></td>
-          <td><span class="buy-zone-range is-reasonable">${escapeHTML(formatBuyZoneRange(company.reasonable, currency))}</span></td>
-          <td><span class="buy-zone-range is-aggressive">${escapeHTML(formatBuyZoneRange(company.aggressive, currency))}</span></td>
+          <td>${rangeMarkup('safety')}</td>
+          <td>${rangeMarkup('reasonable')}</td>
+          <td>${rangeMarkup('aggressive')}</td>
           <td>
-            ${buyZoneDailyMarkerMarkup(company, quote && quote.price)}
+            ${isPending ? '' : buyZoneDailyMarkerMarkup(company, quote && quote.price)}
             <span class="buy-zone-status ${escapeHTML(status.className)}">${escapeHTML(status.label)}</span>
-            <span class="buy-zone-distance-grid" aria-label="当前行情相对三档价格区间两端的百分比区间">${distanceMarkup}</span>
+            ${isPending ? '' : `<span class="buy-zone-distance-grid" aria-label="当前行情相对三档价格区间两端的百分比区间">${distanceMarkup}</span>`}
             <span class="buy-zone-note">${escapeHTML(textValue(company.view, '等待补充研究备注。'))}</span>
           </td>
         </tr>
       `;
-    }).join('') : `<tr><td colspan="6" class="table-empty">${escapeHTML(`${marketGroupLabel(state.buyZones.market)}暂未录入买入区间研究。`)}</td></tr>`;
+    }).join('') : `<tr><td colspan="6" class="table-empty">${escapeHTML(
+      query
+        ? '当前搜索没有匹配标的，请换一个名称或代码。'
+        : `${marketGroupLabel(state.buyZones.market)}暂未录入估值标的。`
+    )}</td></tr>`;
 
     body.querySelectorAll('[data-valuation-ticker]').forEach((button) => {
       button.addEventListener('click', () => {
@@ -1078,11 +1147,14 @@
     });
 
     if (summary) {
-      const quoteCount = companies.filter((company) => marketQuoteForTicker(company.ticker)).length;
+      const researchedCount = marketCompanies.filter((company) => company.researchStatus === 'researched').length;
+      const pendingCount = marketCompanies.length - researchedCount;
+      const quoteCount = marketCompanies.filter((company) => marketQuoteForTicker(company.ticker)).length;
       const marketSnapshot = state.data.marketQuotes;
-      summary.textContent = quoteCount
-        ? `${marketGroupLabel(state.buyZones.market)} ${companies.length} 只（全部 ${allCompanies.length} 只）· ${quoteCount} 只已接入自动行情快照 · 最近抓取 ${formatMarketQuoteTime(marketSnapshot.fetchedAt, state.buyZones.market)}`
-        : `${marketGroupLabel(state.buyZones.market)} ${companies.length} 只（全部 ${allCompanies.length} 只）· 暂用研究参考价`;
+      const quoteSummary = quoteCount
+        ? ` · 有行情快照 ${quoteCount} 只 · 抓取 ${formatMarketQuoteTime(marketSnapshot.fetchedAt, state.buyZones.market)}`
+        : '';
+      summary.textContent = `${marketGroupLabel(state.buyZones.market)}显示 ${companies.length} / ${marketCompanies.length} 只 · 全部 ${allCompanies.length} 只 · 已有研究区间 ${researchedCount} 只 · 待评估 ${pendingCount} 只${quoteSummary}`;
     }
     if (updatedAt) {
       const fetchedAt = state.data.marketQuotes && state.data.marketQuotes.fetchedAt;
@@ -1096,7 +1168,8 @@
         state.data.marketQuotes && state.data.marketQuotes.source && state.data.marketQuotes.source.dataNotice,
         '自动行情可能延迟或暂时不可用。'
       );
-      disclosure.innerHTML = `<strong>区间与行情边界</strong><p>每日价格图案按当前价不高于安全、合理或激进区间上限分档，只显示当前满足的最保守一档；高于激进区间上限时显示黄色等待图案，低于安全区间下限时仍须先复核基本面。每个百分比区间由当前行情分别对照对应价格带的上、下限计算；表头排序仍以相对激进区间上限的距离为统一口径。总市值采用 TradingView 公司层面口径，ADR 也按对应公司的整体市值显示；USD 与 CNY 双币值使用自动 USD/CNY 汇率换算。${escapeHTML(textValue(snapshot.notice, '静态研究价格带不构成投资建议。'))} ${escapeHTML(quoteNotice)} 行情更新不会移动研究区间，也不会触发交易。</p>`;
+      const researchedTotal = allCompanies.filter((company) => company.researchStatus === 'researched').length;
+      disclosure.innerHTML = `<strong>区间与行情边界</strong><p>股票资料目录中的 ${allCompanies.length} 个标的已全部纳入本表；其中 ${researchedTotal} 个已有经研究的三档价格带，其余 ${allCompanies.length - researchedTotal} 个明确标为“待评估”，不会生成或暗示买入价。已有区间的每日价格图案按当前价不高于安全、合理或激进区间上限分档，只显示当前满足的最保守一档；每个百分比区间由当前行情分别对照对应价格带的上、下限计算。${escapeHTML(textValue(snapshot.notice, '静态研究价格带不构成投资建议。'))} ${escapeHTML(quoteNotice)} 行情更新不会移动研究区间，也不会触发交易。</p>`;
     }
   }
 
@@ -2044,6 +2117,17 @@
     if (buyZoneSortButton) {
       buyZoneSortButton.addEventListener('click', () => {
         state.buyZones.sortDirection = state.buyZones.sortDirection === 'desc' ? 'asc' : 'desc';
+        try {
+          renderBuyZones(state.data.valuation);
+        } catch (error) {
+          renderSectionError('valuation', DATA_SOURCES.valuation, error);
+        }
+      });
+    }
+    const buyZoneSearch = byId('buy-zones-search');
+    if (buyZoneSearch) {
+      buyZoneSearch.addEventListener('input', (event) => {
+        state.buyZones.query = event.target.value;
         try {
           renderBuyZones(state.data.valuation);
         } catch (error) {

@@ -1584,6 +1584,12 @@ a.financial-metric:focus-visible strong {
   background: var(--accent-muted);
 }
 
+.buy-zone-symbol.is-static {
+  border-style: dashed;
+  color: var(--text-secondary);
+  cursor: default;
+}
+
 .buy-zones-table tbody th strong {
   display: block;
   color: var(--text);
@@ -1740,6 +1746,14 @@ a.buy-zone-reference:focus-visible {
   box-shadow: 0 0 14px rgb(236 111 171 / 12%), inset 0 1px rgb(255 255 255 / 7%);
 }
 
+.buy-zone-range.is-pending {
+  border-color: #46596a;
+  border-style: dashed;
+  background: #111c26;
+  color: var(--text-muted);
+  box-shadow: none;
+}
+
 .buy-zone-status {
   display: inline-flex;
   min-height: 25px;
@@ -1779,6 +1793,18 @@ a.buy-zone-reference:focus-visible {
   border-color: #7a4931;
   background: var(--orange-bg);
   color: #ffbd86;
+}
+
+.buy-zone-status.is-pending {
+  border-color: #46596a;
+  border-style: dashed;
+  background: #111c26;
+  color: var(--text-secondary);
+}
+
+.buy-zone-search {
+  width: min(300px, 100%);
+  margin-top: 12px;
 }
 
 .buy-zone-daily-marker {

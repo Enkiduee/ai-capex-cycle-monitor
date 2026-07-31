@@ -186,12 +186,16 @@ for (const key of ['timeHorizon', 'sourceLabel', 'basis', 'notice']) {
 }
 const manualEntries = Array.isArray(manualBuyZones && manualBuyZones.entries) ? manualBuyZones.entries : [];
 const expectedManualTickers = ['AAOI', 'SKHY', 'LITE', '002436', '002916', '002156', 'AXTI', 'ASTS', 'INTC', 'NBIS', 'CRWV', 'GLW'];
+const directoryEntries = [...stockEntries, ...hkEntries, ...usEntries];
+const directoryTickers = new Set(directoryEntries.map((entry) => String(entry && entry.ticker || '')));
+assert(directoryEntries.length === 208, '股票资料目录合计必须包含 208 个标的');
 assert(manualEntries.length === 12, '重点标的买入区间必须包含 12 家公司');
 assert(JSON.stringify(manualEntries.map((entry) => entry.ticker)) === JSON.stringify(expectedManualTickers), '重点标的买入区间必须包含指定股票并保持约定顺序');
 const manualTickers = new Set();
 for (const entry of manualEntries) {
   const ticker = String(entry && entry.ticker || '');
   assert(/^(?:[A-Z][A-Z0-9.-]{0,9}|\d{6})$/.test(ticker), `手工区间 ticker 无效：${ticker}`);
+  assert(directoryTickers.has(ticker), `手工区间标的未录入股票资料目录：${ticker}`);
   assert(!manualTickers.has(ticker), `手工区间 ticker 重复：${ticker}`);
   manualTickers.add(ticker);
   assert(typeof entry.name === 'string' && entry.name.trim(), `${ticker}.name 不能为空`);

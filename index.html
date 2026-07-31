@@ -323,15 +323,19 @@
             <p class="eyebrow">Price &amp; valuation watch</p>
             <h2 id="buy-zones-title">买入区间与估值观察</h2>
           </div>
-          <p>用自动行情快照对照三档静态研究区间，再用财务模型下钻复核。</p>
+          <p>股票资料目录全部纳入；已有研究显示三档区间，其余明确标记为待评估。</p>
         </div>
 
         <article class="buy-zones-card" aria-labelledby="buy-zones-title" aria-describedby="buy-zones-disclosure">
           <div class="buy-zones-head">
             <div>
-              <p class="panel-kicker">Conversation research snapshot</p>
-              <h3>AI 产业链股票买入区间速览</h3>
-              <p id="buy-zones-summary">正在读取关联研究对话中的价格带…</p>
+              <p class="panel-kicker">Valuation coverage</p>
+              <h3>股票估值与买入区间速览</h3>
+              <p id="buy-zones-summary">正在合并股票资料与研究区间…</p>
+              <label class="stock-watchlist-search buy-zone-search" for="buy-zones-search">
+                <span>搜索当前市场</span>
+                <input id="buy-zones-search" type="search" placeholder="输入名称或代码" autocomplete="off">
+              </label>
               <div id="buy-zone-market-tabs" class="market-tabs market-tabs-compact" role="tablist" aria-label="买入区间市场分类">
                 <button type="button" role="tab" data-buy-zone-market="cn" aria-selected="true">
                   沪深 <span id="buy-zone-market-count-cn">0</span>
@@ -351,14 +355,14 @@
               </div>
             </div>
             <div class="buy-zones-meta" aria-label="区间数据状态">
-              <span class="demo-chip">自动行情 + 静态区间</span>
+              <span class="demo-chip">208 标的 · 区间逐步补充</span>
               <time id="buy-zones-updated-at" datetime="">加载中…</time>
             </div>
           </div>
 
           <div class="buy-zones-table-scroll" tabindex="0" aria-label="可横向滚动的股票买入区间表">
             <table class="buy-zones-table">
-              <caption>按沪深、港股和美股分类展示的三档研究价格带</caption>
+              <caption>按沪深、港股和美股分类展示的估值覆盖与三档研究价格带</caption>
               <thead>
                 <tr>
                   <th scope="col">标的</th>
@@ -380,14 +384,14 @@
                 </tr>
               </thead>
               <tbody id="buy-zones-body">
-                <tr><td colspan="6" class="table-empty">正在加载买入区间…</td></tr>
+                <tr><td colspan="6" class="table-empty">正在合并股票资料与研究区间…</td></tr>
               </tbody>
             </table>
           </div>
 
           <aside id="buy-zones-disclosure" class="buy-zones-disclosure" role="note">
             <strong>区间与行情边界</strong>
-            <p>四种卡通图案分别代表当前价不高于安全、合理或激进区间上限，以及高于激进区间时的等待状态；对三档价内状态仅显示最保守一档，不构成个性化投资建议。每个百分比区间分别对照价格带的上、下限；总市值采用公司层面口径，并按自动 USD/CNY 汇率同时显示美元和人民币。区间、行情、市值及汇率均可能存在口径差异或延迟。</p>
+            <p>股票资料目录中的 208 个标的全部纳入；仅已有研究依据的标的显示三档价格带，其余明确标记为“待评估”，不会生成或暗示买入价。已有区间的百分比计算分别对照价格带的上、下限；区间与行情均不构成个性化投资建议。</p>
           </aside>
         </article>
 

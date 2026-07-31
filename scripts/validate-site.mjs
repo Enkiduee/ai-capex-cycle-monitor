@@ -79,7 +79,7 @@ assert(app.includes('chartApi.resizeAll()'), '进入图表视图后必须触发 
 assert(app.includes('renderSelectedValuation({ forceChart: true })'), '进入供应链视图后必须刷新 TradingView');
 assert(app.includes('calculatePePriceModel'), '估值页面必须从 EPS 与 P/E 计算价格带');
 assert(app.includes('normalizeResearchBands'), '估值页面必须校验人工财报/指引研究区间');
-assert(app.includes('data-valuation-ticker'), '买入区间总表必须可以跳转到单家公司详情');
+assert(app.includes('data-valuation-ticker'), '买入区间总表中已有详细研究的标的必须可以跳转到公司详情');
 assert(app.includes('P/E NOT MEANINGFUL'), '估值页面必须为 P/E 不适用公司提供安全降级');
 assert(app.includes('&gt; ${escapeHTML(bullPrice)} 不列入买入区'), '估值页面必须显示互斥的牛市价值以上等待线');
 assert(app.includes('formatValuationPrice'), '估值页面必须保留价格阈值的两位小数精度');
@@ -105,9 +105,13 @@ assert(app.includes('latestQuarterGrossMargin'), '前端必须从最新季度毛
 assert(app.includes('renderLatestQuarterGrossMargin(company)'), '供应链风险表必须渲染最新季度毛利率与财报链接');
 assert(styles.includes('.financial-metric'), 'CSS 缺少最新季度毛利率样式');
 assert(html.includes('id="buy-zones-sort-button"'), '买入区间速览必须提供高低方向排序按钮');
+assert(html.includes('id="buy-zones-search"'), '买入区间速览必须支持按名称或代码搜索');
 assert(html.includes('data-buy-zone-market="cn"') && html.includes('data-buy-zone-market="hk"') && html.includes('data-buy-zone-market="us"'), '买入区间速览必须按沪深、港股和美股分类');
 assert(app.includes("state.buyZones.market"), '买入区间速览必须保存当前市场分类');
 assert(app.includes('renderBuyZones(data)'), '估值页面必须从统一数据源渲染买入区间速览');
+assert(app.includes('function buyZoneUniverse(data)') && app.includes('return stockWatchlistUniverse().map'), '估值买入区间必须覆盖股票资料目录中的全部标的');
+assert(app.includes("researchStatus: 'pending'") && html.includes('其余明确标记为“待评估”'), '尚未研究的目录标的必须明确显示为待评估');
+assert(html.includes('股票资料目录中的 208 个标的全部纳入'), '页面必须说明 208 个目录标的全部进入估值买入区间');
 assert(app.includes('buyZoneDistanceMetrics'), '买入区间速览必须计算相对三档价格区间两端的百分比距离');
 assert(app.includes('buyZoneDailyMarkerMarkup(company, quote && quote.price)'), '每只股票必须按自动行情显示每日价格图案');
 assert(app.includes("image: './assets/buy-zone-safety.png'") && app.includes("image: './assets/buy-zone-reasonable.png'") && app.includes("image: './assets/buy-zone-aggressive.png'") && app.includes("image: './assets/buy-zone-wait.png'"), '四档每日价格图案资产缺失');
@@ -130,7 +134,7 @@ assert(!app.includes("suffix: 'B'") && !app.includes("suffix: 'T'"), '市值不�
 assert(!/(?:十|百|千|万)亿|(?:十|百|千)万/.test(`${html}\n${app}\n${charts}`), '页面数值不能显示复合中文数量级');
 assert(html.includes('单位：亿美元') && charts.includes("getUnit(data, 'capex', '亿美元')"), '云巨头 CapEx 图表必须统一显示亿美元');
 assert(app.includes('referencePrice: quote ? quote.price : company.referencePrice'), '自动行情缺失时必须回退到研究参考价');
-assert(html.includes('自动行情 + 静态区间'), '买入区间表必须明确区分自动行情与静态研究区间');
+assert(html.includes('208 标的 · 区间逐步补充'), '买入区间表必须说明全部标的已经纳入且区间逐步补充');
 assert(styles.includes('.buy-zone-quote-meta'), 'CSS 缺少自动行情时间与涨跌样式');
 assert(styles.includes('.buy-zone-market-cap strong.is-usd'), 'CSS 缺少 USD 市值样式');
 assert(styles.includes('.buy-zone-market-cap strong.is-cny'), 'CSS 缺少 CNY 市值样式');
