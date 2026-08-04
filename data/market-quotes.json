@@ -1,7 +1,7 @@
 {
   "version": 2,
   "updatedAt": "2026-08-04",
-  "fetchedAt": "2026-08-04T20:52:07.330Z",
+  "fetchedAt": "2026-08-04T21:39:15.426Z",
   "source": {
     "label": "Yahoo Finance Chart",
     "homepage": "https://finance.yahoo.com/",
@@ -28,7 +28,7 @@
       "phase": "after_close",
       "sessionDate": "2026-08-04",
       "timezone": "America/New_York",
-      "refreshedAt": "2026-08-04T20:52:07.330Z",
+      "refreshedAt": "2026-08-04T21:39:15.426Z",
       "quoteCount": 9,
       "staleTickers": []
     }
@@ -45,11 +45,11 @@
       "changePercent": 19.436,
       "quoteTime": "2026-08-04T20:00:01.000Z",
       "quoteDate": "2026-08-04",
-      "fetchedAt": "2026-08-04T20:52:07.330Z",
+      "fetchedAt": "2026-08-04T21:39:15.426Z",
       "sourceUrl": "https://finance.yahoo.com/quote/AAOI",
       "marketCap": 10562355376,
       "marketCapCurrency": "USD",
-      "marketCapFetchedAt": "2026-08-04T20:52:03.943Z",
+      "marketCapFetchedAt": "2026-08-04T21:39:11.513Z",
       "marketCapSourceUrl": "https://www.tradingview.com/symbols/NASDAQ-AAOI/"
     },
     {
@@ -63,11 +63,11 @@
       "changePercent": 8.17,
       "quoteTime": "2026-08-04T20:00:01.000Z",
       "quoteDate": "2026-08-04",
-      "fetchedAt": "2026-08-04T20:52:07.330Z",
+      "fetchedAt": "2026-08-04T21:39:15.426Z",
       "sourceUrl": "https://finance.yahoo.com/quote/SKHY",
       "marketCap": 794924014564,
       "marketCapCurrency": "USD",
-      "marketCapFetchedAt": "2026-08-04T20:52:03.943Z",
+      "marketCapFetchedAt": "2026-08-04T21:39:11.513Z",
       "marketCapSourceUrl": "https://www.tradingview.com/symbols/NASDAQ-SKHY/"
     },
     {
@@ -81,11 +81,11 @@
       "changePercent": 8.922,
       "quoteTime": "2026-08-04T20:00:01.000Z",
       "quoteDate": "2026-08-04",
-      "fetchedAt": "2026-08-04T20:52:07.330Z",
+      "fetchedAt": "2026-08-04T21:39:15.426Z",
       "sourceUrl": "https://finance.yahoo.com/quote/LITE",
       "marketCap": 66088769834,
       "marketCapCurrency": "USD",
-      "marketCapFetchedAt": "2026-08-04T20:52:03.943Z",
+      "marketCapFetchedAt": "2026-08-04T21:39:11.513Z",
       "marketCapSourceUrl": "https://www.tradingview.com/symbols/NASDAQ-LITE/"
     },
     {
@@ -153,11 +153,11 @@
       "changePercent": -4.951,
       "quoteTime": "2026-08-04T20:00:01.000Z",
       "quoteDate": "2026-08-04",
-      "fetchedAt": "2026-08-04T20:52:07.330Z",
+      "fetchedAt": "2026-08-04T21:39:15.426Z",
       "sourceUrl": "https://finance.yahoo.com/quote/AXTI",
       "marketCap": 4270171318,
       "marketCapCurrency": "USD",
-      "marketCapFetchedAt": "2026-08-04T20:52:03.943Z",
+      "marketCapFetchedAt": "2026-08-04T21:39:11.513Z",
       "marketCapSourceUrl": "https://www.tradingview.com/symbols/NASDAQ-AXTI/"
     },
     {
@@ -171,11 +171,11 @@
       "changePercent": 10.69,
       "quoteTime": "2026-08-04T20:00:01.000Z",
       "quoteDate": "2026-08-04",
-      "fetchedAt": "2026-08-04T20:52:07.330Z",
+      "fetchedAt": "2026-08-04T21:39:15.426Z",
       "sourceUrl": "https://finance.yahoo.com/quote/ASTS",
       "marketCap": 27289037828,
       "marketCapCurrency": "USD",
-      "marketCapFetchedAt": "2026-08-04T20:52:03.943Z",
+      "marketCapFetchedAt": "2026-08-04T21:39:11.513Z",
       "marketCapSourceUrl": "https://www.tradingview.com/symbols/NASDAQ-ASTS/"
     },
     {
@@ -189,11 +189,11 @@
       "changePercent": 10.835,
       "quoteTime": "2026-08-04T20:00:01.000Z",
       "quoteDate": "2026-08-04",
-      "fetchedAt": "2026-08-04T20:52:07.330Z",
+      "fetchedAt": "2026-08-04T21:39:15.426Z",
       "sourceUrl": "https://finance.yahoo.com/quote/INTC",
       "marketCap": 508737840000,
       "marketCapCurrency": "USD",
-      "marketCapFetchedAt": "2026-08-04T20:52:03.943Z",
+      "marketCapFetchedAt": "2026-08-04T21:39:11.513Z",
       "marketCapSourceUrl": "https://www.tradingview.com/symbols/NASDAQ-INTC/"
     },
     {
@@ -207,11 +207,11 @@
       "changePercent": 6.191,
       "quoteTime": "2026-08-04T20:00:00.000Z",
       "quoteDate": "2026-08-04",
-      "fetchedAt": "2026-08-04T20:52:07.330Z",
+      "fetchedAt": "2026-08-04T21:39:15.426Z",
       "sourceUrl": "https://finance.yahoo.com/quote/NBIS",
       "marketCap": 56807570155,
       "marketCapCurrency": "USD",
-      "marketCapFetchedAt": "2026-08-04T20:52:03.943Z",
+      "marketCapFetchedAt": "2026-08-04T21:39:11.513Z",
       "marketCapSourceUrl": "https://www.tradingview.com/symbols/NASDAQ-NBIS/"
     },
     {
@@ -225,11 +225,11 @@
       "changePercent": 7.16,
       "quoteTime": "2026-08-04T20:00:01.000Z",
       "quoteDate": "2026-08-04",
-      "fetchedAt": "2026-08-04T20:52:07.330Z",
+      "fetchedAt": "2026-08-04T21:39:15.426Z",
       "sourceUrl": "https://finance.yahoo.com/quote/CRWV",
       "marketCap": 50137916514,
       "marketCapCurrency": "USD",
-      "marketCapFetchedAt": "2026-08-04T20:52:03.943Z",
+      "marketCapFetchedAt": "2026-08-04T21:39:11.513Z",
       "marketCapSourceUrl": "https://www.tradingview.com/symbols/NASDAQ-CRWV/"
     },
     {
@@ -243,19 +243,19 @@
       "changePercent": 9.036,
       "quoteTime": "2026-08-04T20:05:23.000Z",
       "quoteDate": "2026-08-04",
-      "fetchedAt": "2026-08-04T20:52:07.330Z",
+      "fetchedAt": "2026-08-04T21:39:15.426Z",
       "sourceUrl": "https://finance.yahoo.com/quote/GLW",
       "marketCap": 137727375620,
       "marketCapCurrency": "USD",
-      "marketCapFetchedAt": "2026-08-04T20:52:03.943Z",
+      "marketCapFetchedAt": "2026-08-04T21:39:11.513Z",
       "marketCapSourceUrl": "https://www.tradingview.com/symbols/NYSE-GLW/"
     }
   ],
   "fx": {
     "pair": "USD/CNY",
-    "rate": 6.7527,
-    "quoteTime": "2026-08-04T20:51:37.000Z",
-    "fetchedAt": "2026-08-04T20:52:03.943Z",
+    "rate": 6.7402,
+    "quoteTime": "2026-08-04T21:32:36.000Z",
+    "fetchedAt": "2026-08-04T21:39:11.513Z",
     "sourceUrl": "https://finance.yahoo.com/quote/CNY=X/"
   }
 }
