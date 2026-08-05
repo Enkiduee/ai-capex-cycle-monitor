@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-04",
+  "updatedAt": "2026-08-05",
   "isDemoData": false,
   "methodologyVersion": "pe-cycle-v1",
   "dataNotice": "估值卡同时包含可复算 P/E 情景与截至 2026-07-14 的人工财报/指引研究区间；两者都是研究假设，不是目标价、收益保证、个性化建议或任何形式的买卖推荐。价格带必须在每份财报或重大事件后重算。",
@@ -320,7 +320,7 @@
     "valuationRangeMode": "P/E 情景仅在财报与重大事件后人工复核更新",
     "lastDailyCheckAt": "2026-08-05T04:32:48.640Z",
     "lastDailySecCheckAt": "2026-08-05T04:32:48.640Z",
-    "lastEventDetectedAt": "2026-08-04T20:12:41.152Z"
+    "lastEventDetectedAt": "2026-08-05T12:26:53.506Z"
   },
   "companies": [
     {
@@ -453,7 +453,7 @@
       "reviewedAt": "2026-07-12",
       "reviewedBy": "项目估值研究",
       "reviewEvidenceUrl": "https://investors.arista.com/Communications/Press-Releases-and-Events/Press-Release-Detail/2026/Arista-Networks-Inc--Reports-First-Quarter-2026-Financial-Results/default.aspx",
-      "reviewReason": "发现新的 SEC 8-K 披露（2026-08-04），现有 EPS 与 P/E 情景已标记为待人工复核。",
+      "reviewReason": "发现新的 SEC 10-Q 披露（2026-08-05），现有 EPS 与 P/E 情景已标记为待人工复核。",
       "currency": "USD",
       "confidence": "medium",
       "valuationModel": {
@@ -503,10 +503,10 @@
         }
       ],
       "latestSecFiling": {
-        "form": "8-K",
-        "filingDate": "2026-08-04",
-        "accessionNumber": "0001596532-26-000174",
-        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1596532/000159653226000174/0001596532-26-000174-index.html"
+        "form": "10-Q",
+        "filingDate": "2026-08-05",
+        "accessionNumber": "0001596532-26-000175",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1596532/000159653226000175/0001596532-26-000175-index.html"
       }
     },
     {
@@ -627,7 +627,7 @@
       "reviewedAt": "2026-07-12",
       "reviewedBy": "项目估值研究",
       "reviewEvidenceUrl": "https://www.sec.gov/Archives/edgar/data/1736297/000173629726000020/alab-20260331.htm",
-      "reviewReason": "发现新的 SEC 8-K 披露（2026-08-04），现有 EPS 与 P/E 情景已标记为待人工复核。",
+      "reviewReason": "发现新的 SEC 10-Q 披露（2026-08-05），现有 EPS 与 P/E 情景已标记为待人工复核。",
       "currency": "USD",
       "confidence": "low",
       "valuationModel": {
@@ -677,10 +677,10 @@
         }
       ],
       "latestSecFiling": {
-        "form": "8-K",
-        "filingDate": "2026-08-04",
-        "accessionNumber": "0001736297-26-000033",
-        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1736297/000173629726000033/0001736297-26-000033-index.html"
+        "form": "10-Q",
+        "filingDate": "2026-08-05",
+        "accessionNumber": "0001736297-26-000035",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1736297/000173629726000035/0001736297-26-000035-index.html"
       }
     },
     {
