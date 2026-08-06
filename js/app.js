@@ -11,6 +11,7 @@
     marketQuotes: { path: './data/market-quotes.json', label: '自动行情快照' },
     valuationCoverage: { path: './data/valuation-coverage.json', label: '全目录估值区间' },
     valuation: { path: './data/valuation-bands.json', label: '价格与估值观察' },
+    insiderSales: { path: './data/insider-sales.json', label: '内部人减持' },
     macro: { path: './data/macro.json', label: '宏观环境' },
     events: { path: './data/events.json', label: '重大事件' }
   };
@@ -20,6 +21,7 @@
     overview: { label: '周期总览', titleId: 'overview-title' },
     hyperscalers: { label: '云巨头 CapEx', titleId: 'hyperscalers-title' },
     'supply-chain': { label: '供应链风险与估值', titleId: 'supply-chain-title' },
+    'insider-sales': { label: '减持雷达', titleId: 'insider-sales-title' },
     macro: { label: '宏观与利率环境', titleId: 'macro-title' },
     events: { label: '重大事件时间线', titleId: 'events-title' },
     methodology: { label: '方法说明', titleId: 'methodology-title' }
@@ -47,6 +49,10 @@
     },
     stocks: {
       market: 'cn',
+      query: ''
+    },
+    insiderSales: {
+      status: 'all',
       query: ''
     },
     events: {
@@ -2027,6 +2033,181 @@
     renderEventTimeline();
   }
 
+  function formatSaleUsd(value, options = {}) {
+    const amount = toFiniteNumber(value);
+    if (amount === null) return '—';
+    if (amount === 0) return '$0';
+    const absolute = Math.abs(amount);
+    const sign = amount < 0 ? '−' : '';
+    if (absolute >= 1e9) return `${sign}$${formatNumber(absolute / 1e9, 2)}B`;
+    if (absolute >= 1e6) return `${sign}$${formatNumber(absolute / 1e6, options.compact ? 1 : 2)}M`;
+    if (absolute >= 1e3) return `${sign}$${formatNumber(absolute / 1e3, options.compact ? 0 : 1)}K`;
+    return `${sign}$${formatNumber(absolute, 0)}`;
+  }
+
+  function formatSaleShares(value) {
+    const amount = toFiniteNumber(value);
+    if (amount === null) return '—';
+    return new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 0 }).format(amount);
+  }
+
+  function saleStatusMeta(company) {
+    if (company.coverage === 'excluded') {
+      return { label: '非可比', className: 'is-excluded' };
+    }
+    if (Number(company.pending && company.pending.shares) > 0) {
+      return { label: '待确认拟售', className: 'is-pending' };
+    }
+    if (Number(company.executed && company.executed.shares) > 0) {
+      return { label: '已有出售', className: 'is-sold' };
+    }
+    return { label: '窗口内零披露', className: 'is-clear' };
+  }
+
+  function renderSaleCompanyBars(data) {
+    const container = byId('sale-company-bars');
+    if (!container) return;
+    const active = (data.companies || [])
+      .filter((company) => company.coverage === 'covered')
+      .filter((company) => Number(company.executed && company.executed.valueUsd) > 0 || Number(company.pending && company.pending.valueUsd) > 0)
+      .sort((a, b) => (Number(b.executed && b.executed.valueUsd) + Number(b.pending && b.pending.valueUsd))
+        - (Number(a.executed && a.executed.valueUsd) + Number(a.pending && a.pending.valueUsd)));
+    const maximum = Math.max(1, ...active.map((company) => Number(company.executed.valueUsd) + Number(company.pending.valueUsd)));
+
+    container.innerHTML = active.map((company, index) => {
+      const executed = Number(company.executed.valueUsd) || 0;
+      const pending = Number(company.pending.valueUsd) || 0;
+      const executedWidth = executed > 0 ? Math.max(2, Math.sqrt(executed / maximum) * 100) : 0;
+      const pendingWidth = pending > 0 ? Math.max(2, Math.sqrt(pending / maximum) * 100) : 0;
+      return `
+        <div class="sale-bar-row">
+          <div class="sale-bar-rank">${String(index + 1).padStart(2, '0')}</div>
+          <div class="sale-bar-company">
+            <strong>${escapeHTML(company.ticker)}</strong>
+            <span>${escapeHTML(company.name)}</span>
+          </div>
+          <div class="sale-bar-track-group">
+            <div class="sale-bar-track" title="已售 ${escapeHTML(formatSaleUsd(executed))}">
+              <span class="is-executed" style="width:${executedWidth.toFixed(2)}%"></span>
+            </div>
+            <div class="sale-bar-track" title="待确认拟售 ${escapeHTML(formatSaleUsd(pending))}">
+              <span class="is-pending" style="width:${pendingWidth.toFixed(2)}%"></span>
+            </div>
+          </div>
+          <div class="sale-bar-values">
+            <strong>${escapeHTML(formatSaleUsd(executed))}</strong>
+            <span>${pending > 0 ? `+ ${escapeHTML(formatSaleUsd(pending))} 待确认` : '拟售已匹配'}</span>
+          </div>
+        </div>
+      `;
+    }).join('') + `<p class="sale-scale-note">条形按金额平方根缩放，便于同时辨认小额交易；精确值以右侧数字和下表为准。</p>`;
+  }
+
+  function saleCompanyMatchesFilter(company) {
+    const query = state.insiderSales.query.trim().toLowerCase();
+    const matchesQuery = !query || `${company.ticker} ${company.name} ${company.market}`.toLowerCase().includes(query);
+    if (!matchesQuery) return false;
+    if (state.insiderSales.status === 'all') return true;
+    if (state.insiderSales.status === 'active') return Number(company.executed && company.executed.shares) > 0;
+    if (state.insiderSales.status === 'pending') return Number(company.pending && company.pending.shares) > 0;
+    if (state.insiderSales.status === 'clear') return company.coverage === 'covered'
+      && Number(company.executed && company.executed.shares) === 0
+      && Number(company.pending && company.pending.shares) === 0;
+    return true;
+  }
+
+  function renderSaleCompanyTable() {
+    const data = state.data.insiderSales;
+    const body = byId('sale-company-body');
+    if (!data || !body) return;
+    const companies = (data.companies || []).filter(saleCompanyMatchesFilter);
+    const resultCount = byId('sale-result-count');
+    if (resultCount) resultCount.textContent = `显示 ${companies.length} / ${data.companies.length} 只标的`;
+
+    if (!companies.length) {
+      body.innerHTML = '<tr><td colspan="6" class="table-empty">当前筛选条件下没有标的，请调整筛选器。</td></tr>';
+      return;
+    }
+
+    body.innerHTML = companies.map((company) => {
+      const status = saleStatusMeta(company);
+      const executedShares = company.executed ? formatSaleShares(company.executed.shares) : '—';
+      const executedValue = company.executed ? formatSaleUsd(company.executed.valueUsd) : '—';
+      const pendingShares = company.pending ? formatSaleShares(company.pending.shares) : '—';
+      const pendingValue = company.pending ? formatSaleUsd(company.pending.valueUsd) : '—';
+      return `
+        <tr class="${escapeHTML(status.className)}">
+          <td>
+            <a class="sale-company-name" href="${escapeHTML(company.sourceUrl)}" target="_blank" rel="noopener noreferrer">
+              <strong>${escapeHTML(company.ticker)}</strong>
+              <span>${escapeHTML(company.name)} · ${escapeHTML(company.market)}</span>
+            </a>
+          </td>
+          <td><span class="sale-status ${escapeHTML(status.className)}">${escapeHTML(status.label)}</span></td>
+          <td class="sale-numeric"><strong>${escapeHTML(executedShares)}</strong></td>
+          <td class="sale-numeric"><strong>${escapeHTML(executedValue)}</strong></td>
+          <td class="sale-numeric"><strong>${escapeHTML(pendingShares)}</strong><span>${escapeHTML(pendingValue)}</span></td>
+          <td><p class="sale-company-note">${escapeHTML(company.note)}</p><a class="sale-source-link" href="${escapeHTML(company.sourceUrl)}" target="_blank" rel="noopener noreferrer">打开原始披露 ↗</a></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function renderSaleLedger(data) {
+    const ledger = byId('sale-ledger');
+    if (!ledger) return;
+    ledger.innerHTML = (data.timeline || []).map((item) => {
+      const kindLabel = item.kind === 'pending' ? '拟售' : item.kind === 'executed-discretionary' ? '非计划' : '已售';
+      return `
+        <article class="sale-ledger-item is-${escapeHTML(item.kind)}">
+          <time datetime="${escapeHTML(item.date)}">${escapeHTML(formatDate(item.date))}</time>
+          <div class="sale-ledger-marker" aria-hidden="true"></div>
+          <div class="sale-ledger-copy">
+            <div class="sale-ledger-titleline">
+              <span class="sale-ledger-kind">${escapeHTML(kindLabel)}</span>
+              <strong>${escapeHTML(item.ticker)} · ${escapeHTML(item.person)}</strong>
+            </div>
+            <p>${escapeHTML(item.label)} · ${escapeHTML(formatSaleShares(item.shares))} 股 · ${escapeHTML(formatSaleUsd(item.valueUsd))}</p>
+            <small>${escapeHTML(item.detail)}</small>
+          </div>
+          <a href="${escapeHTML(item.sourceUrl)}" target="_blank" rel="noopener noreferrer" aria-label="打开 ${escapeHTML(item.ticker)} ${escapeHTML(item.date)} 原始披露">↗</a>
+        </article>
+      `;
+    }).join('');
+  }
+
+  function renderInsiderSales(data) {
+    state.data.insiderSales = data;
+    const summary = data.summary || {};
+    const scope = data.scope || {};
+    const windowRange = data.window || {};
+
+    byId('sale-window-label').textContent = windowRange.label || '滚动观察窗口';
+    byId('sale-window-dates').textContent = `${formatDate(windowRange.start)} — ${formatDate(windowRange.end)}`;
+    byId('sale-coverage-label').textContent = `${scope.comparableCoverage} / ${scope.total} 只可比覆盖 · ${scope.notice || ''}`;
+    byId('sale-executed-value').textContent = formatSaleUsd(summary.executedValueUsd);
+    byId('sale-executed-shares').textContent = formatSaleShares(summary.executedShares);
+    byId('sale-pending-value').textContent = formatSaleUsd(summary.pendingValueUsd);
+    byId('sale-pending-shares').textContent = formatSaleShares(summary.pendingShares);
+    byId('sale-planned-share').textContent = formatNumber(summary.plannedExecutionSharePct, 1, '%');
+    byId('sale-coverage-value').textContent = `${scope.comparableCoverage} / ${scope.total}`;
+    byId('sale-concentration-orbit-value').textContent = formatNumber(summary.topCompanyConcentrationPct, 1, '%');
+    byId('sale-concentration-copy').textContent = `CRWV 占样本已售金额 ${formatNumber(summary.topCompanyConcentrationPct, 1, '%')}。集中度远高于其余标的，读数应被视为单一公司事件，而不是整个 AI 供应链的普遍抛压。`;
+    byId('sale-company-count').textContent = `${summary.companiesWithSales} 家`;
+    byId('sale-pending-company-count').textContent = `${summary.companiesWithPendingNotices} 家`;
+    byId('sale-method-executed').textContent = data.methodology.executed;
+    byId('sale-method-notices').textContent = data.methodology.notices;
+    byId('sale-method-pending').textContent = data.methodology.pending;
+    byId('sale-method-caveat').textContent = `${data.methodology.caveat} ${data.methodology.excluded}`;
+    byId('sale-source-links').innerHTML = (data.methodology.sources || []).map((source) => `
+      <a href="${escapeHTML(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(source.label)} <span aria-hidden="true">↗</span></a>
+    `).join('');
+
+    renderSaleCompanyBars(data);
+    renderSaleCompanyTable();
+    renderSaleLedger(data);
+  }
+
   function renderSectionError(key, source, error) {
     const message = `${source.label}加载失败。其他模块仍可继续使用，请刷新页面重试。`;
     console.error(`[AI CapEx Monitor] ${source.label}数据加载失败`, error);
@@ -2052,6 +2233,11 @@
       if (summary) summary.textContent = message;
     } else if (key === 'marketQuotes') {
       // 行情快照失败时，估值模块会自动回退到研究参考价。
+    } else if (key === 'insiderSales') {
+      const body = byId('sale-company-body');
+      if (body) body.innerHTML = `<tr><td colspan="6" class="table-empty">${escapeHTML(message)}</td></tr>`;
+      api.renderSectionError('sale-company-bars', message);
+      api.renderSectionError('sale-ledger', message);
     } else if (key === 'valuation') {
       const buyZoneBody = byId('buy-zones-body');
       if (buyZoneBody) buyZoneBody.innerHTML = `<tr><td colspan="6" class="table-empty">${escapeHTML(message)}</td></tr>`;
@@ -2203,6 +2389,23 @@
         buyZoneMarketButtons[nextIndex].focus();
       });
     });
+    const saleSearch = byId('sale-company-search');
+    if (saleSearch) {
+      saleSearch.addEventListener('input', (event) => {
+        state.insiderSales.query = event.target.value;
+        renderSaleCompanyTable();
+      });
+    }
+    const saleStatusButtons = Array.from(document.querySelectorAll('[data-sale-status]'));
+    saleStatusButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        state.insiderSales.status = button.dataset.saleStatus;
+        saleStatusButtons.forEach((candidate) => {
+          candidate.setAttribute('aria-pressed', String(candidate === button));
+        });
+        renderSaleCompanyTable();
+      });
+    });
     byId('sentiment-filter').addEventListener('change', (event) => {
       state.events.sentiment = event.target.value;
       renderEventTimeline();
@@ -2252,6 +2455,7 @@
       marketQuotes: () => {},
       valuationCoverage: () => {},
       valuation: renderValuation,
+      insiderSales: renderInsiderSales,
       macro: renderMacro,
       events: renderEvents
     };

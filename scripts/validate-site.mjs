@@ -6,6 +6,7 @@ const routes = [
   { id: 'overview', titleId: 'overview-title' },
   { id: 'hyperscalers', titleId: 'hyperscalers-title' },
   { id: 'supply-chain', titleId: 'supply-chain-title' },
+  { id: 'insider-sales', titleId: 'insider-sales-title' },
   { id: 'macro', titleId: 'macro-title' },
   { id: 'events', titleId: 'events-title' },
   { id: 'methodology', titleId: 'methodology-title' }
@@ -72,7 +73,7 @@ routes.forEach((route, index) => {
 assert(html.includes('class="brand" href="#/overview"'), '品牌入口必须返回 #/overview');
 assert(html.includes('id="main-content" class="dashboard-shell" tabindex="-1"'), 'main 必须可由跳过链接聚焦');
 assert(html.includes('document.documentElement.dataset.initialRoute'), 'head 中必须预先标记首屏路由，避免长页面闪烁');
-assert(!/<a\b[^>]*href="#(?:overview|hyperscalers|supply-chain|macro|events|methodology)"/.test(html), '不能保留旧式页面路由 hash');
+assert(!/<a\b[^>]*href="#(?:overview|hyperscalers|supply-chain|insider-sales|macro|events|methodology)"/.test(html), '不能保留旧式页面路由 hash');
 assert(app.includes("window.addEventListener('hashchange'"), 'app.js 必须处理浏览器前进/后退');
 assert(app.includes("link.setAttribute('aria-current', 'page')"), 'app.js 必须同步 aria-current');
 assert(app.includes('chartApi.resizeAll()'), '进入图表视图后必须触发 ECharts resize');
@@ -156,6 +157,11 @@ assert(styles.includes('.valuation-scenario.is-safety'), 'CSS 缺少安全边际
 assert(styles.includes('.valuation-model-kind.is-research'), 'CSS 缺少人工研究区间状态样式');
 assert(styles.includes('.valuation-unavailable-panel'), 'CSS 缺少 P/E 不适用状态样式');
 assert(styles.includes('.buy-zones-table'), 'CSS 缺少重点标的买入区间表样式');
+assert(app.includes("insiderSales: { path: './data/insider-sales.json'"), '前端必须加载减持雷达数据');
+assert(app.includes('function renderInsiderSales(data)'), '前端必须渲染减持雷达');
+assert(html.includes('id="sale-company-body"') && html.includes('id="sale-ledger"'), '减持雷达必须包含公司核对表与披露流水');
+assert(html.includes('data-sale-status="pending"') && html.includes('id="sale-company-search"'), '减持雷达必须支持状态筛选与公司搜索');
+assert(styles.includes('.sale-kpi-grid') && styles.includes('.sale-company-table'), 'CSS 缺少减持雷达核心样式');
 
 if (errors.length) {
   console.error(errors.map((error) => `- ${error}`).join('\n'));

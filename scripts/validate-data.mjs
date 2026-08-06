@@ -10,6 +10,7 @@ const files = [
   'data/market-quotes.json',
   'data/valuation-coverage.json',
   'data/valuation-bands.json',
+  'data/insider-sales.json',
   'data/macro.json',
   'data/events.json'
 ];
@@ -23,6 +24,7 @@ const usWatchlist = payloads['data/us-watchlist.json'];
 const marketQuotes = payloads['data/market-quotes.json'];
 const valuationCoverage = payloads['data/valuation-coverage.json'];
 const valuation = payloads['data/valuation-bands.json'];
+const insiderSales = payloads['data/insider-sales.json'];
 const events = payloads['data/events.json'];
 const risk = payloads['data/risk-score.json'];
 const secState = await readJson('data/sec-filings-state.json');
@@ -49,6 +51,48 @@ for (const [file, payload] of Object.entries(payloads)) {
 
 assert(hyperscalers.units && hyperscalers.units.capex === '亿美元', '云巨头 CapEx 必须以亿美元为单位');
 assert(!/(?:十|百|千|万)亿|(?:十|百|千)万/.test(JSON.stringify(payloads)), '数据文本不能使用复合中文数量级');
+
+assert(insiderSales.version === 1, 'insider-sales.version 必须为 1');
+assert(validDate(insiderSales.window && insiderSales.window.start), 'insider-sales.window.start 无效');
+assert(validDate(insiderSales.window && insiderSales.window.end), 'insider-sales.window.end 无效');
+assert(insiderSales.window.start <= insiderSales.window.end, '减持雷达观察窗口起始日不能晚于结束日');
+const insiderCompanies = Array.isArray(insiderSales.companies) ? insiderSales.companies : [];
+assert(insiderCompanies.length === 12, '减持雷达必须覆盖 12 只重点标的');
+assert(new Set(insiderCompanies.map((company) => company.ticker)).size === insiderCompanies.length, '减持雷达 ticker 不能重复');
+assert(insiderSales.scope && insiderSales.scope.total === insiderCompanies.length, '减持雷达 scope.total 必须与公司数一致');
+const comparableInsiderCompanies = insiderCompanies.filter((company) => company.coverage === 'covered');
+assert(insiderSales.scope.comparableCoverage === comparableInsiderCompanies.length, '减持雷达可比覆盖数不一致');
+const executedShares = comparableInsiderCompanies.reduce((total, company) => total + Number(company.executed && company.executed.shares || 0), 0);
+const executedValueUsd = comparableInsiderCompanies.reduce((total, company) => total + Number(company.executed && company.executed.valueUsd || 0), 0);
+const pendingShares = comparableInsiderCompanies.reduce((total, company) => total + Number(company.pending && company.pending.shares || 0), 0);
+const pendingValueUsd = comparableInsiderCompanies.reduce((total, company) => total + Number(company.pending && company.pending.valueUsd || 0), 0);
+const noticeShares = comparableInsiderCompanies.reduce((total, company) => total + Number(company.notices && company.notices.shares || 0), 0);
+const noticeValueUsd = comparableInsiderCompanies.reduce((total, company) => total + Number(company.notices && company.notices.valueUsd || 0), 0);
+assert(insiderSales.summary.executedShares === executedShares, '减持雷达已售股份汇总不一致');
+assert(Math.abs(insiderSales.summary.executedValueUsd - executedValueUsd) < 0.01, '减持雷达已售金额汇总不一致');
+assert(insiderSales.summary.pendingShares === pendingShares, '减持雷达待确认拟售股份汇总不一致');
+assert(Math.abs(insiderSales.summary.pendingValueUsd - pendingValueUsd) < 0.01, '减持雷达待确认拟售金额汇总不一致');
+assert(insiderSales.summary.noticeShares === noticeShares, '减持雷达拟售通知股份汇总不一致');
+assert(Math.abs(insiderSales.summary.noticeValueUsd - noticeValueUsd) < 0.01, '减持雷达拟售通知金额汇总不一致');
+for (const company of insiderCompanies) {
+  assert(typeof company.ticker === 'string' && company.ticker.trim(), '减持雷达公司 ticker 不能为空');
+  assert(typeof company.name === 'string' && company.name.trim(), `${company.ticker}.name 不能为空`);
+  assert(['covered', 'excluded'].includes(company.coverage), `${company.ticker}.coverage 无效`);
+  assert(typeof company.sourceUrl === 'string' && /^https:\/\//.test(company.sourceUrl), `${company.ticker}.sourceUrl 无效`);
+}
+const saleTimeline = Array.isArray(insiderSales.timeline) ? insiderSales.timeline : [];
+assert(saleTimeline.length > 0, '减持雷达披露流水不能为空');
+for (const item of saleTimeline) {
+  assert(validDate(item.date), `减持流水日期无效：${item.date}`);
+  assert(item.date >= insiderSales.window.start && item.date <= insiderSales.window.end, `减持流水超出观察窗口：${item.date}`);
+  assert(['executed', 'executed-discretionary', 'pending'].includes(item.kind), `减持流水 kind 无效：${item.kind}`);
+}
+const timelineExecuted = saleTimeline.filter((item) => item.kind.startsWith('executed'));
+const timelinePending = saleTimeline.filter((item) => item.kind === 'pending');
+assert(timelineExecuted.reduce((total, item) => total + item.shares, 0) === executedShares, '减持流水已售股份与公司汇总不一致');
+assert(Math.abs(timelineExecuted.reduce((total, item) => total + item.valueUsd, 0) - executedValueUsd) < 0.01, '减持流水已售金额与公司汇总不一致');
+assert(timelinePending.reduce((total, item) => total + item.shares, 0) === pendingShares, '减持流水待确认拟售股份与公司汇总不一致');
+assert(Math.abs(timelinePending.reduce((total, item) => total + item.valueUsd, 0) - pendingValueUsd) < 0.01, '减持流水待确认拟售金额与公司汇总不一致');
 
 assert(stockWatchlist.version === 2, 'stock-watchlist.version 必须为 2');
 assert(stockWatchlist.source && typeof stockWatchlist.source.label === 'string' && stockWatchlist.source.label.trim(), 'stock-watchlist.source.label 不能为空');

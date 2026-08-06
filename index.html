@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="./css/styles.css">
     <script>
       (function () {
-        var routes = ['overview', 'hyperscalers', 'supply-chain', 'macro', 'events', 'methodology'];
+        var routes = ['overview', 'hyperscalers', 'supply-chain', 'insider-sales', 'macro', 'events', 'methodology'];
         var hash = window.location.hash || '';
         var candidate = hash.indexOf('#/') === 0 ? hash.slice(2).split(/[?&]/, 1)[0].replace(/\/+$/, '') : hash.slice(1);
         document.documentElement.dataset.initialRoute = routes.indexOf(candidate) >= 0 ? candidate : 'overview';
@@ -56,6 +56,7 @@
           <a href="#/overview" data-route="overview" aria-controls="overview">总览</a>
           <a href="#/hyperscalers" data-route="hyperscalers" aria-controls="hyperscalers">云巨头</a>
           <a href="#/supply-chain" data-route="supply-chain" aria-controls="supply-chain">供应链与估值</a>
+          <a href="#/insider-sales" data-route="insider-sales" aria-controls="insider-sales">减持雷达</a>
           <a href="#/macro" data-route="macro" aria-controls="macro">宏观</a>
           <a href="#/events" data-route="events" aria-controls="events">事件</a>
           <a href="#/methodology" data-route="methodology" aria-controls="methodology">方法</a>
@@ -465,6 +466,161 @@
         </div>
         <div id="supply-chain-heatmap" class="heatmap" aria-live="polite">
           <div class="loading-block">正在加载产业链风险节点…</div>
+        </div>
+      </section>
+
+      <section id="insider-sales" class="dashboard-section route-view" data-route="insider-sales" aria-labelledby="insider-sales-title">
+        <div class="section-heading insider-sales-heading">
+          <div>
+            <p class="eyebrow">Insider flow / 30D</p>
+            <h1 id="insider-sales-title" tabindex="-1">减持雷达</h1>
+            <p>追踪 12 只重点标的最近一个月的已披露出售、拟售通知与尚待成交确认的供给压力。</p>
+          </div>
+          <span id="insider-source-chip" class="demo-chip sale-live-chip"><span aria-hidden="true"></span>SEC + 巨潮资讯</span>
+        </div>
+
+        <div class="sale-window-strip" role="note" aria-label="减持数据观察窗口">
+          <span class="sale-window-pulse" aria-hidden="true"></span>
+          <strong id="sale-window-label">滚动窗口加载中…</strong>
+          <span id="sale-window-dates">—</span>
+          <span class="sale-window-divider" aria-hidden="true"></span>
+          <span id="sale-coverage-label">正在核对市场覆盖…</span>
+        </div>
+
+        <div class="sale-kpi-grid" aria-live="polite">
+          <article class="sale-kpi sale-kpi-primary">
+            <div class="sale-kpi-topline">
+              <span>已确认出售</span>
+              <span class="sale-kpi-index">01</span>
+            </div>
+            <strong id="sale-executed-value">—</strong>
+            <p><span id="sale-executed-shares">—</span> 股 · Form 4 / 已实施公告</p>
+          </article>
+          <article class="sale-kpi sale-kpi-warning">
+            <div class="sale-kpi-topline">
+              <span>待确认拟售</span>
+              <span class="sale-kpi-index">02</span>
+            </div>
+            <strong id="sale-pending-value">—</strong>
+            <p><span id="sale-pending-shares">—</span> 股 · 尚未匹配 Form 4</p>
+          </article>
+          <article class="sale-kpi">
+            <div class="sale-kpi-topline">
+              <span>计划化成交占比</span>
+              <span class="sale-kpi-index">03</span>
+            </div>
+            <strong id="sale-planned-share">—</strong>
+            <p>按成交金额 · 10b5-1 标记</p>
+          </article>
+          <article class="sale-kpi">
+            <div class="sale-kpi-topline">
+              <span>可比口径覆盖</span>
+              <span class="sale-kpi-index">04</span>
+            </div>
+            <strong id="sale-coverage-value">—</strong>
+            <p>美股 SEC + A 股公司公告</p>
+          </article>
+        </div>
+
+        <div class="sale-hero-grid">
+          <article class="sale-flow-card" aria-labelledby="sale-flow-title">
+            <div class="sale-card-heading">
+              <div>
+                <p class="panel-kicker">Company pressure map</p>
+                <h2 id="sale-flow-title">公司减持压力对比</h2>
+              </div>
+              <div class="sale-legend" aria-label="图例">
+                <span><i class="is-executed" aria-hidden="true"></i>已售</span>
+                <span><i class="is-pending" aria-hidden="true"></i>待确认拟售</span>
+              </div>
+            </div>
+            <div id="sale-company-bars" class="sale-company-bars" aria-live="polite">
+              <div class="loading-block">正在计算公司减持压力…</div>
+            </div>
+          </article>
+
+          <aside class="sale-concentration-card" aria-labelledby="sale-concentration-title">
+            <div class="sale-concentration-orbit" aria-hidden="true">
+              <span id="sale-concentration-orbit-value">—</span>
+            </div>
+            <p class="panel-kicker">Concentration alert</p>
+            <h2 id="sale-concentration-title">压力高度集中</h2>
+            <p id="sale-concentration-copy">正在识别减持金额最集中的公司…</p>
+            <dl class="sale-concentration-stats">
+              <div><dt>发生出售</dt><dd id="sale-company-count">—</dd></div>
+              <div><dt>有待确认拟售</dt><dd id="sale-pending-company-count">—</dd></div>
+            </dl>
+          </aside>
+        </div>
+
+        <article class="sale-table-card" aria-labelledby="sale-table-title">
+          <div class="sale-table-toolbar">
+            <div>
+              <p class="panel-kicker">Coverage ledger</p>
+              <h2 id="sale-table-title">12 只重点标的逐家公司核对</h2>
+              <p id="sale-result-count" class="sale-result-count" aria-live="polite">正在加载公司数据…</p>
+            </div>
+            <div class="sale-table-controls">
+              <div class="sale-filter-pills" role="group" aria-label="减持状态筛选">
+                <button type="button" data-sale-status="all" aria-pressed="true">全部</button>
+                <button type="button" data-sale-status="active" aria-pressed="false">有出售</button>
+                <button type="button" data-sale-status="pending" aria-pressed="false">待确认</button>
+                <button type="button" data-sale-status="clear" aria-pressed="false">零披露</button>
+              </div>
+              <label class="sale-search" for="sale-company-search">
+                <span>搜索公司</span>
+                <input id="sale-company-search" type="search" placeholder="代码或名称" autocomplete="off">
+              </label>
+            </div>
+          </div>
+          <div class="sale-table-scroll" tabindex="0" aria-label="可横向滚动的重点标的减持表">
+            <table class="sale-company-table">
+              <caption>最近一个月重点标的已披露出售与尚待确认拟售</caption>
+              <thead>
+                <tr>
+                  <th scope="col">标的</th>
+                  <th scope="col">状态</th>
+                  <th scope="col">已售股份</th>
+                  <th scope="col">已售金额</th>
+                  <th scope="col">待确认拟售</th>
+                  <th scope="col">判断与来源</th>
+                </tr>
+              </thead>
+              <tbody id="sale-company-body">
+                <tr><td colspan="6" class="table-empty">正在加载减持披露…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <div class="sale-lower-grid">
+          <article class="sale-ledger-card" aria-labelledby="sale-ledger-title">
+            <div class="sale-card-heading">
+              <div>
+                <p class="panel-kicker">Disclosure ledger</p>
+                <h2 id="sale-ledger-title">披露流水</h2>
+              </div>
+              <span class="sale-ledger-note">同日同申报人合并</span>
+            </div>
+            <div id="sale-ledger" class="sale-ledger" aria-live="polite">
+              <div class="loading-block">正在加载披露流水…</div>
+            </div>
+          </article>
+
+          <aside class="sale-method-card" aria-labelledby="sale-method-title">
+            <p class="panel-kicker">Reading protocol</p>
+            <h2 id="sale-method-title">怎样读这组数字</h2>
+            <ol class="sale-method-steps">
+              <li><span>01</span><div><strong>已售看 Form 4</strong><p id="sale-method-executed">只统计公开市场出售。</p></div></li>
+              <li><span>02</span><div><strong>拟售看 Form 144</strong><p id="sale-method-notices">它是出售意向，不是成交确认。</p></div></li>
+              <li><span>03</span><div><strong>同笔申报做匹配</strong><p id="sale-method-pending">扣除已由成交披露匹配的数量。</p></div></li>
+            </ol>
+            <div class="sale-method-alert">
+              <strong>研究边界</strong>
+              <p id="sale-method-caveat">零披露不等于没有既有交易计划；本页不是投资建议。</p>
+            </div>
+            <div id="sale-source-links" class="sale-source-links" aria-label="减持数据来源"></div>
+          </aside>
         </div>
       </section>
 
