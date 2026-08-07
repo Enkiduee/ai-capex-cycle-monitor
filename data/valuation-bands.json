@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-05",
+  "updatedAt": "2026-08-07",
   "isDemoData": false,
   "methodologyVersion": "pe-cycle-v1",
   "dataNotice": "估值卡同时包含可复算 P/E 情景与截至 2026-07-14 的人工财报/指引研究区间；两者都是研究假设，不是目标价、收益保证、个性化建议或任何形式的买卖推荐。价格带必须在每份财报或重大事件后重算。",
@@ -320,7 +320,7 @@
     "valuationRangeMode": "P/E 情景仅在财报与重大事件后人工复核更新",
     "lastDailyCheckAt": "2026-08-06T12:25:22.926Z",
     "lastDailySecCheckAt": "2026-08-06T12:25:22.926Z",
-    "lastEventDetectedAt": "2026-08-05T12:26:53.506Z"
+    "lastEventDetectedAt": "2026-08-07T00:31:27.633Z"
   },
   "companies": [
     {
@@ -815,11 +815,11 @@
       "segment": "光模块",
       "tradingViewSymbol": "NASDAQ:AAOI",
       "secCik": "0001158114",
-      "reviewStatus": "reviewed",
+      "reviewStatus": "needs-review",
       "reviewedAt": "2026-07-12",
       "reviewedBy": "项目估值研究",
       "reviewEvidenceUrl": "https://investors.ao-inc.com/node/17021/html",
-      "reviewReason": "已复核 Q1 2026 与 FY2025；连续亏损，不生成负 P/E 对应的买入价。",
+      "reviewReason": "发现新的 SEC 10-Q 披露（2026-08-06），现有 EPS 与 P/E 情景已标记为待人工复核。",
       "currency": "USD",
       "confidence": "not_assessed",
       "valuationModel": {
@@ -855,7 +855,13 @@
           "url": "https://investors.ao-inc.com/static-files/f6fbe97f-65ef-4f4d-a343-b08a3b54524a",
           "type": "earnings"
         }
-      ]
+      ],
+      "latestSecFiling": {
+        "form": "10-Q",
+        "filingDate": "2026-08-06",
+        "accessionNumber": "0001437749-26-026278",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000143774926026278/0001437749-26-026278-index.html"
+      }
     },
     {
       "ticker": "CRWV",

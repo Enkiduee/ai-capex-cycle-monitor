@@ -1,10 +1,55 @@
 {
-  "updatedAt": "2026-08-05",
+  "updatedAt": "2026-08-07",
   "isDemoData": true,
   "dataNotice": "事件流支持两类内容：明确标注的演示情景，以及发现后自动收录的 SEC EDGAR 官方披露；是否已有官方披露请以本页来源标识为准。自动披露保持中性、风险变化为 0，只用于提醒人工复核，不代表系统判断利好利空。",
   "automationNotice": "GitHub Actions 每 4 小时检查一次所列供应链公司的 10-K、10-Q、20-F、8-K、6-K 等相关申报；GitHub 定时任务可能延迟。",
   "riskScoreChangeMeaning": "正数表示风险上升，负数表示风险下降。",
   "events": [
+    {
+      "id": "sec-aaoi-0001683168-26-006055",
+      "date": "2026-08-06",
+      "entity": "Applied Optoelectronics",
+      "title": "Applied Optoelectronics 提交 8-K 业绩披露",
+      "type": "业绩披露",
+      "sentiment": "neutral",
+      "affectedSegments": [
+        "光模块"
+      ],
+      "riskScoreChange": 0,
+      "description": "SEC EDGAR 于 2026-08-06 收录 8-K，申报项目 2.02、9.01。系统仅记录官方披露并将 EPS 与 P/E 情景标记为待复核，不自动判断利好利空，也不自动调整风险分数或估值价格。",
+      "sourceName": "SEC EDGAR 官方披露 · 8-K",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000168316826006055/0001683168-26-006055-index.html",
+      "isAutomated": true,
+      "filingKind": "earnings",
+      "form": "8-K",
+      "accessionNumber": "0001683168-26-006055",
+      "acceptedAt": "2026-08-06T16:13:01.000Z",
+      "secItems": [
+        "2.02",
+        "9.01"
+      ]
+    },
+    {
+      "id": "sec-aaoi-0001437749-26-026278",
+      "date": "2026-08-06",
+      "entity": "Applied Optoelectronics",
+      "title": "Applied Optoelectronics 提交 10-Q 财报披露",
+      "type": "财报披露",
+      "sentiment": "neutral",
+      "affectedSegments": [
+        "光模块"
+      ],
+      "riskScoreChange": 0,
+      "description": "SEC EDGAR 于 2026-08-06 收录 10-Q。系统仅记录官方披露并将 EPS 与 P/E 情景标记为待复核，不自动判断利好利空，也不自动调整风险分数或估值价格。",
+      "sourceName": "SEC EDGAR 官方披露 · 10-Q",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000143774926026278/0001437749-26-026278-index.html",
+      "isAutomated": true,
+      "filingKind": "earnings",
+      "form": "10-Q",
+      "accessionNumber": "0001437749-26-026278",
+      "acceptedAt": "2026-08-06T16:17:30.000Z",
+      "secItems": []
+    },
     {
       "id": "sec-anet-0001596532-26-000175",
       "date": "2026-08-05",
@@ -380,5 +425,5 @@
       "sourceUrl": "https://investors.broadcom.com/"
     }
   ],
-  "lastAutomatedEventAt": "2026-08-05T12:26:53.506Z"
+  "lastAutomatedEventAt": "2026-08-07T00:31:27.633Z"
 }
