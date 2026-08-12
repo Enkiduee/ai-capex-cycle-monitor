@@ -320,7 +320,7 @@
     "valuationRangeMode": "P/E 情景仅在财报与重大事件后人工复核更新",
     "lastDailyCheckAt": "2026-08-12T03:31:08.544Z",
     "lastDailySecCheckAt": "2026-08-12T03:31:08.544Z",
-    "lastEventDetectedAt": "2026-08-12T15:39:31.443Z"
+    "lastEventDetectedAt": "2026-08-12T23:23:14.931Z"
   },
   "companies": [
     {
@@ -755,11 +755,11 @@
       "segment": "光模块",
       "tradingViewSymbol": "NYSE:COHR",
       "secCik": "0000820318",
-      "reviewStatus": "reviewed",
+      "reviewStatus": "needs-review",
       "reviewedAt": "2026-07-12",
       "reviewedBy": "项目估值研究",
       "reviewEvidenceUrl": "https://www.coherent.com/news/press-releases/third-quarter-fiscal-year-2026-results",
-      "reviewReason": "已按 TTM GAAP 摊薄 EPS 与 GAAP 历史 P/E 同口径复核；并购会计令置信度维持低位。",
+      "reviewReason": "发现新的 SEC 8-K 披露（2026-08-12），现有 EPS 与 P/E 情景已标记为待人工复核。",
       "currency": "USD",
       "confidence": "low",
       "valuationModel": {
@@ -807,7 +807,13 @@
           "url": "https://stockanalysis.com/stocks/cohr/financials/ratios/",
           "type": "historical-valuation"
         }
-      ]
+      ],
+      "latestSecFiling": {
+        "form": "8-K",
+        "filingDate": "2026-08-12",
+        "accessionNumber": "0001193125-26-346860",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/820318/000119312526346860/0001193125-26-346860-index.html"
+      }
     },
     {
       "ticker": "AAOI",
@@ -977,8 +983,8 @@
       "latestSecFiling": {
         "form": "6-K",
         "filingDate": "2026-08-12",
-        "accessionNumber": "0001104659-26-094568",
-        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000110465926094568/0001104659-26-094568-index.html"
+        "accessionNumber": "0001104659-26-094844",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000110465926094844/0001104659-26-094844-index.html"
       }
     }
   ]
