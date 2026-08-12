@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-11",
+  "updatedAt": "2026-08-12",
   "isDemoData": false,
   "methodologyVersion": "pe-cycle-v1",
   "dataNotice": "估值卡同时包含可复算 P/E 情景与截至 2026-07-14 的人工财报/指引研究区间；两者都是研究假设，不是目标价、收益保证、个性化建议或任何形式的买卖推荐。价格带必须在每份财报或重大事件后重算。",
@@ -320,7 +320,7 @@
     "valuationRangeMode": "P/E 情景仅在财报与重大事件后人工复核更新",
     "lastDailyCheckAt": "2026-08-12T03:31:08.544Z",
     "lastDailySecCheckAt": "2026-08-12T03:31:08.544Z",
-    "lastEventDetectedAt": "2026-08-11T23:23:33.531Z"
+    "lastEventDetectedAt": "2026-08-12T11:31:37.287Z"
   },
   "companies": [
     {
@@ -873,7 +873,7 @@
       "reviewedAt": "2026-07-12",
       "reviewedBy": "项目估值研究",
       "reviewEvidenceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000222/crwv-20260331.htm",
-      "reviewReason": "发现新的 SEC 8-K 披露（2026-08-11），现有 EPS 与 P/E 情景已标记为待人工复核。",
+      "reviewReason": "发现新的 SEC 10-Q 披露（2026-08-12），现有 EPS 与 P/E 情景已标记为待人工复核。",
       "currency": "USD",
       "confidence": "not_assessed",
       "valuationModel": {
@@ -916,10 +916,10 @@
         }
       ],
       "latestSecFiling": {
-        "form": "8-K",
-        "filingDate": "2026-08-11",
-        "accessionNumber": "0001769628-26-000362",
-        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000362/0001769628-26-000362-index.html"
+        "form": "10-Q",
+        "filingDate": "2026-08-12",
+        "accessionNumber": "0001769628-26-000366",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000366/0001769628-26-000366-index.html"
       }
     },
     {
