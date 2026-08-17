@@ -320,7 +320,7 @@
     "valuationRangeMode": "P/E 情景仅在财报与重大事件后人工复核更新",
     "lastDailyCheckAt": "2026-08-17T02:36:04.408Z",
     "lastDailySecCheckAt": "2026-08-17T02:36:04.408Z",
-    "lastEventDetectedAt": "2026-08-17T15:02:35.602Z"
+    "lastEventDetectedAt": "2026-08-17T23:00:46.202Z"
   },
   "companies": [
     {
@@ -699,7 +699,7 @@
       "reviewedAt": "2026-07-12",
       "reviewedBy": "项目估值研究",
       "reviewEvidenceUrl": "https://investor.lumentum.com/financial-news-releases/news-details/2026/Lumentum-Announces-Third-Quarter-of-Fiscal-Year-2026-Financial-Results/default.aspx",
-      "reviewReason": "发现新的 SEC 8-K 披露（2026-08-11），现有 EPS 与 P/E 情景已标记为待人工复核。",
+      "reviewReason": "发现新的 SEC 10-K 披露（2026-08-17），现有 EPS 与 P/E 情景已标记为待人工复核。",
       "currency": "USD",
       "confidence": "low",
       "valuationModel": {
@@ -749,10 +749,10 @@
         }
       ],
       "latestSecFiling": {
-        "form": "8-K",
-        "filingDate": "2026-08-11",
-        "accessionNumber": "0001628280-26-055726",
-        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000162828026055726/0001628280-26-055726-index.html"
+        "form": "10-K",
+        "filingDate": "2026-08-17",
+        "accessionNumber": "0001628280-26-057358",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000162828026057358/0001628280-26-057358-index.html"
       }
     },
     {
