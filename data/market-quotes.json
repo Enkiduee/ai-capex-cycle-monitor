@@ -1,7 +1,7 @@
 {
   "version": 2,
   "updatedAt": "2026-08-17",
-  "fetchedAt": "2026-08-17T07:12:23.850Z",
+  "fetchedAt": "2026-08-17T07:59:18.946Z",
   "source": {
     "label": "Yahoo Finance Chart",
     "homepage": "https://finance.yahoo.com/",
@@ -20,7 +20,7 @@
       "phase": "after_close",
       "sessionDate": "2026-08-17",
       "timezone": "Asia/Shanghai",
-      "refreshedAt": "2026-08-17T07:12:23.850Z",
+      "refreshedAt": "2026-08-17T07:59:18.946Z",
       "quoteCount": 3,
       "staleTickers": []
     },
@@ -97,13 +97,13 @@
       "previousClose": 34.82,
       "change": 3.48,
       "changePercent": 9.994,
-      "quoteTime": "2026-08-17T06:57:18.000Z",
+      "quoteTime": "2026-08-17T07:04:03.000Z",
       "quoteDate": "2026-08-17",
-      "fetchedAt": "2026-08-17T07:12:23.850Z",
+      "fetchedAt": "2026-08-17T07:59:18.946Z",
       "sourceUrl": "https://finance.yahoo.com/quote/002436.SZ",
       "marketCap": 59182633676,
       "marketCapCurrency": "CNY",
-      "marketCapFetchedAt": "2026-08-17T07:12:22.682Z",
+      "marketCapFetchedAt": "2026-08-17T07:59:17.319Z",
       "marketCapSourceUrl": "https://www.tradingview.com/symbols/SZSE-002436/"
     },
     {
@@ -115,13 +115,13 @@
       "previousClose": 378,
       "change": 14.9,
       "changePercent": 3.942,
-      "quoteTime": "2026-08-17T06:57:18.000Z",
+      "quoteTime": "2026-08-17T07:04:24.000Z",
       "quoteDate": "2026-08-17",
-      "fetchedAt": "2026-08-17T07:12:23.850Z",
+      "fetchedAt": "2026-08-17T07:59:18.946Z",
       "sourceUrl": "https://finance.yahoo.com/quote/002916.SZ",
       "marketCap": 257040530640,
       "marketCapCurrency": "CNY",
-      "marketCapFetchedAt": "2026-08-17T07:12:22.682Z",
+      "marketCapFetchedAt": "2026-08-17T07:59:17.319Z",
       "marketCapSourceUrl": "https://www.tradingview.com/symbols/SZSE-002916/"
     },
     {
@@ -133,13 +133,13 @@
       "previousClose": 62.96,
       "change": 6.3,
       "changePercent": 10.006,
-      "quoteTime": "2026-08-17T06:57:18.000Z",
+      "quoteTime": "2026-08-17T07:04:36.000Z",
       "quoteDate": "2026-08-17",
-      "fetchedAt": "2026-08-17T07:12:23.850Z",
+      "fetchedAt": "2026-08-17T07:59:18.946Z",
       "sourceUrl": "https://finance.yahoo.com/quote/002156.SZ",
       "marketCap": 95387744135,
       "marketCapCurrency": "CNY",
-      "marketCapFetchedAt": "2026-08-17T07:12:22.682Z",
+      "marketCapFetchedAt": "2026-08-17T07:59:17.319Z",
       "marketCapSourceUrl": "https://www.tradingview.com/symbols/SZSE-002156/"
     },
     {
@@ -253,9 +253,9 @@
   ],
   "fx": {
     "pair": "USD/CNY",
-    "rate": 6.7382,
-    "quoteTime": "2026-08-17T07:12:12.000Z",
-    "fetchedAt": "2026-08-17T07:12:22.682Z",
+    "rate": 6.7378,
+    "quoteTime": "2026-08-17T07:59:12.000Z",
+    "fetchedAt": "2026-08-17T07:59:17.319Z",
     "sourceUrl": "https://finance.yahoo.com/quote/CNY=X/"
   }
 }
