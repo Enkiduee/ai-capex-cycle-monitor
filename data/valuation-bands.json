@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-21",
+  "updatedAt": "2026-08-24",
   "isDemoData": false,
   "methodologyVersion": "pe-cycle-v1",
   "dataNotice": "估值卡同时包含可复算 P/E 情景与截至 2026-07-14 的人工财报/指引研究区间；两者都是研究假设，不是目标价、收益保证、个性化建议或任何形式的买卖推荐。价格带必须在每份财报或重大事件后重算。",
@@ -320,7 +320,7 @@
     "valuationRangeMode": "P/E 情景仅在财报与重大事件后人工复核更新",
     "lastDailyCheckAt": "2026-08-24T02:39:13.900Z",
     "lastDailySecCheckAt": "2026-08-24T02:39:13.900Z",
-    "lastEventDetectedAt": "2026-08-21T23:01:11.594Z"
+    "lastEventDetectedAt": "2026-08-24T23:02:07.355Z"
   },
   "companies": [
     {
@@ -837,7 +837,7 @@
       "reviewedAt": "2026-07-12",
       "reviewedBy": "项目估值研究",
       "reviewEvidenceUrl": "https://investors.ao-inc.com/node/17021/html",
-      "reviewReason": "发现新的 SEC 8-K 披露（2026-08-21），现有 EPS 与 P/E 情景已标记为待人工复核。",
+      "reviewReason": "发现新的 SEC 8-K 披露（2026-08-24），现有 EPS 与 P/E 情景已标记为待人工复核。",
       "currency": "USD",
       "confidence": "not_assessed",
       "valuationModel": {
@@ -876,9 +876,9 @@
       ],
       "latestSecFiling": {
         "form": "8-K",
-        "filingDate": "2026-08-21",
-        "accessionNumber": "0001104659-26-099688",
-        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000110465926099688/0001104659-26-099688-index.html"
+        "filingDate": "2026-08-24",
+        "accessionNumber": "0001683168-26-006693",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000168316826006693/0001683168-26-006693-index.html"
       }
     },
     {
@@ -950,7 +950,7 @@
       "reviewedAt": "2026-07-12",
       "reviewedBy": "项目估值研究",
       "reviewEvidenceUrl": "https://assets.nebius.com/assets/6fc0ea6c-0884-4a1f-bed8-1f797eb9628f/Financial%20results_Q1%202026.pdf",
-      "reviewReason": "发现新的 SEC 6-K 披露（2026-08-20），现有 EPS 与 P/E 情景已标记为待人工复核。",
+      "reviewReason": "发现新的 SEC 6-K 披露（2026-08-24），现有 EPS 与 P/E 情景已标记为待人工复核。",
       "currency": "USD",
       "confidence": "not_assessed",
       "valuationModel": {
@@ -994,9 +994,9 @@
       ],
       "latestSecFiling": {
         "form": "6-K",
-        "filingDate": "2026-08-20",
-        "accessionNumber": "0001104659-26-098924",
-        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000110465926098924/0001104659-26-098924-index.html"
+        "filingDate": "2026-08-24",
+        "accessionNumber": "0001104659-26-100347",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000110465926100347/0001104659-26-100347-index.html"
       }
     }
   ]
