@@ -320,7 +320,7 @@
     "valuationRangeMode": "P/E 情景仅在财报与重大事件后人工复核更新",
     "lastDailyCheckAt": "2026-08-26T02:40:48.170Z",
     "lastDailySecCheckAt": "2026-08-26T02:40:48.170Z",
-    "lastEventDetectedAt": "2026-08-26T16:05:28.490Z"
+    "lastEventDetectedAt": "2026-08-26T21:15:18.019Z"
   },
   "companies": [
     {
@@ -333,7 +333,7 @@
       "reviewedAt": "2026-07-12",
       "reviewedBy": "项目估值研究",
       "reviewEvidenceUrl": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2026/",
-      "reviewReason": "发现新的 SEC 8-K 披露（2026-08-17），现有 EPS 与 P/E 情景已标记为待人工复核。",
+      "reviewReason": "发现新的 SEC 10-Q 披露（2026-08-26），现有 EPS 与 P/E 情景已标记为待人工复核。",
       "currency": "USD",
       "confidence": "medium",
       "valuationModel": {
@@ -383,10 +383,10 @@
         }
       ],
       "latestSecFiling": {
-        "form": "8-K",
-        "filingDate": "2026-08-17",
-        "accessionNumber": "0001045810-26-000069",
-        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000069/0001045810-26-000069-index.html"
+        "form": "10-Q",
+        "filingDate": "2026-08-26",
+        "accessionNumber": "0001045810-26-000075",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/0001045810-26-000075-index.html"
       }
     },
     {
