@@ -320,7 +320,7 @@
     "valuationRangeMode": "P/E 情景仅在财报与重大事件后人工复核更新",
     "lastDailyCheckAt": "2026-08-28T12:58:11.258Z",
     "lastDailySecCheckAt": "2026-08-28T12:58:11.258Z",
-    "lastEventDetectedAt": "2026-08-28T02:20:56.603Z"
+    "lastEventDetectedAt": "2026-08-28T23:42:14.131Z"
   },
   "companies": [
     {
@@ -525,7 +525,7 @@
       "reviewedAt": "2026-07-12",
       "reviewedBy": "项目估值研究",
       "reviewEvidenceUrl": "https://investor.marvell.com/news-events/press-releases/detail/1023/marvell-technology-inc-reports-first-quarter-of-fiscal-year-2027-financial-results",
-      "reviewReason": "发现新的 SEC 8-K 披露（2026-08-27），现有 EPS 与 P/E 情景已标记为待人工复核。",
+      "reviewReason": "发现新的 SEC 10-Q 披露（2026-08-28），现有 EPS 与 P/E 情景已标记为待人工复核。",
       "currency": "USD",
       "confidence": "not_assessed",
       "valuationModel": {
@@ -568,10 +568,10 @@
         }
       ],
       "latestSecFiling": {
-        "form": "8-K",
-        "filingDate": "2026-08-27",
-        "accessionNumber": "0001835632-26-000022",
-        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1835632/000183563226000022/0001835632-26-000022-index.html"
+        "form": "10-Q",
+        "filingDate": "2026-08-28",
+        "accessionNumber": "0001835632-26-000025",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1835632/000183563226000025/0001835632-26-000025-index.html"
       }
     },
     {
