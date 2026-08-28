@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-06",
+  "updatedAt": "2026-08-28",
   "window": {
-    "start": "2025-08-07",
-    "end": "2026-08-06",
+    "start": "2025-08-29",
+    "end": "2026-08-28",
     "label": "近一年（滚动 12 个月）"
   },
   "scope": {
@@ -16,20 +16,20 @@
     "notice": "美股已售按 SEC Form 4，最新 Form 144 仅作为期末待确认快照；A 股按巨潮资讯已实施减持公告；人民币成交用 ECB 交易日参考汇率折算为美元可比值。"
   },
   "summary": {
-    "executedShares": 118110655,
-    "executedValueUsd": 10378818558.57,
-    "noticeShares": 2707878,
-    "noticeValueUsd": 215179478.2,
-    "pendingShares": 333297,
-    "pendingValueUsd": 28708978.96,
+    "executedShares": 108482565,
+    "executedValueUsd": 10369059963.32,
+    "executedValueCny": 928238714.39,
+    "usExecutedValueUsd": 10236052369.81,
+    "noticeShares": 618512,
+    "noticeValueUsd": 94641913.28,
+    "pendingShares": 455003,
+    "pendingValueUsd": 69524498.98,
     "companiesWithSales": 10,
-    "companiesWithPendingNotices": 1,
-    "plannedExecutionSharePct": 30.42,
-    "topCompanyConcentrationPct": 88.63,
-    "executedValueCny": 1109535217.76,
-    "usExecutedValueUsd": 10220417572.26,
+    "companiesWithPendingNotices": 2,
+    "plannedExecutionSharePct": 31.89,
     "topCompanyTicker": "CRWV",
-    "valueBasis": "美元金额 + A 股人民币成交按交易日 ECB 参考汇率折算；人民币原值另列"
+    "topCompanyConcentrationPct": 88.29,
+    "valueBasis": "美元金额 + A 股人民币成交按交易日参考汇率折算；人民币原值另列"
   },
   "companies": [
     {
@@ -39,23 +39,23 @@
       "coverage": "covered",
       "status": "pending",
       "executed": {
-        "shares": 80538870,
-        "valueUsd": 9199008972.93,
+        "shares": 79481175,
+        "valueUsd": 9155223751.67,
         "valueCny": 0,
-        "filingCount": 306
+        "filingCount": 329
       },
       "notices": {
-        "shares": 2690920,
-        "valueUsd": 212586586.4,
-        "filingCount": 43
+        "shares": 565301,
+        "valueUsd": 49160970.25,
+        "filingCount": 11
       },
       "pending": {
-        "shares": 333297,
-        "valueUsd": 28708978.96,
-        "filingCount": 4
+        "shares": 415792,
+        "valueUsd": 36035419,
+        "filingCount": 11
       },
-      "planExecutedValueUsd": 2990967600.36,
-      "note": "近一年已售金额占全样本美元可比值 88.6%；约 32.5% 已售金额标记为 10b5-1。期末仍有 Form 144 待确认。",
+      "planExecutedValueUsd": 3078424611.17,
+      "note": "滚动一年已售 79,481,175 股，美元可比金额约 $9.16B。期末仍有未匹配 Form 144。",
       "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
     },
     {
@@ -65,23 +65,23 @@
       "coverage": "covered",
       "status": "sold",
       "executed": {
-        "shares": 808139,
-        "valueUsd": 156765247.79,
+        "shares": 863435,
+        "valueUsd": 171477027.72,
         "valueCny": 0,
-        "filingCount": 21
+        "filingCount": 23
       },
       "notices": {
-        "shares": 6958,
-        "valueUsd": 1350478.22,
-        "filingCount": 1
+        "shares": 0,
+        "valueUsd": 0,
+        "filingCount": 0
       },
       "pending": {
         "shares": 0,
         "valueUsd": 0,
         "filingCount": 0
       },
-      "planExecutedValueUsd": 17566907.52,
-      "note": "近一年公开市场出售约 $156.77M，其中约 11.2% 标记为 10b5-1；期末无未匹配 Form 144。",
+      "planExecutedValueUsd": 32278687.45,
+      "note": "滚动一年已售 863,435 股，美元可比金额约 $171.48M。期末无活跃未匹配拟售。",
       "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845&type=4&dateb=&owner=include&count=100"
     },
     {
@@ -91,23 +91,23 @@
       "coverage": "covered",
       "status": "sold",
       "executed": {
-        "shares": 896933,
-        "valueUsd": 119710581.65,
+        "shares": 877149,
+        "valueUsd": 120504704.85,
         "valueCny": 0,
-        "filingCount": 43
+        "filingCount": 42
       },
       "notices": {
-        "shares": 10000,
-        "valueUsd": 1242413.58,
-        "filingCount": 3
+        "shares": 0,
+        "valueUsd": 0,
+        "filingCount": 0
       },
       "pending": {
         "shares": 0,
         "valueUsd": 0,
         "filingCount": 0
       },
-      "planExecutedValueUsd": 19833015.9,
-      "note": "近一年公开市场出售约 $119.71M，其中约 16.6% 标记为 10b5-1。",
+      "planExecutedValueUsd": 21298555.9,
+      "note": "滚动一年已售 877,149 股，美元可比金额约 $120.50M。期末无活跃未匹配拟售。",
       "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001158114&type=4&dateb=&owner=include&count=100"
     },
     {
@@ -115,25 +115,25 @@
       "name": "Lumentum",
       "market": "NASDAQ",
       "coverage": "covered",
-      "status": "sold",
+      "status": "pending",
       "executed": {
-        "shares": 158057,
-        "valueUsd": 87832040.5,
+        "shares": 200615,
+        "valueUsd": 140170461.21,
         "valueCny": 0,
-        "filingCount": 34
+        "filingCount": 36
       },
       "notices": {
-        "shares": 0,
-        "valueUsd": 0,
-        "filingCount": 0
+        "shares": 53211,
+        "valueUsd": 45480943.03,
+        "filingCount": 7
       },
       "pending": {
-        "shares": 0,
-        "valueUsd": 0,
-        "filingCount": 0
+        "shares": 39211,
+        "valueUsd": 33489079.98,
+        "filingCount": 7
       },
-      "planExecutedValueUsd": 68657543.17,
-      "note": "近一年公开市场出售约 $87.83M，其中约 78.2% 标记为 10b5-1。",
+      "planExecutedValueUsd": 120619443.2,
+      "note": "滚动一年已售 200,615 股，美元可比金额约 $140.17M。期末仍有未匹配 Form 144。",
       "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001633978&type=4&dateb=&owner=include&count=100"
     },
     {
@@ -143,10 +143,10 @@
       "coverage": "covered",
       "status": "sold",
       "executed": {
-        "shares": 1850513,
-        "valueUsd": 78166090.59,
+        "shares": 1857013,
+        "valueUsd": 78771795.99,
         "valueCny": 0,
-        "filingCount": 31
+        "filingCount": 33
       },
       "notices": {
         "shares": 0,
@@ -159,7 +159,7 @@
         "filingCount": 0
       },
       "planExecutedValueUsd": 0,
-      "note": "近一年公开市场出售约 $78.17M；纳入交易未标记为 10b5-1。",
+      "note": "滚动一年已售 1,857,013 股，美元可比金额约 $78.77M。期末无活跃未匹配拟售。",
       "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001051627&type=4&dateb=&owner=include&count=100"
     },
     {
@@ -169,10 +169,10 @@
       "coverage": "covered",
       "status": "sold",
       "executed": {
-        "shares": 5616430,
-        "valueUsd": 451990007.04,
+        "shares": 5596430,
+        "valueUsd": 450940407.04,
         "valueCny": 0,
-        "filingCount": 14
+        "filingCount": 13
       },
       "notices": {
         "shares": 0,
@@ -185,7 +185,7 @@
         "filingCount": 0
       },
       "planExecutedValueUsd": 11974000,
-      "note": "近一年公开市场出售约 $451.99M，其中约 2.6% 标记为 10b5-1。",
+      "note": "滚动一年已售 5,596,430 股，美元可比金额约 $450.94M。期末无活跃未匹配拟售。",
       "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001780312&type=4&dateb=&owner=include&count=100"
     },
     {
@@ -211,7 +211,7 @@
         "filingCount": 0
       },
       "planExecutedValueUsd": 0,
-      "note": "近一年检出 3 份含交易代码 S 的 Form 4，合计约 $7.47M。",
+      "note": "滚动一年已售 81,280 股，美元可比金额约 $7.47M。期末无活跃未匹配拟售。",
       "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000050863&type=4&dateb=&owner=include&count=100"
     },
     {
@@ -221,10 +221,10 @@
       "coverage": "covered",
       "status": "sold",
       "executed": {
-        "shares": 904733,
-        "valueUsd": 119470233.36,
+        "shares": 782568,
+        "valueUsd": 111489822.93,
         "valueCny": 0,
-        "filingCount": 37
+        "filingCount": 33
       },
       "notices": {
         "shares": 0,
@@ -237,7 +237,7 @@
         "filingCount": 0
       },
       "planExecutedValueUsd": 0,
-      "note": "近一年公开市场出售约 $119.47M；纳入交易未标记为 10b5-1。",
+      "note": "滚动一年已售 782,568 股，美元可比金额约 $111.49M。期末无活跃未匹配拟售。",
       "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000024741&type=4&dateb=&owner=include&count=100"
     },
     {
@@ -247,10 +247,10 @@
       "coverage": "covered",
       "status": "sold",
       "executed": {
-        "shares": 8687900,
-        "valueUsd": 25569197.23,
-        "valueCny": 181851454.69,
-        "filingCount": 1
+        "shares": 3742900,
+        "valueUsd": 12311016.61,
+        "valueCny": 87638714.39,
+        "filingCount": 0
       },
       "notices": {
         "shares": 0,
@@ -263,7 +263,7 @@
         "filingCount": 0
       },
       "planExecutedValueUsd": 0,
-      "note": "窗口内 4 笔集中竞价合计 8,687,900 股、¥181.85M；8 月 5–6 日两笔因早于窗口起点未计入。",
+      "note": "滚动一年已售 3,742,900 股，美元可比金额约 $12.31M / ¥87.64M 原值。期末无活跃未匹配拟售。",
       "sourceUrl": "https://www.cninfo.com.cn/new/disclosure/stock?stockCode=002436&orgId=9900012934"
     },
     {
@@ -275,6 +275,7 @@
       "executed": {
         "shares": 0,
         "valueUsd": 0,
+        "valueCny": 0,
         "filingCount": 0
       },
       "notices": {
@@ -288,7 +289,7 @@
         "filingCount": 0
       },
       "planExecutedValueUsd": 0,
-      "note": "巨潮资讯近一年未检出标题含“减持”的公司公告。",
+      "note": "截至最近收盘扫描，滚动一年未检出纳入口径的已实施减持。",
       "sourceUrl": "https://www.cninfo.com.cn/new/disclosure/stock?stockCode=002916&orgId=9900022488"
     },
     {
@@ -298,10 +299,10 @@
       "coverage": "covered",
       "status": "sold",
       "executed": {
-        "shares": 18567800,
-        "valueUsd": 132831789.08,
-        "valueCny": 927683763.07,
-        "filingCount": 2
+        "shares": 15000000,
+        "valueUsd": 120696576.9,
+        "valueCny": 840600000,
+        "filingCount": 0
       },
       "notices": {
         "shares": 0,
@@ -314,7 +315,7 @@
         "filingCount": 0
       },
       "planExecutedValueUsd": 0,
-      "note": "窗口内合计 18,567,800 股、约 ¥927.68M；其中 2025-08-07 至 08-20 的金额按公告披露的整批均价估算。",
+      "note": "滚动一年已售 15,000,000 股，美元可比金额约 $120.70M / ¥840.60M 原值。期末无活跃未匹配拟售。",
       "sourceUrl": "https://www.cninfo.com.cn/new/disclosure/stock?stockCode=002156&orgId=9900003427"
     },
     {
@@ -333,8 +334,8 @@
   ],
   "financing": {
     "window": {
-      "start": "2025-08-07",
-      "end": "2026-08-06",
+      "start": "2025-08-29",
+      "end": "2026-08-28",
       "label": "公司融资（滚动 12 个月）"
     },
     "scope": {
@@ -548,52 +549,124 @@
   },
   "timeline": [
     {
-      "date": "2026-08-05",
-      "ticker": "CRWV",
-      "person": "Chen Goldberg",
+      "date": "2026-08-27",
+      "ticker": "LITE",
+      "person": "MICHAEL EDWARD HURLSTON",
       "kind": "pending",
-      "shares": 19208,
-      "valueUsd": 1772706.32,
+      "shares": 548,
+      "valueUsd": 525345.68,
+      "valueCny": 0,
       "label": "Form 144 待确认",
-      "detail": "拟售日期 8 月 5 日；申报备注显示包含 RSU 归属税款所需出售。",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2058056/000205805626000015/primary_doc.xml",
-      "valueCny": 0
+      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726008740/primary_doc.xml"
     },
     {
-      "date": "2026-08-04",
+      "date": "2026-08-27",
+      "ticker": "LITE",
+      "person": "多位申报人（月度合并）",
+      "kind": "executed",
+      "shares": 64147,
+      "valueUsd": 54940391.34,
+      "valueCny": 0,
+      "label": "月度 Form 4 出售",
+      "detail": "2026-08 月交易代码 S 合并；10b5-1 标记金额约占 99.0%。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000164825626000008/form4-08282026_010803.xml"
+    },
+    {
+      "date": "2026-08-26",
+      "ticker": "CRWV",
+      "person": "Kristen J. McVeety",
+      "kind": "pending",
+      "shares": 2100,
+      "valueUsd": 184884,
+      "valueCny": 0,
+      "label": "Form 144 待确认",
+      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000196858226000884/primary_doc.xml"
+    },
+    {
+      "date": "2026-08-25",
+      "ticker": "CRWV",
+      "person": "多位申报人",
+      "kind": "pending",
+      "shares": 307692,
+      "valueUsd": 26538435,
+      "valueCny": 0,
+      "label": "Form 144 待确认",
+      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726008687/primary_doc.xml"
+    },
+    {
+      "date": "2026-08-25",
+      "ticker": "CRWV",
+      "person": "多位申报人（月度合并）",
+      "kind": "executed",
+      "shares": 6711052,
+      "valueUsd": 691737917.57,
+      "valueCny": 0,
+      "label": "月度 Form 4 出售",
+      "detail": "2026-08 月交易代码 S 合并；10b5-1 标记金额约占 29.9%。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000412/form4.xml"
+    },
+    {
+      "date": "2026-08-25",
+      "ticker": "LITE",
+      "person": "VINCENT D RETORT",
+      "kind": "pending",
+      "shares": 38663,
+      "valueUsd": 32963734.3,
+      "valueCny": 0,
+      "label": "Form 144 待确认",
+      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726008659/primary_doc.xml"
+    },
+    {
+      "date": "2026-08-24",
+      "ticker": "CRWV",
+      "person": "多位申报人",
+      "kind": "pending",
+      "shares": 106000,
+      "valueUsd": 9312100,
+      "valueCny": 0,
+      "label": "Form 144 待确认",
+      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726008618/primary_doc.xml"
+    },
+    {
+      "date": "2026-08-18",
       "ticker": "AAOI",
       "person": "多位申报人（月度合并）",
       "kind": "executed",
-      "shares": 4715,
-      "valueUsd": 596447.5,
+      "shares": 14715,
+      "valueUsd": 2061987.5,
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-08 月交易代码 S 合并；10b5-1 标记金额约占 100.0%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001158114&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000168316826006634/ownership.xml"
     },
     {
-      "date": "2026-08-04",
-      "ticker": "CRWV",
-      "person": "Michael Intrator / Omnadora / Chen Goldberg",
-      "kind": "pending",
-      "shares": 314089,
-      "valueUsd": 26936272.64,
-      "label": "3 份 Form 144 待确认",
-      "detail": "拟售日期 8 月 4 日；截至数据截止日尚未由 Form 4 成交披露匹配。",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2058037/000195004726007620/primary_doc.xml",
-      "valueCny": 0
+      "date": "2026-08-17",
+      "ticker": "AXTI",
+      "person": "LEBLANC LEONARD J",
+      "kind": "executed-discretionary",
+      "shares": 6000,
+      "valueUsd": 560910.4,
+      "valueCny": 0,
+      "label": "月度公开市场出售",
+      "detail": "2026-08 月交易代码 S 合并；未标记 10b5-1。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1051627/000143774926028577/rdgdoc.xml"
     },
     {
-      "date": "2026-08-03",
-      "ticker": "CRWV",
+      "date": "2026-08-14",
+      "ticker": "NBIS",
       "person": "多位申报人（月度合并）",
       "kind": "executed",
-      "shares": 250000,
-      "valueUsd": 20591945.26,
+      "shares": 55296,
+      "valueUsd": 14711779.93,
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-08 月交易代码 S 合并；10b5-1 标记金额约占 100.0%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000151384526000092/form4.xml"
     },
     {
       "date": "2026-07-29",
@@ -601,11 +674,11 @@
       "person": "多位申报人（月度合并）",
       "kind": "executed",
       "shares": 2441012,
-      "valueUsd": 192120556.3,
+      "valueUsd": 192120556.21,
       "valueCny": 0,
       "label": "月度 Form 4 出售",
-      "detail": "2026-07 月交易代码 S 合并；含 EDGAR 最新申报补录；10b5-1 标记金额约占 99.8%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
+      "detail": "2026-07 月交易代码 S 合并；10b5-1 标记金额约占 99.8%。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000339/form4.xml"
     },
     {
       "date": "2026-07-21",
@@ -617,7 +690,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-07 月交易代码 S 合并；10b5-1 标记金额约占 100.0%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001158114&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000168316826005736/ownership.xml"
     },
     {
       "date": "2026-07-15",
@@ -628,20 +701,20 @@
       "valueUsd": 24311815.21,
       "valueCny": 0,
       "label": "月度 Form 4 出售",
-      "detail": "2026-07 月交易代码 S 合并；含 EDGAR 最新申报补录；10b5-1 标记金额约占 5.6%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845&type=4&dateb=&owner=include&count=100"
+      "detail": "2026-07 月交易代码 S 合并；10b5-1 标记金额约占 5.6%。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000151384526000084/form4.xml"
     },
     {
-      "date": "2026-06-24",
+      "date": "2026-06-30",
       "ticker": "CRWV",
       "person": "多位申报人（月度合并）",
       "kind": "executed",
-      "shares": 2586708,
-      "valueUsd": 284558283.54,
+      "shares": 3345179,
+      "valueUsd": 357541320.47,
       "valueCny": 0,
       "label": "月度 Form 4 出售",
-      "detail": "2026-06 月交易代码 S 合并；10b5-1 标记金额约占 92.8%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
+      "detail": "2026-06 月交易代码 S 合并；10b5-1 标记金额约占 94.2%。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000312/form4.xml"
     },
     {
       "date": "2026-06-18",
@@ -653,19 +726,19 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-06 月交易代码 S 合并；10b5-1 标记金额约占 19.6%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001158114&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000168316826004977/0001683168-26-004977-index.html"
     },
     {
       "date": "2026-06-15",
       "ticker": "AXTI",
       "person": "多位申报人（月度合并）",
       "kind": "executed-discretionary",
-      "shares": 265836,
-      "valueUsd": 29165679.29,
+      "shares": 266336,
+      "valueUsd": 29210474.29,
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2026-06 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001051627&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1051627/000143774926028577/rdgdoc.xml"
     },
     {
       "date": "2026-06-15",
@@ -677,7 +750,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-06 月交易代码 S 合并；10b5-1 标记金额约占 60.6%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000151384526000074/0001513845-26-000074-index.html"
     },
     {
       "date": "2026-06-11",
@@ -689,31 +762,31 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-06 月交易代码 S 合并；10b5-1 标记金额约占 47.3%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001780312&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1780312/000149315226028542/0001493152-26-028542-index.html"
     },
     {
       "date": "2026-06-09",
       "ticker": "GLW",
-      "person": "多位申报人（月度合并）",
+      "person": "WEEKS WENDELL P",
       "kind": "executed-discretionary",
       "shares": 100000,
       "valueUsd": 18646000,
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2026-06 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000024741&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000002474126000237/0000024741-26-000237-index.html"
     },
     {
       "date": "2026-06-02",
       "ticker": "LITE",
-      "person": "多位申报人（月度合并）",
+      "person": "Harris Isaac Hosojiro",
       "kind": "executed",
       "shares": 1416,
       "valueUsd": 1416113.28,
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-06 月交易代码 S 合并；10b5-1 标记金额约占 100.0%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001633978&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000186650326000005/0001866503-26-000005-index.html"
     },
     {
       "date": "2026-05-29",
@@ -725,7 +798,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-05 月交易代码 S 合并；10b5-1 标记金额约占 20.8%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000262/0001769628-26-000262-index.html"
     },
     {
       "date": "2026-05-29",
@@ -737,7 +810,7 @@
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2026-05 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000050863&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/50863/000005086326000138/0000050863-26-000138-index.html"
     },
     {
       "date": "2026-05-29",
@@ -749,7 +822,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-05 月交易代码 S 合并；10b5-1 标记金额约占 80.0%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001633978&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000186650326000004/0001866503-26-000004-index.html"
     },
     {
       "date": "2026-05-26",
@@ -761,7 +834,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-05 月交易代码 S 合并；10b5-1 标记金额约占 1.5%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001158114&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000168316826004348/0001683168-26-004348-index.html"
     },
     {
       "date": "2026-05-22",
@@ -773,7 +846,7 @@
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2026-05 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000024741&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000002474126000233/0000024741-26-000233-index.html"
     },
     {
       "date": "2026-05-20",
@@ -785,7 +858,7 @@
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2026-05 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001780312&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1780312/000149315226024877/0001493152-26-024877-index.html"
     },
     {
       "date": "2026-05-20",
@@ -797,7 +870,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-05 月交易代码 S 合并；10b5-1 标记金额约占 6.7%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000151384526000066/0001513845-26-000066-index.html"
     },
     {
       "date": "2026-04-30",
@@ -809,19 +882,19 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-04 月交易代码 S 合并；10b5-1 标记金额约占 44.3%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000110465926054308/0001104659-26-054308-index.html"
     },
     {
       "date": "2026-04-15",
       "ticker": "ASTS",
-      "person": "多位申报人（月度合并）",
+      "person": "Rakuten Group, Inc.",
       "kind": "executed-discretionary",
       "shares": 3040000,
       "valueUsd": 270896800,
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2026-04 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001780312&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1780312/000095010326005837/0000950103-26-005837-index.html"
     },
     {
       "date": "2026-04-15",
@@ -833,19 +906,19 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-04 月交易代码 S 合并；10b5-1 标记金额约占 34.9%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000151384526000051/0001513845-26-000051-index.html"
     },
     {
       "date": "2026-04-10",
       "ticker": "AAOI",
-      "person": "多位申报人（月度合并）",
+      "person": "Murry Stefan J.",
       "kind": "executed",
       "shares": 4000,
       "valueUsd": 546000,
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-04 月交易代码 S 合并；10b5-1 标记金额约占 100.0%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001158114&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000168316826002918/0001683168-26-002918-index.html"
     },
     {
       "date": "2026-03-31",
@@ -857,7 +930,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-03 月交易代码 S 合并；10b5-1 标记金额约占 87.4%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000135/0001769628-26-000135-index.html"
     },
     {
       "date": "2026-03-31",
@@ -869,19 +942,19 @@
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2026-03 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000151384526000039/0001513845-26-000039-index.html"
     },
     {
       "date": "2026-03-23",
       "ticker": "ASTS",
-      "person": "多位申报人（月度合并）",
+      "person": "Yao Huiwen",
       "kind": "executed",
       "shares": 40000,
       "valueUsd": 3555200,
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-03 月交易代码 S 合并；10b5-1 标记金额约占 100.0%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001780312&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1780312/000149315226012442/0001493152-26-012442-index.html"
     },
     {
       "date": "2026-03-19",
@@ -893,7 +966,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-03 月交易代码 S 合并；10b5-1 标记金额约占 19.8%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001158114&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000168316826002112/0001683168-26-002112-index.html"
     },
     {
       "date": "2026-03-13",
@@ -905,7 +978,7 @@
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2026-03 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001051627&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1051627/000143774926008379/0001437749-26-008379-index.html"
     },
     {
       "date": "2026-02-27",
@@ -917,7 +990,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-02 月交易代码 S 合并；10b5-1 标记金额约占 87.2%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001633978&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000156110026000002/0001561100-26-000002-index.html"
     },
     {
       "date": "2026-02-26",
@@ -929,7 +1002,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-02 月交易代码 S 合并；10b5-1 标记金额约占 96.6%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000097/0001769628-26-000097-index.html"
     },
     {
       "date": "2026-02-26",
@@ -941,7 +1014,7 @@
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2026-02 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000024741&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000002474126000135/0000024741-26-000135-index.html"
     },
     {
       "date": "2026-02-20",
@@ -953,19 +1026,19 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-02 月交易代码 S 合并；10b5-1 标记金额约占 100.0%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001158114&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000168316826001282/0001683168-26-001282-index.html"
     },
     {
       "date": "2026-02-02",
       "ticker": "INTC",
-      "person": "多位申报人（月度合并）",
+      "person": "Miller Boise April",
       "kind": "executed-discretionary",
       "shares": 20000,
       "valueUsd": 981000,
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2026-02 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000050863&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/50863/000005086326000034/0000050863-26-000034-index.html"
     },
     {
       "date": "2026-01-29",
@@ -977,7 +1050,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-01 月交易代码 S 合并；10b5-1 标记金额约占 99.6%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000051/0001769628-26-000051-index.html"
     },
     {
       "date": "2026-01-29",
@@ -989,7 +1062,7 @@
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2026-01 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000024741&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000002474126000036/0000024741-26-000036-index.html"
     },
     {
       "date": "2026-01-28",
@@ -1001,7 +1074,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-01 月交易代码 S 合并；10b5-1 标记金额约占 100.0%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001158114&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000168316826000634/0001683168-26-000634-index.html"
     },
     {
       "date": "2026-01-23",
@@ -1011,9 +1084,9 @@
       "shares": 15000000,
       "valueUsd": 120696576.9,
       "valueCny": 840600000,
-      "fxRate": 6.964572,
+      "valueEstimated": false,
       "label": "集中竞价减持完成",
-      "detail": "成交均价 ¥56.04；按 2026-01-23 ECB USD/CNY 6.964572 折算美元可比值。",
+      "detail": "成交均价 ¥56.04。 按当日或最近 ECB USD/CNY 6.964572 折算美元可比值。",
       "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-01-27/1224950623.PDF"
     },
     {
@@ -1026,7 +1099,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2025-12 月交易代码 S 合并；10b5-1 标记金额约占 90.9%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000005/0001769628-26-000005-index.html"
     },
     {
       "date": "2025-12-23",
@@ -1038,7 +1111,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2025-12 月交易代码 S 合并；10b5-1 标记金额约占 83.4%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001158114&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000168316825009380/0001683168-25-009380-index.html"
     },
     {
       "date": "2025-12-10",
@@ -1050,7 +1123,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2025-12 月交易代码 S 合并；10b5-1 标记金额约占 1.8%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001780312&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1780312/000149315225027599/0001493152-25-027599-index.html"
     },
     {
       "date": "2025-12-10",
@@ -1062,7 +1135,7 @@
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2025-12 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000024741&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000002474125000138/0000024741-25-000138-index.html"
     },
     {
       "date": "2025-12-09",
@@ -1074,7 +1147,7 @@
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2025-12 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001051627&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1051627/000143774925037434/0001437749-25-037434-index.html"
     },
     {
       "date": "2025-11-28",
@@ -1086,19 +1159,19 @@
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2025-11 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001051627&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1051627/000143774925036693/0001437749-25-036693-index.html"
     },
     {
       "date": "2025-11-26",
       "ticker": "ASTS",
-      "person": "多位申报人（月度合并）",
+      "person": "Johnson Andrew Martin",
       "kind": "executed-discretionary",
       "shares": 10000,
       "valueUsd": 560000,
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2025-11 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001780312&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1780312/000149315225025390/0001493152-25-025390-index.html"
     },
     {
       "date": "2025-11-26",
@@ -1110,7 +1183,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2025-11 月交易代码 S 合并；10b5-1 标记金额约占 94.4%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962825000086/0001769628-25-000086-index.html"
     },
     {
       "date": "2025-11-19",
@@ -1122,7 +1195,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2025-11 月交易代码 S 合并；10b5-1 标记金额约占 12.9%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001633978&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000171103525000007/0001711035-25-000007-index.html"
     },
     {
       "date": "2025-10-31",
@@ -1134,7 +1207,7 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2025-10 月交易代码 S 合并；10b5-1 标记金额约占 6.7%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000110465925105078/0001104659-25-105078-index.html"
     },
     {
       "date": "2025-10-31",
@@ -1146,7 +1219,7 @@
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2025-10 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000024741&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000002474125000124/0000024741-25-000124-index.html"
     },
     {
       "date": "2025-09-30",
@@ -1158,19 +1231,19 @@
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2025-09 月交易代码 S 合并；10b5-1 标记金额约占 26.7%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000205803725000008/0002058037-25-000008-index.html"
     },
     {
       "date": "2025-09-22",
       "ticker": "002436",
       "person": "邱醒亚",
       "kind": "executed",
-      "shares": 8687900,
-      "valueUsd": 25569197.23,
-      "valueCny": 181851454.69,
-      "fxRate": 7.11213,
-      "label": "窗口内集中竞价减持",
-      "detail": "仅合并 2025-08-27 至 09-22 的四笔窗口内成交；按 2025-09-22 ECB USD/CNY 7.112130 折算美元可比值。",
+      "shares": 1322900,
+      "valueUsd": 4454680.16,
+      "valueCny": 31682264.39,
+      "valueEstimated": false,
+      "label": "集中竞价减持",
+      "detail": "公告披露成交均价 ¥23.9491。 按当日或最近 ECB USD/CNY 7.11213 折算美元可比值。",
       "sourceUrl": "https://static.cninfo.com.cn/finalpage/2025-09-26/1224682315.PDF"
     },
     {
@@ -1183,93 +1256,44 @@
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2025-09 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000024741&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000002474125000089/0000024741-25-000089-index.html"
     },
     {
       "date": "2025-09-16",
       "ticker": "ASTS",
-      "person": "多位申报人（月度合并）",
+      "person": "Yao Huiwen",
       "kind": "executed",
       "shares": 56000,
       "valueUsd": 2391840,
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2025-09 月交易代码 S 合并；10b5-1 标记金额约占 67.9%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001780312&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1780312/000149315225013908/0001493152-25-013908-index.html"
+    },
+    {
+      "date": "2025-09-12",
+      "ticker": "002436",
+      "person": "邱醒亚",
+      "kind": "executed",
+      "shares": 2420000,
+      "valueUsd": 7856336.45,
+      "valueCny": 55956450,
+      "valueEstimated": false,
+      "label": "集中竞价减持",
+      "detail": "公告披露成交均价 ¥23.1225。 按当日或最近 ECB USD/CNY 7.122461 折算美元可比值。",
+      "sourceUrl": "https://static.cninfo.com.cn/finalpage/2025-09-26/1224682315.PDF"
     },
     {
       "date": "2025-08-29",
       "ticker": "CRWV",
-      "person": "多位申报人（月度合并）",
-      "kind": "executed",
-      "shares": 8358038,
-      "valueUsd": 796188748.75,
-      "valueCny": 0,
-      "label": "月度 Form 4 出售",
-      "detail": "2025-08 月交易代码 S 合并；10b5-1 标记金额约占 21.6%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
-    },
-    {
-      "date": "2025-08-27",
-      "ticker": "LITE",
-      "person": "多位申报人（月度合并）",
-      "kind": "executed",
-      "shares": 21589,
-      "valueUsd": 2601970.63,
-      "valueCny": 0,
-      "label": "月度 Form 4 出售",
-      "detail": "2025-08 月交易代码 S 合并；10b5-1 标记金额约占 94.3%。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001633978&type=4&dateb=&owner=include&count=100"
-    },
-    {
-      "date": "2025-08-26",
-      "ticker": "ASTS",
-      "person": "多位申报人（月度合并）",
+      "person": "Magnetar Financial LLC",
       "kind": "executed-discretionary",
-      "shares": 20000,
-      "valueUsd": 1049600,
+      "shares": 80820,
+      "valueUsd": 8274518.34,
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2025-08 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001780312&type=4&dateb=&owner=include&count=100"
-    },
-    {
-      "date": "2025-08-20",
-      "ticker": "002156",
-      "person": "国家集成电路产业投资基金",
-      "kind": "executed",
-      "shares": 3567800,
-      "valueUsd": 12135212.18,
-      "valueCny": 87083763.07,
-      "fxRate": 7.176122,
-      "valueEstimated": true,
-      "label": "跨窗减持的窗口内部分",
-      "detail": "股份数由 8 月 20 日结果减去截至 8 月 6 日累计量得到；金额按该批大宗交易披露均价估算，再按 2025-08-20 ECB USD/CNY 7.176122 折算。",
-      "sourceUrl": "https://static.cninfo.com.cn/finalpage/2025-09-09/1224645638.PDF"
-    },
-    {
-      "date": "2025-08-15",
-      "ticker": "AAOI",
-      "person": "多位申报人（月度合并）",
-      "kind": "executed-discretionary",
-      "shares": 29784,
-      "valueUsd": 671416.8,
-      "valueCny": 0,
-      "label": "月度公开市场出售",
-      "detail": "2025-08 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001158114&type=4&dateb=&owner=include&count=100"
-    },
-    {
-      "date": "2025-08-12",
-      "ticker": "GLW",
-      "person": "多位申报人（月度合并）",
-      "kind": "executed-discretionary",
-      "shares": 122165,
-      "valueUsd": 7980410.43,
-      "valueCny": 0,
-      "label": "月度公开市场出售",
-      "detail": "2025-08 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000024741&type=4&dateb=&owner=include&count=100"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000110465925086583/0001104659-25-086583-index.html"
     }
   ],
   "methodology": {
@@ -1300,5 +1324,17 @@
         "url": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html"
       }
     ]
+  },
+  "automation": {
+    "enabled": true,
+    "schedule": "A 股 15:47 Asia/Shanghai；美股 16:47 America/New_York（交易日）",
+    "lastSuccessfulRefreshAt": "2026-08-28T10:00:00.000Z",
+    "secLastCheckedAt": "2026-08-28T10:00:00.000Z",
+    "secSessionDate": "2026-08-27",
+    "cninfoLastCheckedAt": "2026-08-28T10:00:00.000Z",
+    "cninfoSessionDate": "2026-08-28",
+    "cninfoReviewCount": 0,
+    "status": "最近收盘扫描完成",
+    "disclosureLagNotice": "Form 4 通常在成交后两个工作日内提交；每日刷新扫描最新披露，不等于成交当日即可见。"
   }
 }
