@@ -12,7 +12,7 @@
     marketQuotes: { path: './data/market-quotes.json', label: '自动行情快照' },
     valuationCoverage: { path: './data/valuation-coverage.json', label: '全目录估值区间' },
     valuation: { path: './data/valuation-bands.json', label: '价格与估值观察' },
-    insiderSales: { path: './data/insider-sales.json', label: '内部人减持' },
+    insiderSales: { path: './data/insider-sales.json', label: '减持与融资' },
     macro: { path: './data/macro.json', label: '宏观环境' },
     events: { path: './data/events.json', label: '重大事件' }
   };
@@ -23,7 +23,7 @@
     hyperscalers: { label: '云巨头 CapEx', titleId: 'hyperscalers-title' },
     turnover: { label: '三地市场每日成交额', titleId: 'turnover-title' },
     'supply-chain': { label: '供应链风险与估值', titleId: 'supply-chain-title' },
-    'insider-sales': { label: '减持雷达', titleId: 'insider-sales-title' },
+    'insider-sales': { label: '减持与融资雷达', titleId: 'insider-sales-title' },
     macro: { label: '宏观与利率环境', titleId: 'macro-title' },
     events: { label: '重大事件时间线', titleId: 'events-title' },
     methodology: { label: '方法说明', titleId: 'methodology-title' }
@@ -2233,6 +2233,40 @@
     return new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 0 }).format(amount);
   }
 
+  function formatFinancingCurrency(value, currency = '$') {
+    const amount = toFiniteNumber(value);
+    if (amount === null || amount === 0) return '';
+    const absolute = Math.abs(amount);
+    const sign = amount < 0 ? '−' : '';
+    if (absolute >= 1e9) return `${sign}${currency}${formatNumber(absolute / 1e9, 2)}B`;
+    if (absolute >= 1e6) return `${sign}${currency}${formatNumber(absolute / 1e6, 1)}M`;
+    if (absolute >= 1e3) return `${sign}${currency}${formatNumber(absolute / 1e3, 0)}K`;
+    return `${sign}${currency}${formatNumber(absolute, 0)}`;
+  }
+
+  function formatFinancingAmount(valueUsd, valueEur) {
+    return [formatFinancingCurrency(valueUsd, '$'), formatFinancingCurrency(valueEur, '€')]
+      .filter(Boolean)
+      .join(' + ') || '—';
+  }
+
+  function financingEventsForTicker(data, ticker) {
+    return (((data || {}).financing || {}).events || []).filter((event) => event.ticker === ticker);
+  }
+
+  function financingTotals(events) {
+    return (events || []).reduce((totals, event) => {
+      const channel = ['equity', 'debt', 'convertible'].includes(event.channel) ? event.channel : 'debt';
+      totals[channel].usd += Number(event.amountUsd) || 0;
+      totals[channel].eur += Number(event.amountEur) || 0;
+      return totals;
+    }, {
+      equity: { usd: 0, eur: 0 },
+      debt: { usd: 0, eur: 0 },
+      convertible: { usd: 0, eur: 0 }
+    });
+  }
+
   function saleStatusMeta(company) {
     if (company.coverage === 'excluded') {
       return { label: '非可比', className: 'is-excluded' };
@@ -2285,6 +2319,73 @@
     }).join('') + `<p class="sale-scale-note">条形按金额平方根缩放，便于同时辨认小额交易；精确值以右侧数字和下表为准。</p>`;
   }
 
+  function renderFinancingCompanyBars(data) {
+    const container = byId('financing-company-bars');
+    if (!container) return;
+    const companyByTicker = new Map((data.companies || []).map((company) => [company.ticker, company]));
+    const financing = data.financing || {};
+    const grouped = new Map();
+
+    (financing.events || []).forEach((event) => {
+      if (!grouped.has(event.ticker)) grouped.set(event.ticker, []);
+      grouped.get(event.ticker).push(event);
+    });
+
+    const rows = Array.from(grouped.entries()).map(([ticker, events]) => {
+      const company = companyByTicker.get(ticker) || { ticker, name: (events[0] && events[0].companyName) || ticker };
+      const totals = financingTotals(events);
+      return {
+        company,
+        events,
+        totals,
+        comparableUsd: totals.equity.usd + totals.debt.usd + totals.convertible.usd
+      };
+    }).sort((a, b) => b.comparableUsd - a.comparableUsd);
+
+    if (!rows.length) {
+      container.innerHTML = '<div class="table-empty">尚未录入公司融资事件。</div>';
+      return;
+    }
+
+    const maximum = Math.max(1, ...rows.map((row) => row.comparableUsd));
+    const width = (value) => value > 0 ? Math.max(2, Math.sqrt(value / maximum) * 100) : 0;
+    container.innerHTML = rows.map((row, index) => {
+      const { company, totals } = row;
+      const equityText = formatFinancingAmount(totals.equity.usd, totals.equity.eur);
+      const debtText = formatFinancingAmount(
+        totals.debt.usd + totals.convertible.usd,
+        totals.debt.eur + totals.convertible.eur
+      );
+      return `
+        <div class="sale-bar-row financing-bar-row">
+          <div class="sale-bar-rank">${String(index + 1).padStart(2, '0')}</div>
+          <div class="sale-bar-company">
+            <strong>${escapeHTML(company.ticker)}</strong>
+            <span>${escapeHTML(company.name)}</span>
+          </div>
+          <div class="sale-bar-track-group">
+            <div class="financing-bar-label" title="股权 / ATM ${escapeHTML(equityText)}">
+              <span>股权 / ATM</span>
+              <div class="sale-bar-track"><span class="is-equity" style="width:${width(totals.equity.usd).toFixed(2)}%"></span></div>
+            </div>
+            <div class="financing-bar-label" title="债券 / 贷款 ${escapeHTML(formatFinancingAmount(totals.debt.usd, totals.debt.eur))}">
+              <span>债券 / 贷款</span>
+              <div class="sale-bar-track"><span class="is-debt" style="width:${width(totals.debt.usd).toFixed(2)}%"></span></div>
+            </div>
+            <div class="financing-bar-label" title="可转债 ${escapeHTML(formatFinancingAmount(totals.convertible.usd, totals.convertible.eur))}">
+              <span>可转债</span>
+              <div class="sale-bar-track"><span class="is-convertible" style="width:${width(totals.convertible.usd).toFixed(2)}%"></span></div>
+            </div>
+          </div>
+          <div class="sale-bar-values financing-bar-values">
+            <strong>${totals.equity.usd || totals.equity.eur ? `股权 ${escapeHTML(equityText)}` : '股权 —'}</strong>
+            <span>${totals.debt.usd || totals.debt.eur || totals.convertible.usd || totals.convertible.eur ? `债务 / 转债 ${escapeHTML(debtText)}` : '债务 / 转债 —'}</span>
+          </div>
+        </div>
+      `;
+    }).join('') + `<p class="sale-scale-note">条形按美元计价规模的平方根缩放；欧元部分保留原币单列，不做静态汇率折算。额度、发行本金与净募集额不可直接视为同一口径。</p>`;
+  }
+
   function saleCompanyMatchesFilter(company) {
     const query = state.insiderSales.query.trim().toLowerCase();
     const matchesQuery = !query || `${company.ticker} ${company.name} ${company.market}`.toLowerCase().includes(query);
@@ -2292,6 +2393,7 @@
     if (state.insiderSales.status === 'all') return true;
     if (state.insiderSales.status === 'active') return Number(company.executed && company.executed.shares) > 0;
     if (state.insiderSales.status === 'pending') return Number(company.pending && company.pending.shares) > 0;
+    if (state.insiderSales.status === 'financing') return financingEventsForTicker(state.data.insiderSales, company.ticker).length > 0;
     if (state.insiderSales.status === 'clear') return company.coverage === 'covered'
       && Number(company.executed && company.executed.shares) === 0
       && Number(company.pending && company.pending.shares) === 0;
@@ -2307,7 +2409,7 @@
     if (resultCount) resultCount.textContent = `显示 ${companies.length} / ${data.companies.length} 只标的`;
 
     if (!companies.length) {
-      body.innerHTML = '<tr><td colspan="6" class="table-empty">当前筛选条件下没有标的，请调整筛选器。</td></tr>';
+      body.innerHTML = '<tr><td colspan="7" class="table-empty">当前筛选条件下没有标的，请调整筛选器。</td></tr>';
       return;
     }
 
@@ -2317,6 +2419,14 @@
       const executedValue = company.executed ? formatSaleUsd(company.executed.valueUsd) : '—';
       const pendingShares = company.pending ? formatSaleShares(company.pending.shares) : '—';
       const pendingValue = company.pending ? formatSaleUsd(company.pending.valueUsd) : '—';
+      const companyFinancingEvents = financingEventsForTicker(data, company.ticker);
+      const companyFinancing = financingTotals(companyFinancingEvents);
+      const equityFinancing = formatFinancingAmount(companyFinancing.equity.usd, companyFinancing.equity.eur);
+      const debtFinancing = formatFinancingAmount(
+        companyFinancing.debt.usd + companyFinancing.convertible.usd,
+        companyFinancing.debt.eur + companyFinancing.convertible.eur
+      );
+      const financingSource = companyFinancingEvents[0] && companyFinancingEvents[0].sourceUrl;
       return `
         <tr class="${escapeHTML(status.className)}">
           <td>
@@ -2329,6 +2439,13 @@
           <td class="sale-numeric"><strong>${escapeHTML(executedShares)}</strong></td>
           <td class="sale-numeric"><strong>${escapeHTML(executedValue)}</strong></td>
           <td class="sale-numeric"><strong>${escapeHTML(pendingShares)}</strong><span>${escapeHTML(pendingValue)}</span></td>
+          <td class="sale-financing-cell">
+            ${companyFinancingEvents.length ? `
+              <strong>股权 ${escapeHTML(equityFinancing)}</strong>
+              <span>债务 / 转债 ${escapeHTML(debtFinancing)}</span>
+              <a class="sale-source-link" href="${escapeHTML(financingSource)}" target="_blank" rel="noopener noreferrer">${companyFinancingEvents.length} 笔融资事件 ↗</a>
+            ` : '<small>待补录，不按零处理</small>'}
+          </td>
           <td><p class="sale-company-note">${escapeHTML(company.note)}</p><a class="sale-source-link" href="${escapeHTML(company.sourceUrl)}" target="_blank" rel="noopener noreferrer">打开原始披露 ↗</a></td>
         </tr>
       `;
@@ -2338,18 +2455,32 @@
   function renderSaleLedger(data) {
     const ledger = byId('sale-ledger');
     if (!ledger) return;
-    ledger.innerHTML = (data.timeline || []).map((item) => {
-      const kindLabel = item.kind === 'pending' ? '拟售' : item.kind === 'executed-discretionary' ? '非计划' : '已售';
+    const saleItems = (data.timeline || []).map((item) => ({
+      ...item,
+      ledgerKind: item.kind,
+      kindLabel: item.kind === 'pending' ? '拟售' : item.kind === 'executed-discretionary' ? '非计划' : '已售',
+      title: `${item.ticker} · ${item.person}`,
+      amountLine: `${item.label} · ${formatSaleShares(item.shares)} 股 · ${formatSaleUsd(item.valueUsd)}`
+    }));
+    const financingItems = (((data || {}).financing || {}).events || []).map((item) => ({
+      ...item,
+      ledgerKind: `financing-${item.channel}`,
+      kindLabel: item.shortLabel || (item.channel === 'equity' ? '公司股权' : item.channel === 'convertible' ? '可转债' : '公司债务'),
+      title: `${item.ticker} · ${item.companyName}`,
+      amountLine: `${item.label} · ${item.amountText} · ${item.statusLabel}`
+    }));
+    const items = [...saleItems, ...financingItems].sort((a, b) => b.date.localeCompare(a.date));
+    ledger.innerHTML = items.map((item) => {
       return `
-        <article class="sale-ledger-item is-${escapeHTML(item.kind)}">
+        <article class="sale-ledger-item is-${escapeHTML(item.ledgerKind)}">
           <time datetime="${escapeHTML(item.date)}">${escapeHTML(formatDate(item.date))}</time>
           <div class="sale-ledger-marker" aria-hidden="true"></div>
           <div class="sale-ledger-copy">
             <div class="sale-ledger-titleline">
-              <span class="sale-ledger-kind">${escapeHTML(kindLabel)}</span>
-              <strong>${escapeHTML(item.ticker)} · ${escapeHTML(item.person)}</strong>
+              <span class="sale-ledger-kind">${escapeHTML(item.kindLabel)}</span>
+              <strong>${escapeHTML(item.title)}</strong>
             </div>
-            <p>${escapeHTML(item.label)} · ${escapeHTML(formatSaleShares(item.shares))} 股 · ${escapeHTML(formatSaleUsd(item.valueUsd))}</p>
+            <p>${escapeHTML(item.amountLine)}</p>
             <small>${escapeHTML(item.detail)}</small>
           </div>
           <a href="${escapeHTML(item.sourceUrl)}" target="_blank" rel="noopener noreferrer" aria-label="打开 ${escapeHTML(item.ticker)} ${escapeHTML(item.date)} 原始披露">↗</a>
@@ -2363,28 +2494,48 @@
     const summary = data.summary || {};
     const scope = data.scope || {};
     const windowRange = data.window || {};
+    const financing = data.financing || {};
+    const financingSummary = financing.summary || {};
+    const financingScope = financing.scope || {};
+    const financingWindow = financing.window || {};
 
     byId('sale-window-label').textContent = windowRange.label || '滚动观察窗口';
     byId('sale-window-dates').textContent = `${formatDate(windowRange.start)} — ${formatDate(windowRange.end)}`;
-    byId('sale-coverage-label').textContent = `${scope.comparableCoverage} / ${scope.total} 只可比覆盖 · ${scope.notice || ''}`;
+    byId('financing-window-label').textContent = financingWindow.label || '公司融资窗口';
+    byId('financing-window-dates').textContent = financingWindow.start && financingWindow.end
+      ? `${formatDate(financingWindow.start)} — ${formatDate(financingWindow.end)}`
+      : '—';
+    byId('sale-coverage-label').textContent = `${scope.comparableCoverage} / ${scope.total} 只减持可比 · ${financingScope.enteredCompanies || 0} / ${scope.total} 只融资已录入；未录入不按零处理`;
     byId('sale-executed-value').textContent = formatSaleUsd(summary.executedValueUsd);
     byId('sale-executed-shares').textContent = formatSaleShares(summary.executedShares);
     byId('sale-pending-value').textContent = formatSaleUsd(summary.pendingValueUsd);
     byId('sale-pending-shares').textContent = formatSaleShares(summary.pendingShares);
     byId('sale-planned-share').textContent = formatNumber(summary.plannedExecutionSharePct, 1, '%');
-    byId('sale-coverage-value').textContent = `${scope.comparableCoverage} / ${scope.total}`;
+    byId('financing-equity-value').textContent = formatFinancingAmount(financingSummary.equityValueUsd, financingSummary.equityValueEur);
+    byId('financing-debt-value').textContent = formatFinancingAmount(financingSummary.debtAndConvertibleValueUsd, financingSummary.debtAndConvertibleValueEur);
+    byId('financing-equity-note').textContent = `${financingSummary.equityEventCount || 0} 笔 ATM / 增发 / 私募 · 已完成口径`;
+    byId('financing-debt-note').textContent = `${financingSummary.debtAndConvertibleEventCount || 0} 笔债券本金与已关闭贷款额度`;
+    byId('financing-equity-count').textContent = `${financingSummary.equityEventCount || 0} 笔`;
+    byId('financing-debt-count').textContent = `${financingSummary.debtAndConvertibleEventCount || 0} 笔`;
+    byId('financing-company-count').textContent = `${financingScope.enteredCompanies || 0} 家`;
+    byId('financing-coverage-value').textContent = `${financingScope.enteredCompanies || 0} / ${scope.total || 0}`;
     byId('sale-concentration-orbit-value').textContent = formatNumber(summary.topCompanyConcentrationPct, 1, '%');
     byId('sale-concentration-copy').textContent = `CRWV 占样本已售金额 ${formatNumber(summary.topCompanyConcentrationPct, 1, '%')}。集中度远高于其余标的，读数应被视为单一公司事件，而不是整个 AI 供应链的普遍抛压。`;
     byId('sale-company-count').textContent = `${summary.companiesWithSales} 家`;
     byId('sale-pending-company-count').textContent = `${summary.companiesWithPendingNotices} 家`;
     byId('sale-method-executed').textContent = data.methodology.executed;
     byId('sale-method-notices').textContent = data.methodology.notices;
-    byId('sale-method-pending').textContent = data.methodology.pending;
-    byId('sale-method-caveat').textContent = `${data.methodology.caveat} ${data.methodology.excluded}`;
-    byId('sale-source-links').innerHTML = (data.methodology.sources || []).map((source) => `
+    byId('financing-method-equity').textContent = (financing.methodology || {}).equity || 'ATM 与增发按已完成发行规模记录。';
+    byId('financing-method-debt').textContent = (financing.methodology || {}).debt || '债券、可转债与贷款额度分项记录。';
+    byId('financing-method-status').textContent = (financing.methodology || {}).status || '计划上限、发行本金与实际净募集额不混用。';
+    byId('sale-method-caveat').textContent = `${data.methodology.caveat} ${(financing.methodology || {}).caveat || ''} ${data.methodology.excluded}`;
+    const sourceMap = new Map([...(data.methodology.sources || []), ...((financing.methodology || {}).sources || [])]
+      .map((source) => [source.url, source]));
+    byId('sale-source-links').innerHTML = Array.from(sourceMap.values()).map((source) => `
       <a href="${escapeHTML(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(source.label)} <span aria-hidden="true">↗</span></a>
     `).join('');
 
+    renderFinancingCompanyBars(data);
     renderSaleCompanyBars(data);
     renderSaleCompanyTable();
     renderSaleLedger(data);
@@ -2423,7 +2574,8 @@
       // 行情快照失败时，估值模块会自动回退到研究参考价。
     } else if (key === 'insiderSales') {
       const body = byId('sale-company-body');
-      if (body) body.innerHTML = `<tr><td colspan="6" class="table-empty">${escapeHTML(message)}</td></tr>`;
+      if (body) body.innerHTML = `<tr><td colspan="7" class="table-empty">${escapeHTML(message)}</td></tr>`;
+      api.renderSectionError('financing-company-bars', message);
       api.renderSectionError('sale-company-bars', message);
       api.renderSectionError('sale-ledger', message);
     } else if (key === 'valuation') {

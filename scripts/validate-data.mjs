@@ -168,6 +168,35 @@ assert(Math.abs(timelineExecuted.reduce((total, item) => total + item.valueUsd, 
 assert(timelinePending.reduce((total, item) => total + item.shares, 0) === pendingShares, '减持流水待确认拟售股份与公司汇总不一致');
 assert(Math.abs(timelinePending.reduce((total, item) => total + item.valueUsd, 0) - pendingValueUsd) < 0.01, '减持流水待确认拟售金额与公司汇总不一致');
 
+const financing = insiderSales.financing || {};
+assert(validDate(financing.window && financing.window.start), 'financing.window.start 无效');
+assert(validDate(financing.window && financing.window.end), 'financing.window.end 无效');
+assert(financing.window.start <= financing.window.end, '公司融资观察窗口起始日不能晚于结束日');
+const financingEvents = Array.isArray(financing.events) ? financing.events : [];
+assert(financingEvents.length > 0, '公司融资事件不能为空');
+for (const event of financingEvents) {
+  assert(validDate(event.date), `公司融资事件日期无效：${event.date}`);
+  assert(event.date >= financing.window.start && event.date <= financing.window.end, `公司融资事件超出观察窗口：${event.date}`);
+  assert(insiderCompanies.some((company) => company.ticker === event.ticker), `公司融资事件 ticker 不在重点标的中：${event.ticker}`);
+  assert(['equity', 'debt', 'convertible'].includes(event.channel), `公司融资事件 channel 无效：${event.channel}`);
+  assert(Number(event.amountUsd || 0) >= 0 && Number(event.amountEur || 0) >= 0, `公司融资事件金额无效：${event.ticker} ${event.date}`);
+  assert(Number(event.amountUsd || 0) + Number(event.amountEur || 0) > 0, `公司融资事件金额不能为零：${event.ticker} ${event.date}`);
+  assert(typeof event.sourceUrl === 'string' && /^https:\/\//.test(event.sourceUrl), `公司融资事件来源无效：${event.ticker} ${event.date}`);
+}
+const financingTickers = new Set(financingEvents.map((event) => event.ticker));
+assert(financing.scope && financing.scope.totalCompanies === insiderCompanies.length, '公司融资 scope.totalCompanies 必须与重点标的数一致');
+assert(financing.scope.enteredCompanies === financingTickers.size, '公司融资已录入公司数不一致');
+const equityFinancing = financingEvents.filter((event) => event.channel === 'equity');
+const debtFinancing = financingEvents.filter((event) => event.channel !== 'equity');
+const sumFinancing = (events, currency) => events.reduce((total, event) => total + Number(event[currency] || 0), 0);
+assert(financing.summary.eventCount === financingEvents.length, '公司融资事件汇总数不一致');
+assert(financing.summary.equityEventCount === equityFinancing.length, '公司股权融资事件数不一致');
+assert(financing.summary.debtAndConvertibleEventCount === debtFinancing.length, '公司债务与可转债事件数不一致');
+assert(financing.summary.equityValueUsd === sumFinancing(equityFinancing, 'amountUsd'), '公司股权融资美元规模不一致');
+assert(financing.summary.equityValueEur === sumFinancing(equityFinancing, 'amountEur'), '公司股权融资欧元规模不一致');
+assert(financing.summary.debtAndConvertibleValueUsd === sumFinancing(debtFinancing, 'amountUsd'), '公司债务与可转债美元规模不一致');
+assert(financing.summary.debtAndConvertibleValueEur === sumFinancing(debtFinancing, 'amountEur'), '公司债务与可转债欧元规模不一致');
+
 assert(stockWatchlist.version === 2, 'stock-watchlist.version 必须为 2');
 assert(stockWatchlist.source && typeof stockWatchlist.source.label === 'string' && stockWatchlist.source.label.trim(), 'stock-watchlist.source.label 不能为空');
 assert(stockWatchlist.source && typeof stockWatchlist.source.notice === 'string' && stockWatchlist.source.notice.trim(), 'stock-watchlist.source.notice 不能为空');

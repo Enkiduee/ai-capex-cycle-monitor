@@ -169,6 +169,9 @@ assert(app.includes('function renderInsiderSales(data)'), '前端必须渲染减
 assert(html.includes('id="sale-company-body"') && html.includes('id="sale-ledger"'), '减持雷达必须包含公司核对表与披露流水');
 assert(html.includes('data-sale-status="pending"') && html.includes('id="sale-company-search"'), '减持雷达必须支持状态筛选与公司搜索');
 assert(styles.includes('.sale-kpi-grid') && styles.includes('.sale-company-table'), 'CSS 缺少减持雷达核心样式');
+assert(html.includes('id="financing-company-bars"') && html.includes('data-sale-status="financing"'), '减持与融资雷达必须包含公司融资对比与融资筛选');
+assert(app.includes('function renderFinancingCompanyBars(data)'), '前端必须渲染公司融资规模对比');
+assert(styles.includes('.sale-financing-grid') && styles.includes('.financing-mix-card'), 'CSS 缺少公司融资核心样式');
 
 if (errors.length) {
   console.error(errors.map((error) => `- ${error}`).join('\n'));

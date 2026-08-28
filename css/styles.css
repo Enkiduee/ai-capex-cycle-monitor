@@ -393,6 +393,10 @@ a:hover {
   box-shadow: inset 0 3px 0 var(--yellow);
 }
 
+.sale-kpi-debt {
+  box-shadow: inset 0 3px 0 #7896ff;
+}
+
 .sale-kpi-topline {
   display: flex;
   align-items: center;
@@ -429,6 +433,15 @@ a:hover {
   color: #f7d77f;
 }
 
+.sale-kpi:nth-child(3) > strong {
+  color: #79dbe2;
+}
+
+.sale-kpi-debt > strong {
+  color: #a6b7ff;
+  font-size: clamp(21px, 2.15vw, 31px);
+}
+
 .sale-kpi p {
   position: relative;
   z-index: 1;
@@ -444,7 +457,16 @@ a:hover {
   margin-bottom: 14px;
 }
 
+.sale-financing-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.65fr) minmax(300px, 1fr);
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
 .sale-flow-card,
+.sale-financing-card,
+.financing-mix-card,
 .sale-concentration-card,
 .sale-table-card,
 .sale-ledger-card,
@@ -456,6 +478,8 @@ a:hover {
 }
 
 .sale-flow-card,
+.sale-financing-card,
+.financing-mix-card,
 .sale-concentration-card,
 .sale-ledger-card,
 .sale-method-card {
@@ -471,6 +495,7 @@ a:hover {
 }
 
 .sale-card-heading h2,
+.financing-mix-card h2,
 .sale-concentration-card h2,
 .sale-table-toolbar h2,
 .sale-method-card h2 {
@@ -511,6 +536,140 @@ a:hover {
 .sale-legend i.is-pending,
 .sale-bar-track span.is-pending {
   background: var(--yellow);
+}
+
+.sale-legend i.is-equity,
+.sale-bar-track span.is-equity {
+  background: #69d7df;
+}
+
+.sale-legend i.is-debt,
+.sale-bar-track span.is-debt {
+  background: #7896ff;
+}
+
+.sale-legend i.is-convertible,
+.sale-bar-track span.is-convertible {
+  background: #ae8cff;
+}
+
+.sale-financing-card {
+  padding: 22px;
+}
+
+.financing-company-bars .sale-bar-row {
+  grid-template-columns: 34px minmax(110px, 0.68fr) minmax(190px, 2.5fr) minmax(170px, 1fr);
+}
+
+.financing-company-bars .sale-bar-track-group {
+  gap: 6px;
+}
+
+.financing-bar-label {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.financing-bar-label > span:first-child {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+.financing-bar-label .sale-bar-track {
+  min-width: 0;
+}
+
+.financing-bar-values {
+  gap: 5px;
+}
+
+.financing-bar-values strong,
+.financing-bar-values span {
+  display: block;
+  overflow: visible;
+  text-overflow: initial;
+  white-space: normal;
+}
+
+.financing-bar-values strong {
+  color: #8de7ec;
+}
+
+.financing-bar-values span {
+  color: #aab8ff;
+  font-family: var(--font-mono);
+  line-height: 1.45;
+}
+
+.financing-mix-card {
+  position: relative;
+  padding: 22px;
+  overflow: hidden;
+  background: linear-gradient(145deg, #0d1820 0%, #111528 100%);
+}
+
+.financing-mix-card::after {
+  position: absolute;
+  right: -54px;
+  bottom: -64px;
+  width: 150px;
+  height: 150px;
+  border: 1px solid rgb(120 150 255 / 12%);
+  border-radius: 50%;
+  content: "";
+}
+
+.financing-mix-card > p:not(.panel-kicker, .financing-mix-footnote) {
+  margin: 11px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.financing-mix-stats {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 22px 0 0;
+  overflow: hidden;
+  border: 1px solid #28344e;
+  border-radius: var(--radius-sm);
+  background: #28344e;
+}
+
+.financing-mix-stats div {
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  background: #0d1521;
+}
+
+.financing-mix-stats dt {
+  color: var(--text-muted);
+  font-size: 9px;
+}
+
+.financing-mix-stats dd {
+  margin: 0;
+  color: #d9e0ff;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.financing-mix-card .financing-mix-footnote {
+  position: relative;
+  z-index: 1;
+  margin: 14px 0 0;
+  padding-top: 13px;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 9px;
 }
 
 .sale-company-bars {
@@ -655,7 +814,7 @@ a:hover {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
   margin: 24px 0 0;
   overflow: hidden;
@@ -772,7 +931,7 @@ a:hover {
 
 .sale-company-table {
   width: 100%;
-  min-width: 990px;
+  min-width: 1160px;
   border-collapse: collapse;
 }
 
@@ -870,6 +1029,35 @@ a:hover {
 .sale-numeric strong,
 .sale-numeric span {
   display: block;
+}
+
+.sale-financing-cell {
+  min-width: 170px;
+}
+
+.sale-financing-cell strong,
+.sale-financing-cell span {
+  display: block;
+}
+
+.sale-financing-cell strong {
+  color: #8de7ec;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.sale-financing-cell span {
+  margin-top: 4px;
+  color: #aab8ff;
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.sale-financing-cell small {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 9px;
 }
 
 .sale-numeric strong {
@@ -971,6 +1159,18 @@ a:hover {
   border-color: var(--orange);
 }
 
+.sale-ledger-item.is-financing-equity .sale-ledger-marker {
+  border-color: #69d7df;
+}
+
+.sale-ledger-item.is-financing-debt .sale-ledger-marker {
+  border-color: #7896ff;
+}
+
+.sale-ledger-item.is-financing-convertible .sale-ledger-marker {
+  border-color: #ae8cff;
+}
+
 .sale-ledger-copy {
   min-width: 0;
 }
@@ -1003,6 +1203,18 @@ a:hover {
 
 .is-executed-discretionary .sale-ledger-kind {
   color: var(--orange);
+}
+
+.is-financing-equity .sale-ledger-kind {
+  color: #69d7df;
+}
+
+.is-financing-debt .sale-ledger-kind {
+  color: #90a8ff;
+}
+
+.is-financing-convertible .sale-ledger-kind {
+  color: #c0a6ff;
 }
 
 .sale-ledger-copy p {
@@ -1116,6 +1328,7 @@ a:hover {
   }
 
   .sale-hero-grid,
+  .sale-financing-grid,
   .sale-lower-grid {
     grid-template-columns: 1fr;
   }
@@ -1141,7 +1354,7 @@ a:hover {
   .sale-concentration-stats {
     grid-column: 3;
     grid-row: 1 / span 3;
-    min-width: 190px;
+    min-width: 240px;
     margin: 0;
   }
 }
@@ -1167,6 +1380,15 @@ a:hover {
 
   .sale-bar-row {
     grid-template-columns: 28px minmax(95px, 0.7fr) minmax(130px, 1.4fr);
+  }
+
+  .financing-company-bars .sale-bar-row {
+    grid-template-columns: 28px minmax(95px, 0.7fr) minmax(150px, 1.5fr);
+  }
+
+  .financing-company-bars .financing-bar-values {
+    grid-column: 2 / -1;
+    grid-row: 2;
   }
 
   .sale-bar-values {
@@ -1215,6 +1437,8 @@ a:hover {
   }
 
   .sale-flow-card,
+  .sale-financing-card,
+  .financing-mix-card,
   .sale-concentration-card,
   .sale-ledger-card,
   .sale-method-card,

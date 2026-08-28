@@ -185,6 +185,209 @@
       "sourceUrl": "https://www.nasdaq.com/newsroom/global-innovation-meets-global-capital-sk-hynix-lists-nasdaq"
     }
   ],
+  "financing": {
+    "window": {
+      "start": "2025-08-07",
+      "end": "2026-08-06",
+      "label": "公司融资（滚动 12 个月）"
+    },
+    "scope": {
+      "totalCompanies": 12,
+      "enteredCompanies": 4,
+      "notice": "首版录入已由官方披露核对的代表性融资事件；其余 8 家显示待补录，不按零融资处理。"
+    },
+    "summary": {
+      "equityValueUsd": 29997100000,
+      "equityValueEur": 0,
+      "debtAndConvertibleValueUsd": 22450000000,
+      "debtAndConvertibleValueEur": 2000000000,
+      "equityEventCount": 4,
+      "debtAndConvertibleEventCount": 8,
+      "eventCount": 12
+    },
+    "events": [
+      {
+        "date": "2026-07-10",
+        "ticker": "SKHY",
+        "companyName": "SK 海力士 ADR",
+        "channel": "equity",
+        "shortLabel": "公司股权",
+        "label": "Nasdaq ADR 首发",
+        "statusLabel": "已完成",
+        "amountUsd": 26507100000,
+        "amountEur": 0,
+        "amountText": "$26.51B（177.9M ADR × $149）",
+        "detail": "公司新发行 ADR 的首发规模；它会带来股本供给并为公司融资，不属于内部人减持。",
+        "sourceUrl": "https://www.nasdaq.com/newsroom/global-innovation-meets-global-capital-sk-hynix-lists-nasdaq"
+      },
+      {
+        "date": "2026-06-11",
+        "ticker": "CRWV",
+        "companyName": "CoreWeave",
+        "channel": "debt",
+        "shortLabel": "公司发债",
+        "label": "2032 年到期美元及欧元优先票据",
+        "statusLabel": "已定价",
+        "amountUsd": 1250000000,
+        "amountEur": 2000000000,
+        "amountText": "$1.25B + €2.00B",
+        "detail": "美元票据票息 9.625%，欧元票据票息 8.500%；保留原币展示，不使用静态汇率合并。",
+        "sourceUrl": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Announces-Pricing-of-1-25-Billion-of-Senior-Notes-and-2-Billion-of-Senior-Notes/default.aspx"
+      },
+      {
+        "date": "2026-05-18",
+        "ticker": "CRWV",
+        "companyName": "CoreWeave",
+        "channel": "debt",
+        "shortLabel": "贷款额度",
+        "label": "DDTL 5.0 延迟提款定期贷款",
+        "statusLabel": "已关闭额度",
+        "amountUsd": 3100000000,
+        "amountEur": 0,
+        "amountText": "$3.10B",
+        "detail": "已关闭的融资额度，不等同于披露日已全部提款或净现金流入。",
+        "sourceUrl": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Closes-3-1-Billion-Loan-Facility-Expanding-Access-to-Public-Markets-for-GPU-Backed-Financing/default.aspx"
+      },
+      {
+        "date": "2026-04-16",
+        "ticker": "CRWV",
+        "companyName": "CoreWeave",
+        "channel": "debt",
+        "shortLabel": "公司发债",
+        "label": "9.750% 优先票据（2031 年到期）",
+        "statusLabel": "已定价",
+        "amountUsd": 1000000000,
+        "amountEur": 0,
+        "amountText": "$1.00B",
+        "detail": "按发行本金记录；募集用途包括一般公司用途和偿还现有债务。",
+        "sourceUrl": "https://investors.coreweave.com/news/"
+      },
+      {
+        "date": "2026-04-15",
+        "ticker": "CRWV",
+        "companyName": "CoreWeave",
+        "channel": "equity",
+        "shortLabel": "公司股权",
+        "label": "Jane Street 股权投资",
+        "statusLabel": "已完成",
+        "amountUsd": 1000000000,
+        "amountEur": 0,
+        "amountText": "$1.00B（$109.00 / 股）",
+        "detail": "向公司投入的一级市场股权资本，与同一公告中的云服务采购承诺分开记录。",
+        "sourceUrl": "https://investors.coreweave.com/news/news-details/2026/Jane-Street-Signs-6-Billion-AI-Cloud-Agreement-With-CoreWeave/default.aspx"
+      },
+      {
+        "date": "2026-04-10",
+        "ticker": "CRWV",
+        "companyName": "CoreWeave",
+        "channel": "convertible",
+        "shortLabel": "可转债",
+        "label": "1.75% 可转换优先票据（2032 年到期）",
+        "statusLabel": "已定价",
+        "amountUsd": 3500000000,
+        "amountEur": 0,
+        "amountText": "$3.50B",
+        "detail": "按本金记录，不计额外 $500M 超额配售选择权；可转换结构存在潜在稀释，但 capped call 可部分缓释。",
+        "sourceUrl": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Prices-Upsized-3-5-Billion-Convertible-Senior-Notes-Offering/default.aspx"
+      },
+      {
+        "date": "2026-04-09",
+        "ticker": "CRWV",
+        "companyName": "CoreWeave",
+        "channel": "debt",
+        "shortLabel": "公司发债",
+        "label": "优先票据发行上调并定价",
+        "statusLabel": "已定价",
+        "amountUsd": 1750000000,
+        "amountEur": 0,
+        "amountText": "$1.75B",
+        "detail": "由最初拟发行规模上调后的本金；不与同日可转债提案重复计算。",
+        "sourceUrl": "https://investors.coreweave.com/news/"
+      },
+      {
+        "date": "2026-04-02",
+        "ticker": "AAOI",
+        "companyName": "应用光电",
+        "channel": "equity",
+        "shortLabel": "ATM",
+        "label": "ATM 市价增发完成",
+        "statusLabel": "已完成",
+        "amountUsd": 490000000,
+        "amountEur": 0,
+        "amountText": "$490.0M 净募集额",
+        "detail": "约 4.8M 股，成交加权均价 $103.51；$500M 为计划上限，本页使用公司披露的约 $490M 净募集额。",
+        "sourceUrl": "https://investors.ao-inc.com/static-files/be9aadfe-6391-4eb5-9ca2-681f1c63033b"
+      },
+      {
+        "date": "2026-03-31",
+        "ticker": "CRWV",
+        "companyName": "CoreWeave",
+        "channel": "debt",
+        "shortLabel": "贷款额度",
+        "label": "DDTL 4.0 延迟提款定期贷款",
+        "statusLabel": "已关闭额度",
+        "amountUsd": 8500000000,
+        "amountEur": 0,
+        "amountText": "$8.50B",
+        "detail": "GPU 支持的延迟提款融资额度；额度关闭不代表披露日已全部提款。",
+        "sourceUrl": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Closes-Landmark-8-5-Billion-Financing-Facility-Achieving-First-Investment-Grade-Rated-GPU-backed-Financing/default.aspx"
+      },
+      {
+        "date": "2026-01-26",
+        "ticker": "CRWV",
+        "companyName": "CoreWeave",
+        "channel": "equity",
+        "shortLabel": "公司股权",
+        "label": "NVIDIA 股权投资",
+        "statusLabel": "已完成",
+        "amountUsd": 2000000000,
+        "amountEur": 0,
+        "amountText": "$2.00B（$87.20 / 股）",
+        "detail": "一级市场股权投资进入公司，不属于现有股东在二级市场出售。",
+        "sourceUrl": "https://investors.coreweave.com/news/news-details/2026/NVIDIA-and-CoreWeave-Strengthen-Collaboration-to-Accelerate-Buildout-of-AI-Factories/default.aspx"
+      },
+      {
+        "date": "2025-12-09",
+        "ticker": "CRWV",
+        "companyName": "CoreWeave",
+        "channel": "convertible",
+        "shortLabel": "可转债",
+        "label": "1.75% 可转换优先票据（2031 年到期）",
+        "statusLabel": "已定价",
+        "amountUsd": 2250000000,
+        "amountEur": 0,
+        "amountText": "$2.25B",
+        "detail": "按发行本金记录，不计额外 $337.5M 选择权；公司预计基础情形净募集额约 $2.21B。",
+        "sourceUrl": "https://investors.coreweave.com/news/news-details/2025/CoreWeave-Prices-Upsized-2-25-Billion-Convertible-Senior-Notes-Offering/default.aspx"
+      },
+      {
+        "date": "2025-09-04",
+        "ticker": "LITE",
+        "companyName": "Lumentum",
+        "channel": "convertible",
+        "shortLabel": "可转债",
+        "label": "0.375% 可转换优先票据（2032 年到期）",
+        "statusLabel": "已定价",
+        "amountUsd": 1100000000,
+        "amountEur": 0,
+        "amountText": "$1.10B",
+        "detail": "按发行本金记录，不计额外 $165M 选择权；公司预计基础情形净募集额约 $1.09B。",
+        "sourceUrl": "https://investor.lumentum.com/financial-news-releases/news-details/2025/Lumentum-Announces-Pricing-of-1-1-Billion-Convertible-Notes-Offering/"
+      }
+    ],
+    "methodology": {
+      "equity": "ATM、增发与私募只在已完成或已明确成交时计入；公司获得融资，现有股东面对的是股本稀释而不是内部人套现。",
+      "debt": "普通债券和贷款按发行本金或已关闭额度记录；可转债单列，因为它同时带来债务负担与潜在股权稀释。",
+      "status": "计划上限、超额配售选择权、已定价本金、已关闭贷款额度和实际净募集额分别展示，不把可用额度当成已经到账。",
+      "caveat": "公司融资为滚动 12 个月的首批事件样本，目前只录入 4 / 12 家；待补录不代表零融资，跨币种规模也不做静态汇率加总。",
+      "sources": [
+        { "label": "CoreWeave 投资者关系公告", "url": "https://investors.coreweave.com/news/" },
+        { "label": "Applied Optoelectronics SEC 文件", "url": "https://investors.ao-inc.com/financial-information/sec-filings" },
+        { "label": "Lumentum 投资者关系公告", "url": "https://investor.lumentum.com/financial-news-releases/" },
+        { "label": "Nasdaq 上市公告", "url": "https://www.nasdaq.com/newsroom/global-innovation-meets-global-capital-sk-hynix-lists-nasdaq" }
+      ]
+    }
+  },
   "timeline": [
     {
       "date": "2026-08-05",
