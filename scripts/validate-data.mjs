@@ -54,7 +54,7 @@ for (const [file, payload] of Object.entries(payloads)) {
 assert(hyperscalers.units && hyperscalers.units.capex === '亿美元', '云巨头 CapEx 必须以亿美元为单位');
 assert(!/(?:十|百|千|万)亿|(?:十|百|千)万/.test(JSON.stringify(payloads)), '数据文本不能使用复合中文数量级');
 
-assert(marketTurnover.version === 3, 'market-turnover.version 必须为 3');
+assert(marketTurnover.version === 4, 'market-turnover.version 必须为 4');
 assert(marketTurnover.isDemoData === false, 'market-turnover 必须明确标为真实数据');
 assert(validIso(marketTurnover.fetchedAt), 'market-turnover.fetchedAt 必须为 ISO UTC 时间');
 assert(marketTurnover.fx && marketTurnover.fx.base === 'USD', 'market-turnover.fx.base 必须为 USD');
@@ -91,16 +91,18 @@ for (const key of ['comparison', 'retention', 'caveat']) {
 }
 const turnoverMarkets = Array.isArray(marketTurnover.markets) ? marketTurnover.markets : [];
 assert(
-  JSON.stringify(turnoverMarkets.map((market) => market.id)) === JSON.stringify(['cn', 'hk', 'nasdaq']),
-  'market-turnover.markets 必须按 cn、hk、nasdaq 排列'
+  JSON.stringify(turnoverMarkets.map((market) => market.id)) === JSON.stringify(['cn', 'hk', 'us', 'cn_tech', 'us_tech']),
+  'market-turnover.markets 必须按 cn、hk、us、cn_tech、us_tech 排列'
 );
-const turnoverCurrencies = { cn: 'CNY', hk: 'HKD', nasdaq: 'USD' };
-const turnoverTimezones = { cn: 'Asia/Shanghai', hk: 'Asia/Hong_Kong', nasdaq: 'America/New_York' };
+const turnoverCurrencies = { cn: 'CNY', hk: 'HKD', us: 'USD', cn_tech: 'CNY', us_tech: 'USD' };
+const turnoverTimezones = { cn: 'Asia/Shanghai', hk: 'Asia/Hong_Kong', us: 'America/New_York', cn_tech: 'Asia/Shanghai', us_tech: 'America/New_York' };
+const turnoverGroups = { cn: 'total', hk: 'total', us: 'total', cn_tech: 'tech', us_tech: 'tech' };
 for (const market of turnoverMarkets) {
   const marketId = String(market && market.id || '');
   assert(typeof market.name === 'string' && market.name.trim(), `${marketId}.name 不能为空`);
   assert(market.currency === turnoverCurrencies[marketId], `${marketId}.currency 无效`);
   assert(market.timezone === turnoverTimezones[marketId], `${marketId}.timezone 无效`);
+  assert(market.group === turnoverGroups[marketId], `${marketId}.group 无效`);
   assert(/^\d{2}:\d{2}$/.test(String(market.closeTime || '')), `${marketId}.closeTime 无效`);
   assert(typeof market.definition === 'string' && market.definition.trim(), `${marketId}.definition 不能为空`);
   assert(typeof market.sourceLabel === 'string' && market.sourceLabel.trim(), `${marketId}.sourceLabel 不能为空`);

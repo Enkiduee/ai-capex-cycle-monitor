@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#0b1017">
     <title>AI CapEx Cycle Monitor｜AI 数据中心资本开支周期雷达</title>
     <link rel="icon" type="image/svg+xml" href="./assets/logo.svg">
-    <link rel="stylesheet" href="./css/styles.css?v=20260828-annual-v3">
+    <link rel="stylesheet" href="./css/styles.css?v=20260828-market-scope-v4">
     <script>
       (function () {
         var routes = ['overview', 'hyperscalers', 'turnover', 'supply-chain', 'insider-sales', 'macro', 'events', 'methodology'];
@@ -23,8 +23,8 @@
     <script defer src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
     <script defer src="./js/utils.js?v=20260828-annual-v2"></script>
     <script defer src="./js/scoring.js?v=20260828-annual-v2"></script>
-    <script defer src="./js/charts.js?v=20260828-annual-v2"></script>
-    <script defer src="./js/app.js?v=20260828-annual-v3"></script>
+    <script defer src="./js/charts.js?v=20260828-market-scope-v4"></script>
+    <script defer src="./js/app.js?v=20260828-market-scope-v4"></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
@@ -209,12 +209,12 @@
         <div class="turnover-anime-hero">
           <div class="turnover-hero-copy">
             <p class="turnover-anime-label"><span aria-hidden="true">✦</span> Liquidity observatory <span aria-hidden="true">✦</span></p>
-            <h1 id="turnover-title" tabindex="-1">三地市场<br><span>每日成交额</span></h1>
-            <p>收盘铃响后，确认 A 股、港股与纳斯达克的资金星轨；按每日汇率统一换算为美元，并明确显示人民币与港元金额。</p>
+            <h1 id="turnover-title" tabindex="-1">中美市场<br><span>每日成交额</span></h1>
+            <p>收盘铃响后，确认中国与美国全市场的资金星轨；科技成长部分独立拆分，并按每日汇率统一换算为美元。</p>
             <div class="turnover-hero-markets" aria-label="覆盖市场">
-              <span>A 股</span>
+              <span>A 股全市场</span>
               <span>港 股</span>
-              <span>NASDAQ</span>
+              <span>美股全市场</span>
             </div>
           </div>
           <span class="demo-chip turnover-live-chip"><span aria-hidden="true"></span>日终自动更新</span>
@@ -223,14 +223,14 @@
         </div>
 
         <div id="turnover-market-grid" class="turnover-market-grid" aria-live="polite">
-          <div class="loading-block">正在读取三地市场日终成交额…</div>
+          <div class="loading-block">正在读取全市场日终成交额…</div>
         </div>
 
         <article class="chart-card turnover-chart-card" aria-labelledby="turnover-chart-title">
           <div class="card-heading">
             <div>
               <p class="panel-kicker">Rolling year with daily FX</p>
-              <h2 id="turnover-chart-title">最近一年成交额</h2>
+              <h2 id="turnover-chart-title">全市场最近一年成交额</h2>
             </div>
             <span class="unit-label">统一口径：亿美元</span>
           </div>
@@ -238,11 +238,42 @@
             id="market-turnover-chart"
             class="chart turnover-chart"
             role="img"
-            aria-label="A 股、港股与纳斯达克最近一年按每日汇率折算为美元的成交额趋势图"
+            aria-label="A 股全市场、港股与美股全市场最近一年按每日汇率折算为美元的成交额趋势图"
           >
             <div class="chart-placeholder">成交额趋势加载中…</div>
           </div>
-          <p class="chart-note">每个交易日使用当日或此前最近一个有效 ECB 参考汇率；悬停或轻触可查看人民币、港元金额，美股同时显示折合人民币金额。</p>
+          <p class="chart-note">中国全市场包含沪市 A 股、深市股票和北交所 A 股；美股全市场包含 Tape A、B、C。悬停或轻触可查看本币与折合人民币金额。</p>
+        </article>
+
+        <div class="turnover-focus-heading">
+          <div>
+            <p class="panel-kicker">Technology liquidity focus</p>
+            <h2>科技成交额拆分</h2>
+          </div>
+          <p>将科技成长倾向从全市场中单独拿出来观察。</p>
+        </div>
+
+        <div id="turnover-tech-grid" class="turnover-market-grid turnover-tech-grid" aria-live="polite">
+          <div class="loading-block">正在读取科技成交额…</div>
+        </div>
+
+        <article class="chart-card turnover-chart-card turnover-tech-chart-card" aria-labelledby="turnover-tech-chart-title">
+          <div class="card-heading">
+            <div>
+              <p class="panel-kicker">Rolling year · technology proxies</p>
+              <h2 id="turnover-tech-chart-title">科技倾向最近一年成交额</h2>
+            </div>
+            <span class="unit-label">统一口径：亿美元</span>
+          </div>
+          <div
+            id="market-turnover-tech-chart"
+            class="chart turnover-chart"
+            role="img"
+            aria-label="A 股科技成长与美股科技倾向最近一年成交额趋势图"
+          >
+            <div class="chart-placeholder">科技成交额趋势加载中…</div>
+          </div>
+          <p class="chart-note">A 股科技成长 = 科创板 + 创业板；美股科技倾向 = Nasdaq 上市证券（Tape C）。它们是可复现的代理口径，并非严格的科技行业分类。</p>
         </article>
 
         <article class="table-card turnover-table-card" aria-labelledby="turnover-history-title">
@@ -253,19 +284,14 @@
             </div>
             <time id="turnover-fetched-at" datetime="">加载中…</time>
           </div>
-          <div class="table-scroll" tabindex="0" aria-label="可横向滚动的三地市场每日成交额明细表">
+          <div class="table-scroll" tabindex="0" aria-label="可横向滚动的全市场及科技成交额明细表">
             <table class="turnover-history-table">
-              <caption>按交易日期对齐的三地市场每日成交额；美元为统一口径，A 股显示人民币、港股显示港元、纳斯达克显示折合人民币</caption>
+              <caption>按交易日期对齐的全市场与科技成交额；美元为统一口径，中国市场显示人民币、港股显示港元、美股显示折合人民币</caption>
               <thead>
-                <tr>
-                  <th scope="col">交易日期</th>
-                  <th scope="col">A 股</th>
-                  <th scope="col">港股</th>
-                  <th scope="col">纳斯达克</th>
-                </tr>
+                <tr id="turnover-history-head"><th scope="col">交易日期</th></tr>
               </thead>
               <tbody id="turnover-history-body">
-                <tr><td colspan="4" class="table-empty">正在整理最近交易日成交额…</td></tr>
+                <tr><td colspan="6" class="table-empty">正在整理最近交易日成交额…</td></tr>
               </tbody>
             </table>
           </div>

@@ -18,7 +18,7 @@ on:
           - asia
           - cn
           - hk
-          - nasdaq
+          - us
       backfill:
         description: Number of recent trading days to request
         required: true
@@ -72,7 +72,7 @@ jobs:
           MANUAL_MARKET: ${{ inputs.market }}
           MANUAL_BACKFILL: ${{ inputs.backfill }}
         run: |
-          market=nasdaq
+          market=us
           backfill=1
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             market="$MANUAL_MARKET"

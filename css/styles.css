@@ -2009,6 +2009,33 @@ a:hover {
   grid-column: 1 / -1;
 }
 
+.turnover-tech-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 12px;
+}
+
+.turnover-focus-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 22px;
+  padding: 0 3px;
+}
+
+.turnover-focus-heading h2 {
+  margin: 2px 0 0;
+  font-size: 22px;
+}
+
+.turnover-focus-heading > p {
+  max-width: 430px;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 11px;
+  text-align: right;
+}
+
 .turnover-market-card {
   --turnover-glow: #79dce6;
   min-width: 0;
@@ -2068,7 +2095,7 @@ a:hover {
     #201c14;
 }
 
-.turnover-market-card[data-market="nasdaq"] {
+.turnover-market-card[data-market="us"] {
   --turnover-glow: #b99bff;
   border-color: #4a3f62;
   background: #191725;
@@ -2076,6 +2103,32 @@ a:hover {
     radial-gradient(circle at 88% 8%, rgb(185 155 255 / 16%), transparent 34%),
     linear-gradient(145deg, rgb(255 255 255 / 3%), transparent 45%),
     #191725;
+}
+
+.turnover-market-card[data-market="cn_tech"] {
+  --turnover-glow: #5bd39a;
+  border-color: #315d4c;
+  background:
+    radial-gradient(circle at 88% 8%, rgb(91 211 154 / 16%), transparent 34%),
+    linear-gradient(145deg, rgb(255 255 255 / 3%), transparent 45%),
+    #102119;
+}
+
+.turnover-market-card[data-market="us_tech"] {
+  --turnover-glow: #f59b55;
+  border-color: #66462f;
+  background:
+    radial-gradient(circle at 88% 8%, rgb(245 155 85 / 16%), transparent 34%),
+    linear-gradient(145deg, rgb(255 255 255 / 3%), transparent 45%),
+    #251a14;
+}
+
+.turnover-market-card[data-group="tech"]::after {
+  content: "✦ TECH";
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
 }
 
 .turnover-card-topline,
@@ -2259,6 +2312,14 @@ a:hover {
 
 .turnover-chart {
   height: 390px;
+}
+
+.turnover-tech-chart-card {
+  margin-top: 12px;
+  border-color: #394c46;
+  background:
+    linear-gradient(135deg, rgb(91 211 154 / 4%), transparent 36%),
+    var(--surface);
 }
 
 .turnover-table-card {
@@ -5017,6 +5078,16 @@ a.buy-zone-reference:focus-visible {
   .turnover-market-grid,
   .turnover-method-note {
     grid-template-columns: 1fr;
+  }
+
+  .turnover-focus-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .turnover-focus-heading > p {
+    text-align: left;
   }
 
   .turnover-market-card {

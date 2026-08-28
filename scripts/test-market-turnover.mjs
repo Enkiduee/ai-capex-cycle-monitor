@@ -2,10 +2,12 @@ import assert from 'node:assert/strict';
 import {
   normalizeHkexReport,
   normalizeEastmoneyHkFile,
+  normalizeEastmoneyBseSnapshot,
   normalizeEcbFxHistory,
   normalizeCboeMarketHistory,
   normalizeSseTurnover,
-  normalizeSzseTurnover
+  normalizeSzseTurnover,
+  normalizeTdxDayFile
 } from './refresh-market-turnover.mjs';
 
 const sse = normalizeSseTurnover({
@@ -23,11 +25,29 @@ assert.equal(sse.breakdown.sseMainBoardA, 684_936_000_000);
 const szse = normalizeSzseTurnover([{
   metadata: { conditions: [{ name: 'txtQueryDate', defaultValue: '2026-08-27' }] },
   data: [
-    { zbmc: '成交量（亿）', gp: '614.78' },
-    { zbmc: '成交金额（亿元）', gp: '11,170.60' }
+    { zbmc: '成交量（亿）', gp: '614.78', cy: '192.44' },
+    { zbmc: '成交金额（亿元）', gp: '11,170.60', cy: '5,464.74' }
   ]
 }], '2026-08-27');
 assert.equal(szse.turnover, 1_117_060_000_000);
+assert.equal(szse.breakdown.szseChiNext, 546_474_000_000);
+
+const bse = normalizeEastmoneyBseSnapshot([
+  { f12: '920992', f6: 6_450_055.23, f124: 1787902639 },
+  { f12: '920985', f6: 10_847_995.53, f124: 1787902639 },
+  { f12: '920982', f6: '-', f124: 1787902639 }
+]);
+assert.equal(bse.date, '2026-08-28');
+assert.equal(bse.turnover, 17_298_051);
+
+const tdxDay = Buffer.alloc(64);
+tdxDay.writeUInt32LE(20260826, 0);
+tdxDay.writeFloatLE(12_345_678, 20);
+tdxDay.writeUInt32LE(20260827, 32);
+tdxDay.writeFloatLE(23_456_789, 52);
+assert.deepEqual(normalizeTdxDayFile(tdxDay, '2026-08-27'), [
+  { date: '2026-08-27', turnover: 23_456_788 }
+]);
 
 const hk = normalizeHkexReport(`
   DATE: 27 AUG 2026 (THURSDAY)
@@ -50,11 +70,23 @@ const eastmoneyHk = normalizeEastmoneyHkFile({
 assert.equal(eastmoneyHk[1].turnover, 233_514_827_776);
 assert.equal(eastmoneyHk[1].breakdown.shareVolume, 12_245_992_960);
 
-const nasdaq = normalizeCboeMarketHistory(`Day,Market Participant,Tape A Shares,Tape B Shares,Tape C Shares,Total Shares,Tape A Notional,Tape B Notional,Tape C Notional,Total Notional
+const us = normalizeCboeMarketHistory(`Day,Market Participant,Tape A Shares,Tape B Shares,Tape C Shares,Total Shares,Tape A Notional,Tape B Notional,Tape C Notional,Total Notional
 2026-08-25,NASDAQ,1,2,300,303,10,20,4000,4030
 2026-08-25,NYSE Arca,4,5,600,609,40,50,7000,7090
 2026-08-24,NASDAQ,7,8,900,915,70,80,10000,10150`);
-assert.deepEqual(nasdaq, [
+assert.deepEqual(us.all, [
+  {
+    date: '2026-08-24',
+    turnover: 10_150,
+    breakdown: { shareVolume: 915, tapeCNotional: 10_000 }
+  },
+  {
+    date: '2026-08-25',
+    turnover: 11_120,
+    breakdown: { shareVolume: 912, tapeCNotional: 11_000 }
+  }
+]);
+assert.deepEqual(us.tapeC, [
   {
     date: '2026-08-24',
     turnover: 10_000,
@@ -83,4 +115,4 @@ assert.deepEqual(fx.rates.CNY.observations, [
 ]);
 assert.equal(fx.rates.HKD.rate, 7.838729);
 
-console.log('validated SSE, SZSE, HKEX, Cboe Tape C, and ECB daily USD FX normalization');
+console.log('validated SSE, SZSE, BSE, HKEX, Cboe all-market/Tape C, and ECB daily USD FX normalization');

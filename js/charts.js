@@ -5,6 +5,7 @@
   const CAPEX_CONTROLS_ID = 'capex-series-controls';
   const GROWTH_CONTAINER_ID = 'growth-chart';
   const TURNOVER_CONTAINER_ID = 'market-turnover-chart';
+  const TURNOVER_TECH_CONTAINER_ID = 'market-turnover-tech-chart';
   const MIN_QUARTERS = 8;
   const RESIZE_DEBOUNCE_MS = 160;
 
@@ -31,6 +32,7 @@
   let capexChart = null;
   let growthChart = null;
   let turnoverChart = null;
+  let turnoverTechChart = null;
   let resizeTimer = null;
 
   function getContainer(id) {
@@ -141,6 +143,11 @@
   function resetTurnoverChart(container) {
     disposeContainerChart(container, turnoverChart);
     turnoverChart = null;
+  }
+
+  function resetTurnoverTechChart(container) {
+    disposeContainerChart(container, turnoverTechChart);
+    turnoverTechChart = null;
   }
 
   function formatDecimal(value) {
@@ -655,9 +662,13 @@
     return value.toISOString().slice(0, 10);
   }
 
-  function buildTurnoverModel(data) {
+  function buildTurnoverModel(data, group) {
     if (!data || !Array.isArray(data.markets)) return null;
-    const rawMarkets = data.markets.flatMap(function (market, index) {
+    const selectedMarkets = data.markets.filter(function (market) {
+      const marketGroup = safeLabel(market && market.group, 'total');
+      return marketGroup === group;
+    });
+    const rawMarkets = selectedMarkets.flatMap(function (market, index) {
       const currency = safeLabel(market.currency, '');
       const observations = Array.isArray(market && market.observations)
         ? market.observations
@@ -689,6 +700,7 @@
       return [{
         id: safeLabel(market.id, 'market-' + String(index + 1)),
         name: safeLabel(market.name, '市场 ' + String(index + 1)),
+        group: safeLabel(market.group, 'total'),
         currency: currency,
         observations: observations
       }];
@@ -709,11 +721,15 @@
   }
 
   function buildTurnoverOption(model) {
-    const colors = [COLORS.accent, COLORS.yellow, COLORS.purple];
+    const colorsById = { cn: COLORS.accent, hk: COLORS.yellow, us: COLORS.purple, cn_tech: COLORS.green, us_tech: COLORS.orange };
+    const colors = model.markets.map(function (market, index) {
+      return colorsById[market.id] || CAPEX_COLORS[index % CAPEX_COLORS.length];
+    });
     const series = model.markets.map(function (market, index) {
       const byDate = new Map(market.observations.map(function (item) { return [item.date, item]; }));
       const line = Object.assign(commonSeriesStyle(colors[index % colors.length]), {
         name: market.name,
+        connectNulls: true,
         data: model.dates.map(function (date) {
           const item = byDate.get(date);
           if (!item) return null;
@@ -732,7 +748,7 @@
     return {
       baseOption: {
         backgroundColor: 'transparent',
-        color: [COLORS.accent, COLORS.yellow, COLORS.purple],
+        color: colors,
         animationDuration: 420,
         animationEasing: 'cubicOut',
         textStyle: { color: COLORS.text, fontFamily: FONT_FAMILY },
@@ -759,7 +775,13 @@
         }),
         legend: commonLegend(),
         grid: { top: 62, right: 24, bottom: 40, left: 70, containLabel: true },
-        xAxis: commonCategoryAxis(model.dates),
+        xAxis: Object.assign(commonCategoryAxis(model.dates), {
+          axisLabel: Object.assign({}, commonCategoryAxis([]).axisLabel, {
+            interval: 'auto',
+            hideOverlap: true,
+            formatter: function (value) { return String(value || '').slice(5); }
+          })
+        }),
         yAxis: Object.assign(commonValueAxis('亿美元'), {
           min: 0,
           axisLabel: Object.assign({}, commonValueAxis('').axisLabel, {
@@ -895,7 +917,7 @@
       showPlaceholder(container, '图表组件加载失败，请检查网络连接后刷新页面。');
       return null;
     }
-    const model = buildTurnoverModel(data);
+    const model = buildTurnoverModel(data, 'total');
     if (!model) {
       showPlaceholder(container, '成交额趋势暂不可用（每个市场至少需要 2 个有效交易日）。');
       return null;
@@ -906,6 +928,29 @@
     } catch (error) {
       resetTurnoverChart(container);
       showPlaceholder(container, '成交额趋势暂时无法绘制，请稍后刷新重试。');
+      return null;
+    }
+  }
+
+  function initTurnoverTechChart(data) {
+    const container = getContainer(TURNOVER_TECH_CONTAINER_ID);
+    if (!container) return null;
+    resetTurnoverTechChart(container);
+    if (!hasECharts()) {
+      showPlaceholder(container, '图表组件加载失败，请检查网络连接后刷新页面。');
+      return null;
+    }
+    const model = buildTurnoverModel(data, 'tech');
+    if (!model) {
+      showPlaceholder(container, '科技成交额趋势暂不可用（每个市场至少需要 2 个有效交易日）。');
+      return null;
+    }
+    try {
+      turnoverTechChart = createChart(container, buildTurnoverOption(model));
+      return turnoverTechChart;
+    } catch (error) {
+      resetTurnoverTechChart(container);
+      showPlaceholder(container, '科技成交额趋势暂时无法绘制，请稍后刷新重试。');
       return null;
     }
   }
@@ -928,12 +973,14 @@
     resizeChart(capexChart);
     resizeChart(growthChart);
     resizeChart(turnoverChart);
+    resizeChart(turnoverTechChart);
   }
 
   function disposeAll() {
     resetCapexChart(getContainer(CAPEX_CONTAINER_ID));
     resetGrowthChart(getContainer(GROWTH_CONTAINER_ID));
     resetTurnoverChart(getContainer(TURNOVER_CONTAINER_ID));
+    resetTurnoverTechChart(getContainer(TURNOVER_TECH_CONTAINER_ID));
 
     if (resizeTimer !== null) {
       global.clearTimeout(resizeTimer);
@@ -960,6 +1007,7 @@
     initCapexChart: initCapexChart,
     initGrowthChart: initGrowthChart,
     initTurnoverChart: initTurnoverChart,
+    initTurnoverTechChart: initTurnoverTechChart,
     setCapexSeriesVisible: setCapexSeriesVisible,
     resizeAll: resizeAll,
     disposeAll: disposeAll

@@ -4,7 +4,7 @@
   const DATA_SOURCES = {
     risk: { path: './data/risk-score.json', label: '风险评分' },
     hyperscalers: { path: './data/hyperscalers.json', label: '云巨头 CapEx' },
-    marketTurnover: { path: './data/market-turnover.json', label: '三地市场每日成交额' },
+    marketTurnover: { path: './data/market-turnover.json', label: '中美市场每日成交额' },
     supplyChain: { path: './data/supply-chain.json', label: '供应链风险' },
     stockWatchlist: { path: './data/stock-watchlist.json', label: '沪深股票资料' },
     hkWatchlist: { path: './data/hk-watchlist.json', label: '港股资料' },
@@ -21,7 +21,7 @@
   const ROUTES = Object.freeze({
     overview: { label: '周期总览', titleId: 'overview-title' },
     hyperscalers: { label: '云巨头 CapEx', titleId: 'hyperscalers-title' },
-    turnover: { label: '三地市场每日成交额', titleId: 'turnover-title' },
+    turnover: { label: '中美市场每日成交额', titleId: 'turnover-title' },
     'supply-chain': { label: '供应链风险与估值', titleId: 'supply-chain-title' },
     'insider-sales': { label: '减持与融资雷达', titleId: 'insider-sales-title' },
     macro: { label: '宏观与利率环境', titleId: 'macro-title' },
@@ -566,21 +566,26 @@
   function turnoverSourceMarkup(market) {
     const primary = safeExternalUrl(market && market.sourceUrl);
     const secondary = safeExternalUrl(market && market.secondarySourceUrl);
+    const tertiary = safeExternalUrl(market && market.tertiarySourceUrl);
     const links = [];
     if (primary) links.push(`<a href="${escapeHTML(primary)}" target="_blank" rel="noopener noreferrer nofollow">${escapeHTML(market.sourceLabel || '数据来源')} ↗</a>`);
     if (secondary) links.push(`<a href="${escapeHTML(secondary)}" target="_blank" rel="noopener noreferrer nofollow">深交所 ↗</a>`);
+    if (tertiary) links.push(`<a href="${escapeHTML(tertiary)}" target="_blank" rel="noopener noreferrer nofollow">沪深京盘后包 ↗</a>`);
     return links.join('<span aria-hidden="true"> · </span>');
   }
 
   function renderMarketTurnover(data) {
     const markets = Array.isArray(data && data.markets) ? data.markets : [];
     const grid = byId('turnover-market-grid');
+    const techGrid = byId('turnover-tech-grid');
     const marketAppearance = {
-      cn: { emblem: '沪深', pulse: 'MARKET PULSE · 01' },
+      cn: { emblem: '中', pulse: 'TOTAL MARKET · 01' },
       hk: { emblem: 'HK', pulse: 'MARKET PULSE · 02' },
-      nasdaq: { emblem: 'NQ', pulse: 'MARKET PULSE · 03' }
+      us: { emblem: 'US', pulse: 'TOTAL MARKET · 03' },
+      cn_tech: { emblem: '科创', pulse: 'TECH FOCUS · CN' },
+      us_tech: { emblem: 'NQ', pulse: 'TECH FOCUS · US' }
     };
-    grid.innerHTML = markets.map((market, index) => {
+    const renderCards = (cardMarkets) => cardMarkets.map((market, index) => {
       const observations = normalizedTurnoverObservations(market);
       const latest = observations.at(-1);
       const previous = observations.at(-2);
@@ -594,7 +599,7 @@
       const currencyDetail = turnoverCurrencyDetailLabel(latest, market, data);
       const appearance = marketAppearance[market.id] || { emblem: String(index + 1).padStart(2, '0'), pulse: `MARKET PULSE · ${String(index + 1).padStart(2, '0')}` };
       return `
-        <article class="turnover-market-card" data-market="${escapeHTML(market.id)}">
+        <article class="turnover-market-card" data-market="${escapeHTML(market.id)}" data-group="${escapeHTML(market.group || 'total')}">
           <div class="turnover-card-topline">
             <div class="turnover-market-identity">
               <span class="turnover-market-emblem" aria-hidden="true">${escapeHTML(appearance.emblem)}</span>
@@ -621,6 +626,8 @@
         </article>
       `;
     }).join('') || '<div class="loading-block">暂无可用的日终成交额记录。</div>';
+    grid.innerHTML = renderCards(markets.filter((market) => market.group !== 'tech'));
+    techGrid.innerHTML = renderCards(markets.filter((market) => market.group === 'tech'));
 
     const marketModels = markets.map((market) => ({
       ...market,
@@ -632,6 +639,8 @@
       .reverse();
     const byMarketAndDate = new Map(marketModels.flatMap((market) => market.observations.map((item) => [`${market.id}:${item.date}`, item])));
     const body = byId('turnover-history-body');
+    const head = byId('turnover-history-head');
+    head.innerHTML = `<th scope="col">交易日期</th>${marketModels.map((market) => `<th scope="col">${escapeHTML(market.name)}</th>`).join('')}`;
     body.innerHTML = dates.map((date) => `
       <tr>
         <td><time datetime="${escapeHTML(date)}">${escapeHTML(formatDate(date))}</time></td>
@@ -640,7 +649,7 @@
           return `<td>${turnoverTableAmountMarkup(item, market, data)}</td>`;
         }).join('')}
       </tr>
-    `).join('') || '<tr><td colspan="4" class="table-empty">暂无成交额历史记录。</td></tr>';
+    `).join('') || `<tr><td colspan="${marketModels.length + 1}" class="table-empty">暂无成交额历史记录。</td></tr>`;
 
     const fetchedAt = byId('turnover-fetched-at');
     fetchedAt.dateTime = data.fetchedAt || data.updatedAt || '';
@@ -658,6 +667,9 @@
     const chartApi = charts();
     if (chartApi && typeof chartApi.initTurnoverChart === 'function') {
       chartApi.initTurnoverChart(data);
+    }
+    if (chartApi && typeof chartApi.initTurnoverTechChart === 'function') {
+      chartApi.initTurnoverTechChart(data);
     }
   }
 
@@ -2583,10 +2595,12 @@
       byId('growth-diagnostic').innerHTML = `<span class="diagnostic-icon">!</span><div><strong>增速诊断不可用</strong><p>${escapeHTML(message)}</p></div>`;
     } else if (key === 'marketTurnover') {
       api.renderSectionError('turnover-market-grid', message);
-      byId('turnover-history-body').innerHTML = `<tr><td colspan="4" class="table-empty">${escapeHTML(message)}</td></tr>`;
+      api.renderSectionError('turnover-tech-grid', message);
+      byId('turnover-history-body').innerHTML = `<tr><td colspan="6" class="table-empty">${escapeHTML(message)}</td></tr>`;
       byId('turnover-method-copy').textContent = message;
       const chartApi = charts();
       if (chartApi && typeof chartApi.initTurnoverChart === 'function') chartApi.initTurnoverChart(null);
+      if (chartApi && typeof chartApi.initTurnoverTechChart === 'function') chartApi.initTurnoverTechChart(null);
     } else if (key === 'supplyChain') {
       byId('supply-chain-body').innerHTML = `<tr><td colspan="12" class="table-empty">${escapeHTML(message)}</td></tr>`;
       api.renderSectionError('supply-chain-heatmap', message);

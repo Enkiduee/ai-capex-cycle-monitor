@@ -1,4 +1,8 @@
 import path from 'node:path';
+import os from 'node:os';
+import { execFile as execFileCallback } from 'node:child_process';
+import { mkdir, mkdtemp, readFile, rm } from 'node:fs/promises';
+import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import {
   dateOnly,
@@ -17,6 +21,9 @@ const DEFAULT_BACKFILL = 1;
 const USER_AGENT = 'Mozilla/5.0 (compatible; AI-CapEx-Cycle-Monitor/1.0)';
 const ECB_FX_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml';
 const ECB_FX_SOURCE_URL = 'https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html';
+const EASTMONEY_BSE_LIST_URL = 'https://push2delay.eastmoney.com/api/qt/clist/get';
+const TDX_HSJ_DAY_URL = 'https://data.tdx.com.cn/vipdoc/hsjday.zip';
+const execFile = promisify(execFileCallback);
 const MONTHS = Object.freeze({
   JAN: '01', FEB: '02', MAR: '03', APR: '04', MAY: '05', JUN: '06',
   JUL: '07', AUG: '08', SEP: '09', OCT: '10', NOV: '11', DEC: '12'
@@ -25,18 +32,21 @@ const MONTHS = Object.freeze({
 const MARKET_METADATA = Object.freeze({
   cn: {
     id: 'cn',
-    name: 'A 股',
+    name: 'A 股全市场',
+    group: 'total',
     currency: 'CNY',
     timezone: 'Asia/Shanghai',
     closeTime: '15:00',
-    definition: '上交所主板 A 股与科创板成交额，加上深交所股票成交额；不含上交所 B 股。',
-    sourceLabel: '上海证券交易所 + 深圳证券交易所',
+    definition: '沪市 A 股、深市股票与北交所 A 股成交额合计；不含沪深 B 股。',
+    sourceLabel: '上交所 + 深交所 + 沪深京盘后行情',
     sourceUrl: 'https://www.sse.com.cn/market/stockdata/overview/day/',
-    secondarySourceUrl: 'https://www.szse.cn/market/stock/situation/daily/index.html'
+    secondarySourceUrl: 'https://www.szse.cn/market/stock/situation/daily/index.html',
+    tertiarySourceUrl: 'https://www.tdx.com.cn/article/vipdata.html'
   },
   hk: {
     id: 'hk',
     name: '港股',
+    group: 'total',
     currency: 'HKD',
     timezone: 'Asia/Hong_Kong',
     closeTime: '16:00',
@@ -44,13 +54,39 @@ const MARKET_METADATA = Object.freeze({
     sourceLabel: '东方财富港股主板日线快照',
     sourceUrl: 'https://quote.eastmoney.com/zsHSI.html'
   },
-  nasdaq: {
-    id: 'nasdaq',
-    name: '纳斯达克',
+  us: {
+    id: 'us',
+    name: '美股全市场',
+    group: 'total',
     currency: 'USD',
     timezone: 'America/New_York',
     closeTime: '16:00',
-    definition: '美国合并行情 Tape C（Nasdaq 上市证券）在所有交易场所成交的美元名义金额。',
+    definition: '美国合并行情 Tape A、B、C 全部上市证券在所有交易场所成交的美元名义金额。',
+    sourceLabel: 'Cboe Historical Market Volume（全市场）',
+    sourceUrl: 'https://www.cboe.com/markets/us/equities/market-statistics/historical-market-volume/'
+  },
+  cn_tech: {
+    id: 'cn_tech',
+    name: 'A 股科技成长',
+    group: 'tech',
+    parentId: 'cn',
+    currency: 'CNY',
+    timezone: 'Asia/Shanghai',
+    closeTime: '15:00',
+    definition: '科创板与创业板成交额合计，作为 A 股科技成长板块的透明代理口径。',
+    sourceLabel: '上交所科创板 + 深交所创业板',
+    sourceUrl: 'https://www.sse.com.cn/market/stockdata/overview/day/',
+    secondarySourceUrl: 'https://www.szse.cn/market/stock/situation/daily/index.html'
+  },
+  us_tech: {
+    id: 'us_tech',
+    name: '美股科技倾向',
+    group: 'tech',
+    parentId: 'us',
+    currency: 'USD',
+    timezone: 'America/New_York',
+    closeTime: '16:00',
+    definition: 'Nasdaq 上市证券（Tape C）在所有场所的成交额，作为科技倾向代理；并非纯科技行业成交额。',
     sourceLabel: 'Cboe Historical Market Volume（Tape C）',
     sourceUrl: 'https://www.cboe.com/markets/us/equities/market-statistics/historical-market-volume/'
   }
@@ -159,13 +195,15 @@ export function normalizeSzseTurnover(payload, expectedDate) {
   const rows = report && Array.isArray(report.data) ? report.data : [];
   const amountRow = rows.find((row) => String(row.zbmc || '').includes('成交金额'));
   const amountYi = numeric(amountRow && amountRow.gp);
+  const chiNextYi = numeric(amountRow && amountRow.cy);
   const reportedDate = report && report.metadata && Array.isArray(report.metadata.conditions)
     ? report.metadata.conditions.find((condition) => condition.name === 'txtQueryDate')?.defaultValue
     : '';
-  if (!amountRow || amountYi === null || amountYi < 0 || reportedDate !== expectedDate) return null;
+  if (!amountRow || amountYi === null || amountYi < 0 || chiNextYi === null || chiNextYi < 0 || reportedDate !== expectedDate) return null;
   return {
     date: expectedDate,
-    turnover: Math.round(amountYi * 1e8)
+    turnover: Math.round(amountYi * 1e8),
+    breakdown: { szseChiNext: Math.round(chiNextYi * 1e8) }
   };
 }
 
@@ -190,8 +228,153 @@ async function loadCnObservation(date = '') {
   return {
     date: sse.date,
     turnover: sse.turnover + szse.turnover,
-    breakdown: { ...sse.breakdown, szseStocks: szse.turnover }
+    breakdown: { ...sse.breakdown, szseStocks: szse.turnover, ...szse.breakdown }
   };
+}
+
+function timestampDateInShanghai(value) {
+  const timestamp = numeric(value);
+  return timestamp && timestamp > 0 ? isoDateInTimezone(new Date(timestamp * 1000), 'Asia/Shanghai') : '';
+}
+
+export function normalizeEastmoneyBseSnapshot(rows) {
+  const validRows = (Array.isArray(rows) ? rows : []).filter((row) => /^\d{6}$/.test(String(row && row.f12 || '')));
+  const dates = validRows.map((row) => timestampDateInShanghai(row.f124)).filter(Boolean).sort();
+  const date = dates.at(-1) || '';
+  const currentRows = validRows.filter((row) => timestampDateInShanghai(row.f124) === date);
+  const turnover = currentRows.reduce((sum, row) => sum + Math.max(0, numeric(row.f6) || 0), 0);
+  if (!date || !currentRows.length || turnover <= 0) return null;
+  return {
+    date,
+    turnover: Math.round(turnover),
+    breakdown: { listedStocks: currentRows.length }
+  };
+}
+
+async function loadBseStockList() {
+  const rows = [];
+  for (let page = 1; page <= 10; page += 1) {
+    const url = new URL(EASTMONEY_BSE_LIST_URL);
+    Object.entries({
+      pn: page,
+      pz: 100,
+      po: 1,
+      np: 1,
+      ut: 'bd1d9ddb04089700cf9c27f6f7426281',
+      fltt: 2,
+      invt: 2,
+      fid: 'f12',
+      fs: 'm:0+t:81+s:2048',
+      fields: 'f12,f14,f6,f124'
+    }).forEach(([key, value]) => url.searchParams.set(key, value));
+    const payload = await fetchJson(url, { retries: 3, timeoutMs: 30000 });
+    const pageRows = payload && payload.data && Array.isArray(payload.data.diff) ? payload.data.diff : [];
+    rows.push(...pageRows);
+    const total = numeric(payload && payload.data && payload.data.total) || rows.length;
+    if (!pageRows.length || rows.length >= total) break;
+    await sleep(120);
+  }
+  if (!rows.length) throw new Error('北交所股票列表为空');
+  return rows;
+}
+
+export function normalizeTdxDayFile(buffer, minimumDate) {
+  const observations = [];
+  for (let offset = 0; offset + 32 <= buffer.length; offset += 32) {
+    const rawDate = buffer.readUInt32LE(offset);
+    const rawDateText = String(rawDate);
+    const date = /^\d{8}$/.test(rawDateText)
+      ? `${rawDateText.slice(0, 4)}-${rawDateText.slice(4, 6)}-${rawDateText.slice(6)}`
+      : '';
+    const turnover = buffer.readFloatLE(offset + 20);
+    if (date >= minimumDate && Number.isFinite(turnover) && turnover > 0) observations.push({ date, turnover });
+  }
+  return observations;
+}
+
+async function loadBseTdxHistory(symbols, referenceDate, backfill) {
+  const temporaryDirectory = await mkdtemp(path.join(os.tmpdir(), 'ai-capex-bse-'));
+  const configuredArchive = String(process.env.AI_CAPEX_TDX_ARCHIVE || '').trim();
+  const archivePath = configuredArchive || path.join(temporaryDirectory, 'hsjday.zip');
+  const extractDirectory = path.join(temporaryDirectory, 'day-files');
+  const minimumDate = shiftDate(referenceDate, -Math.max(backfill * 3, 400));
+  try {
+    if (!configuredArchive) {
+      await execFile('curl', ['-L', '--fail', '--retry', '3', '--max-time', '600', '-sS', '-o', archivePath, TDX_HSJ_DAY_URL], {
+        timeout: 660000,
+        maxBuffer: 1024 * 1024
+      });
+    }
+    await mkdir(extractDirectory, { recursive: true });
+    try {
+      await execFile('unzip', ['-qq', '-j', archivePath, '*bj*.day', '-d', extractDirectory], {
+        timeout: 180000,
+        maxBuffer: 4 * 1024 * 1024
+      });
+    } catch (error) {
+      const warningOnly = error && error.code === 1 && /backslashes as path separators|extra bytes at beginning/.test(String(error.stderr || ''));
+      if (!warningOnly) throw error;
+    }
+    const totals = new Map();
+    let loadedSymbols = 0;
+    for (const symbol of symbols) {
+      const filePath = path.join(extractDirectory, `bj${symbol}.day`);
+      let buffer;
+      try {
+        buffer = await readFile(filePath);
+      } catch {
+        continue;
+      }
+      loadedSymbols += 1;
+      normalizeTdxDayFile(buffer, minimumDate).forEach((item) => {
+        totals.set(item.date, (totals.get(item.date) || 0) + item.turnover);
+      });
+    }
+    if (loadedSymbols < Math.floor(symbols.length * 0.98)) {
+      throw new Error(`沪深京盘后包仅匹配 ${loadedSymbols}/${symbols.length} 只当前北交所股票`);
+    }
+    return Array.from(totals, ([date, turnover]) => ({
+      date,
+      turnover: Math.round(turnover),
+      breakdown: { listedStocks: loadedSymbols }
+    })).filter((item) => item.turnover > 0).sort((left, right) => left.date.localeCompare(right.date));
+  } finally {
+    await rm(temporaryDirectory, { recursive: true, force: true });
+  }
+}
+
+async function loadBseObservations(referenceDate, backfill) {
+  const rows = await loadBseStockList();
+  if (backfill <= 1) {
+    const latest = normalizeEastmoneyBseSnapshot(rows);
+    return latest ? [latest] : [];
+  }
+
+  const symbols = rows.map((row) => String(row.f12 || '')).filter((symbol) => /^\d{6}$/.test(symbol));
+  return loadBseTdxHistory(symbols, referenceDate, backfill);
+}
+
+function buildCnMarketObservations(baseObservations, bseObservations) {
+  const bseByDate = new Map(bseObservations.map((item) => [item.date, item]));
+  const total = [];
+  const tech = [];
+  baseObservations.forEach((item) => {
+    const star = numeric(item.breakdown && item.breakdown.sseStarMarket);
+    const chiNext = numeric(item.breakdown && item.breakdown.szseChiNext);
+    const bse = bseByDate.get(item.date);
+    if (star === null || chiNext === null || !bse) return;
+    total.push({
+      ...item,
+      turnover: item.turnover + bse.turnover,
+      breakdown: { ...item.breakdown, bseStocks: bse.turnover }
+    });
+    tech.push({
+      date: item.date,
+      turnover: Math.round(star + chiNext),
+      breakdown: { sseStarMarket: Math.round(star), szseChiNext: Math.round(chiNext) }
+    });
+  });
+  return { total, tech };
 }
 
 function hkexDateFromText(text) {
@@ -268,31 +451,51 @@ function csvColumns(line) {
 
 export function normalizeCboeMarketHistory(text) {
   const lines = String(text || '').trim().split(/\r?\n/);
-  if (lines.length < 2) return [];
+  if (lines.length < 2) return { all: [], tapeC: [] };
   const headers = csvColumns(lines[0]);
   const dateIndex = headers.indexOf('Day');
-  const volumeIndex = headers.indexOf('Tape C Shares');
-  const dollarVolumeIndex = headers.indexOf('Tape C Notional');
-  if ([dateIndex, volumeIndex, dollarVolumeIndex].some((index) => index < 0)) return [];
+  const totalVolumeIndex = headers.indexOf('Total Shares');
+  const totalNotionalIndex = headers.indexOf('Total Notional');
+  const tapeCVolumeIndex = headers.indexOf('Tape C Shares');
+  const tapeCNotionalIndex = headers.indexOf('Tape C Notional');
+  if ([dateIndex, totalVolumeIndex, totalNotionalIndex, tapeCVolumeIndex, tapeCNotionalIndex].some((index) => index < 0)) {
+    return { all: [], tapeC: [] };
+  }
 
   const byDate = new Map();
   lines.slice(1).forEach((line) => {
     const columns = csvColumns(line);
     const date = columns[dateIndex];
-    const turnover = numeric(columns[dollarVolumeIndex]);
-    const shareVolume = numeric(columns[volumeIndex]);
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || turnover === null || turnover <= 0 || shareVolume === null || shareVolume <= 0) return;
-    const existing = byDate.get(date) || { turnover: 0, shareVolume: 0 };
-    existing.turnover += turnover;
-    existing.shareVolume += shareVolume;
+    const totalTurnover = numeric(columns[totalNotionalIndex]);
+    const totalShareVolume = numeric(columns[totalVolumeIndex]);
+    const tapeCTurnover = numeric(columns[tapeCNotionalIndex]);
+    const tapeCShareVolume = numeric(columns[tapeCVolumeIndex]);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)
+      || totalTurnover === null || totalTurnover <= 0 || totalShareVolume === null || totalShareVolume <= 0
+      || tapeCTurnover === null || tapeCTurnover <= 0 || tapeCShareVolume === null || tapeCShareVolume <= 0) return;
+    const existing = byDate.get(date) || { totalTurnover: 0, totalShareVolume: 0, tapeCTurnover: 0, tapeCShareVolume: 0 };
+    existing.totalTurnover += totalTurnover;
+    existing.totalShareVolume += totalShareVolume;
+    existing.tapeCTurnover += tapeCTurnover;
+    existing.tapeCShareVolume += tapeCShareVolume;
     byDate.set(date, existing);
   });
-  return Array.from(byDate, ([date, values]) => ({
+  const entries = Array.from(byDate).sort(([left], [right]) => left.localeCompare(right));
+  return {
+    all: entries.map(([date, values]) => ({
       date,
-      turnover: Math.round(values.turnover),
-      breakdown: { shareVolume: Math.round(values.shareVolume) }
+      turnover: Math.round(values.totalTurnover),
+      breakdown: {
+        shareVolume: Math.round(values.totalShareVolume),
+        tapeCNotional: Math.round(values.tapeCTurnover)
+      }
+    })),
+    tapeC: entries.map(([date, values]) => ({
+      date,
+      turnover: Math.round(values.tapeCTurnover),
+      breakdown: { shareVolume: Math.round(values.tapeCShareVolume) }
     }))
-    .sort((left, right) => left.date.localeCompare(right.date));
+  };
 }
 
 export function normalizeEcbFxHistory(text, fetchedAt) {
@@ -352,7 +555,7 @@ async function loadFxSnapshot(fetchedAt) {
   return normalizeEcbFxHistory(text, fetchedAt);
 }
 
-async function loadNasdaqObservations(referenceDate, backfill) {
+async function loadUsObservations(referenceDate, backfill) {
   const startYear = Number(shiftDate(referenceDate, -Math.max(backfill * 2, 45)).slice(0, 4));
   const endYear = Number(referenceDate.slice(0, 4));
   const years = Array.from({ length: endYear - startYear + 1 }, (_, index) => startYear + index);
@@ -360,7 +563,10 @@ async function loadNasdaqObservations(referenceDate, backfill) {
     const url = `https://cdn.cboe.com/resources/us/equities/market-statistics/historical-market-volume/market_history_${year}.csv`;
     return normalizeCboeMarketHistory(await fetchText(url));
   }));
-  return batches.flat().sort((left, right) => left.date.localeCompare(right.date));
+  return {
+    all: batches.flatMap((batch) => batch.all).sort((left, right) => left.date.localeCompare(right.date)),
+    tapeC: batches.flatMap((batch) => batch.tapeC).sort((left, right) => left.date.localeCompare(right.date))
+  };
 }
 
 function mergeObservations(existing, incoming) {
@@ -374,44 +580,51 @@ function mergeObservations(existing, incoming) {
 async function scanWeekdays(startDate, targetCount, loader, options = {}) {
   const observations = [];
   const maxCalendarDays = Math.max(targetCount * 3, 12);
-  for (let offset = 0; offset < maxCalendarDays && observations.length < targetCount; offset += 1) {
-    const date = shiftDate(startDate, -offset);
-    if (!isWeekday(date)) continue;
-    try {
-      const observation = await loader(date);
-      if (observation) observations.push(observation);
-    } catch (error) {
-      console.warn(`[turnover] ${options.label || '市场'} ${date} 暂不可用：${error.message}`);
-    }
+  const concurrency = Math.max(1, Math.min(Number(options.concurrency) || 1, 5));
+  const dates = Array.from({ length: maxCalendarDays }, (_, offset) => shiftDate(startDate, -offset)).filter(isWeekday);
+  for (let index = 0; index < dates.length && observations.length < targetCount; index += concurrency) {
+    const batchDates = dates.slice(index, index + concurrency);
+    const batch = await Promise.all(batchDates.map(async (date) => {
+      try {
+        return await loader(date);
+      } catch (error) {
+        console.warn(`[turnover] ${options.label || '市场'} ${date} 暂不可用：${error.message}`);
+        return null;
+      }
+    }));
+    observations.push(...batch.filter(Boolean));
     if (options.delayMs) await sleep(options.delayMs);
   }
-  return observations.sort((left, right) => left.date.localeCompare(right.date));
+  return observations.slice(0, targetCount).sort((left, right) => left.date.localeCompare(right.date));
 }
 
 function selectedMarkets(requested) {
   const normalized = String(requested || 'all').toLowerCase();
-  if (normalized === 'all') return ['cn', 'hk', 'nasdaq'];
+  if (normalized === 'all') return ['cn', 'hk', 'us'];
   if (normalized === 'asia') return ['cn', 'hk'];
-  if (Object.hasOwn(MARKET_METADATA, normalized)) return [normalized];
-  throw new Error(`--market 仅支持 all、asia、cn、hk 或 nasdaq，当前为 ${requested}`);
+  if (normalized === 'nasdaq') return ['us'];
+  if (['cn', 'hk', 'us'].includes(normalized)) return [normalized];
+  throw new Error(`--market 仅支持 all、asia、cn、hk 或 us，当前为 ${requested}`);
 }
 
 function basePayload(current) {
   const existingById = new Map((current && Array.isArray(current.markets) ? current.markets : []).map((market) => [market.id, market]));
   return {
-    version: 3,
+    version: 4,
     updatedAt: current?.updatedAt || dateOnly(now()),
     fetchedAt: current?.fetchedAt || null,
     isDemoData: false,
     fx: current?.fx || null,
     methodology: {
-      comparison: '卡片、图表与明细表按 ECB 每个交易日的参考汇率统一折算为美元；A 股明确显示人民币原值，港股明确显示港元原值，纳斯达克同时显示当日折合人民币金额。',
+      comparison: '卡片、图表与明细表按 ECB 每个交易日的参考汇率统一折算为美元；中国市场明确显示人民币原值，港股明确显示港元原值，美股同时显示当日折合人民币金额。',
       retention: `每个市场最多保留最近 ${MAX_OBSERVATIONS} 个交易日。`,
-      caveat: '趋势图显示滚动最近一年；若市场交易日没有 ECB 汇率，则使用该日之前最近一个有效参考汇率。三地统计范围仍不完全相同。'
+      caveat: '趋势图显示滚动最近一年；若市场交易日没有 ECB 汇率，则使用该日之前最近一个有效参考汇率。北交所历史由通达信沪深京盘后包逐股合计、最新收盘由延迟行情聚合；科技拆分是透明代理口径，并非严格行业分类。'
     },
     markets: Object.keys(MARKET_METADATA).map((id) => ({
       ...MARKET_METADATA[id],
-      observations: existingById.get(id)?.observations || []
+      observations: existingById.get(id)?.observations
+        || (id === 'us_tech' ? existingById.get('nasdaq')?.observations : [])
+        || []
     }))
   };
 }
@@ -464,20 +677,30 @@ export async function refreshMarketTurnover(options = {}) {
   for (const marketId of targets) {
     const market = marketById.get(marketId);
     let incoming = [];
+    let dependentMarket = null;
+    let dependentIncoming = [];
     try {
       if (marketId === 'cn') {
         const latest = await loadCnObservation();
         if (latest) {
-          incoming = backfill > 1
-            ? await scanWeekdays(latest.date, backfill, loadCnObservation, { label: 'A 股', delayMs: 120 })
+          const baseObservations = backfill > 1
+            ? await scanWeekdays(latest.date, backfill, loadCnObservation, { label: 'A 股', delayMs: 120, concurrency: 3 })
             : [latest];
+          const bseObservations = await loadBseObservations(latest.date, backfill);
+          const combined = buildCnMarketObservations(baseObservations, bseObservations);
+          incoming = combined.total;
+          dependentMarket = marketById.get('cn_tech');
+          dependentIncoming = combined.tech;
         }
       } else if (marketId === 'hk') {
         const localDate = isoDateInTimezone(checkedAtDate, MARKET_METADATA.hk.timezone);
         incoming = (await loadHkObservations(localDate, backfill)).slice(-backfill);
-      } else if (marketId === 'nasdaq') {
-        const localDate = isoDateInTimezone(checkedAtDate, MARKET_METADATA.nasdaq.timezone);
-        incoming = (await loadNasdaqObservations(localDate, backfill)).slice(-backfill);
+      } else if (marketId === 'us') {
+        const localDate = isoDateInTimezone(checkedAtDate, MARKET_METADATA.us.timezone);
+        const usObservations = await loadUsObservations(localDate, backfill);
+        incoming = usObservations.all.slice(-backfill);
+        dependentMarket = marketById.get('us_tech');
+        dependentIncoming = usObservations.tapeC.slice(-backfill);
       }
     } catch (error) {
       console.warn(`[turnover] ${MARKET_METADATA[marketId].name} 上游请求失败，保留最近有效快照：${error.message}`);
@@ -493,10 +716,15 @@ export async function refreshMarketTurnover(options = {}) {
     if (JSON.stringify(market.observations) !== previousSnapshot) {
       updatedMarkets.push(marketId);
     }
+    if (dependentMarket && dependentIncoming.length) {
+      const previousDependent = JSON.stringify(dependentMarket.observations);
+      dependentMarket.observations = mergeObservations(dependentMarket.observations, dependentIncoming);
+      if (JSON.stringify(dependentMarket.observations) !== previousDependent) updatedMarkets.push(dependentMarket.id);
+    }
   }
 
   if (!next.markets.every((market) => market.observations.length > 0)) {
-    throw new Error('三地市场至少各需要一条有效成交额记录，未写入不完整数据。');
+    throw new Error('全市场与科技拆分至少各需要一条有效成交额记录，未写入不完整数据。');
   }
 
   if (!updatedMarkets.length && !fxChanged) {
