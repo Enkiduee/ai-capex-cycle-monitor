@@ -54,9 +54,25 @@ for (const [file, payload] of Object.entries(payloads)) {
 assert(hyperscalers.units && hyperscalers.units.capex === '亿美元', '云巨头 CapEx 必须以亿美元为单位');
 assert(!/(?:十|百|千|万)亿|(?:十|百|千)万/.test(JSON.stringify(payloads)), '数据文本不能使用复合中文数量级');
 
-assert(marketTurnover.version === 1, 'market-turnover.version 必须为 1');
+assert(marketTurnover.version === 2, 'market-turnover.version 必须为 2');
 assert(marketTurnover.isDemoData === false, 'market-turnover 必须明确标为真实数据');
 assert(validIso(marketTurnover.fetchedAt), 'market-turnover.fetchedAt 必须为 ISO UTC 时间');
+assert(marketTurnover.fx && marketTurnover.fx.base === 'USD', 'market-turnover.fx.base 必须为 USD');
+assert(marketTurnover.fx && marketTurnover.fx.basis === 'latest_constant_rate', 'market-turnover.fx.basis 必须为 latest_constant_rate');
+assert(typeof (marketTurnover.fx && marketTurnover.fx.sourceLabel) === 'string' && marketTurnover.fx.sourceLabel.trim(), 'market-turnover.fx.sourceLabel 不能为空');
+for (const currency of ['CNY', 'HKD']) {
+  const snapshot = marketTurnover.fx && marketTurnover.fx.rates && marketTurnover.fx.rates[currency];
+  assert(snapshot && snapshot.pair === `USD/${currency}`, `market-turnover.fx.rates.${currency}.pair 无效`);
+  assert(Number.isFinite(snapshot && snapshot.rate) && snapshot.rate > 0, `market-turnover.fx.rates.${currency}.rate 必须为正数`);
+  assert(validIso(snapshot && snapshot.quoteTime), `market-turnover.fx.rates.${currency}.quoteTime 必须为 ISO UTC 时间`);
+  assert(validIso(snapshot && snapshot.fetchedAt), `market-turnover.fx.rates.${currency}.fetchedAt 必须为 ISO UTC 时间`);
+  try {
+    const sourceUrl = new URL(snapshot && snapshot.sourceUrl);
+    assert(sourceUrl.protocol === 'https:', `market-turnover.fx.rates.${currency}.sourceUrl 必须使用 HTTPS`);
+  } catch (error) {
+    errors.push(`market-turnover.fx.rates.${currency}.sourceUrl 无效`);
+  }
+}
 for (const key of ['comparison', 'retention', 'caveat']) {
   assert(
     typeof (marketTurnover.methodology && marketTurnover.methodology[key]) === 'string'
@@ -86,7 +102,7 @@ for (const market of turnoverMarkets) {
     errors.push(`${marketId}.sourceUrl 无效`);
   }
   const observations = Array.isArray(market.observations) ? market.observations : [];
-  assert(observations.length >= 2 && observations.length <= 260, `${marketId}.observations 必须包含 2..260 条记录`);
+  assert(observations.length >= 40 && observations.length <= 260, `${marketId}.observations 必须包含 40..260 条记录，以覆盖最近一个季度`);
   assert(new Set(observations.map((item) => item.date)).size === observations.length, `${marketId}.observations 日期不能重复`);
   for (let index = 0; index < observations.length; index += 1) {
     const item = observations[index];

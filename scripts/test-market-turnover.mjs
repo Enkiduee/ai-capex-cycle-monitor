@@ -4,7 +4,8 @@ import {
   normalizeEastmoneyHkFile,
   normalizeNasdaqFile,
   normalizeSseTurnover,
-  normalizeSzseTurnover
+  normalizeSzseTurnover,
+  normalizeTurnoverFx
 } from './refresh-market-turnover.mjs';
 
 const sse = normalizeSseTurnover({
@@ -65,4 +66,17 @@ assert.deepEqual(nasdaq, [
   }
 ]);
 
-console.log('validated SSE, SZSE, HKEX, and Nasdaq daily turnover normalization');
+const cnyFx = normalizeTurnoverFx(`DATE,DEXCHUS
+2026-08-20,6.7225
+2026-08-21,6.7210`, 'CNY', '2026-08-28T08:00:00.000Z');
+assert.equal(cnyFx.pair, 'USD/CNY');
+assert.equal(cnyFx.rate, 6.721);
+assert.equal(cnyFx.quoteTime, '2026-08-21T00:00:00.000Z');
+
+const hkdFx = normalizeTurnoverFx(`DATE,DEXHKUS
+2026-08-20,7.8425
+2026-08-21,7.8397`, 'HKD', '2026-08-28T08:00:00.000Z');
+assert.equal(hkdFx.pair, 'USD/HKD');
+assert.equal(hkdFx.rate, 7.8397);
+
+console.log('validated SSE, SZSE, HKEX, Nasdaq, and USD FX normalization');

@@ -381,6 +381,24 @@
     ];
   }
 
+  function turnoverResponsiveMedia() {
+    return responsiveMedia().map(function (entry) {
+      const axisLabel = entry.option && entry.option.xAxis && entry.option.xAxis.axisLabel || {};
+      return Object.assign({}, entry, {
+        option: Object.assign({}, entry.option, {
+          xAxis: Object.assign({}, entry.option.xAxis, {
+            axisLabel: Object.assign({}, axisLabel, {
+              interval: 'auto',
+              rotate: 0,
+              hideOverlap: true,
+              formatter: function (value) { return String(value || '').slice(5); }
+            })
+          })
+        })
+      });
+    });
+  }
+
   function buildCapexModel(data, quarters) {
     if (!Array.isArray(data.companies)) {
       return null;
@@ -621,40 +639,69 @@
     }) + ' ' + unit;
   }
 
+  function turnoverFxRate(data, currency) {
+    if (currency === 'USD') return 1;
+    const rate = toFiniteNumber(data && data.fx && data.fx.rates && data.fx.rates[currency] && data.fx.rates[currency].rate);
+    return rate !== null && rate > 0 ? rate : null;
+  }
+
+  function rollingQuarterStartDate(latestDate) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(latestDate || ''))) return '';
+    const value = new Date(latestDate + 'T00:00:00.000Z');
+    const day = value.getUTCDate();
+    value.setUTCDate(1);
+    value.setUTCMonth(value.getUTCMonth() - 3);
+    const lastDay = new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth() + 1, 0)).getUTCDate();
+    value.setUTCDate(Math.min(day, lastDay));
+    return value.toISOString().slice(0, 10);
+  }
+
   function buildTurnoverModel(data) {
     if (!data || !Array.isArray(data.markets)) return null;
-    const markets = data.markets.flatMap(function (market, index) {
+    const rawMarkets = data.markets.flatMap(function (market, index) {
+      const currency = safeLabel(market.currency, '');
+      const fxRate = turnoverFxRate(data, currency);
+      if (fxRate === null) return [];
       const observations = Array.isArray(market && market.observations)
         ? market.observations
           .map(function (item) {
             return {
               date: safeLabel(item && item.date, ''),
-              turnover: toFiniteNumber(item && item.turnover)
+              turnover: toFiniteNumber(item && item.turnover),
+              turnoverUsd: toFiniteNumber(item && item.turnover) / fxRate
             };
           })
           .filter(function (item) {
-            return /^\d{4}-\d{2}-\d{2}$/.test(item.date) && item.turnover !== null && item.turnover > 0;
+            return /^\d{4}-\d{2}-\d{2}$/.test(item.date)
+              && item.turnover !== null
+              && item.turnover > 0
+              && Number.isFinite(item.turnoverUsd)
+              && item.turnoverUsd > 0;
           })
           .sort(function (left, right) { return left.date.localeCompare(right.date); })
-          .slice(-40)
         : [];
-      if (observations.length < 2) return [];
-      const baselineWindow = observations.slice(-20);
-      const baseline = baselineWindow.reduce(function (sum, item) { return sum + item.turnover; }, 0) / baselineWindow.length;
-      if (!Number.isFinite(baseline) || baseline <= 0) return [];
+      if (!observations.length) return [];
       return [{
         id: safeLabel(market.id, 'market-' + String(index + 1)),
         name: safeLabel(market.name, '市场 ' + String(index + 1)),
-        currency: safeLabel(market.currency, ''),
-        baseline: baseline,
+        currency: currency,
+        fxRate: fxRate,
         observations: observations
       }];
+    });
+    const latestDate = rawMarkets.flatMap(function (market) {
+      return market.observations.map(function (item) { return item.date; });
+    }).sort().at(-1);
+    const startDate = rollingQuarterStartDate(latestDate);
+    const markets = rawMarkets.flatMap(function (market) {
+      const observations = market.observations.filter(function (item) { return item.date >= startDate; });
+      return observations.length >= 2 ? [Object.assign({}, market, { observations: observations })] : [];
     });
     if (!markets.length) return null;
     const dates = Array.from(new Set(markets.flatMap(function (market) {
       return market.observations.map(function (item) { return item.date; });
     }))).sort();
-    return dates.length >= 2 ? { dates: dates, markets: markets } : null;
+    return dates.length >= 2 ? { dates: dates, markets: markets, startDate: startDate, endDate: latestDate } : null;
   }
 
   function buildTurnoverOption(model) {
@@ -667,28 +714,13 @@
           const item = byDate.get(date);
           if (!item) return null;
           return {
-            value: Number(((item.turnover / market.baseline) * 100).toFixed(1)),
+            value: Number((item.turnoverUsd / 1e8).toFixed(2)),
             rawTurnover: item.turnover,
+            usdTurnover: item.turnoverUsd,
             currency: market.currency
           };
         })
       });
-      if (index === 0) {
-        line.markLine = {
-          silent: true,
-          symbol: ['none', 'none'],
-          label: {
-            show: true,
-            position: 'insideEndTop',
-            formatter: '近期均值 100',
-            color: COLORS.textMuted,
-            fontFamily: MONO_FONT_FAMILY,
-            fontSize: 9
-          },
-          lineStyle: { color: COLORS.textMuted, type: 'dashed', width: 1, opacity: 0.8 },
-          data: [{ yAxis: 100 }]
-        };
-      }
       return line;
     });
 
@@ -709,24 +741,24 @@
           items.forEach(function (item) {
             lines.push(
               '● ' + safeLabel(item.seriesName, '市场') + '：'
-              + formatTurnoverAmount(item.data.rawTurnover, item.data.currency)
-              + '（' + formatDecimal(getAxisValue(item)) + '）'
+              + formatTurnoverAmount(item.data.usdTurnover, 'USD')
+              + (item.data.currency === 'USD' ? '' : ' · 原币 ' + formatTurnoverAmount(item.data.rawTurnover, item.data.currency))
             );
           });
           return lines.join('\n');
         }),
         legend: commonLegend(),
-        grid: { top: 62, right: 24, bottom: 40, left: 62, containLabel: true },
+        grid: { top: 62, right: 24, bottom: 40, left: 70, containLabel: true },
         xAxis: commonCategoryAxis(model.dates),
-        yAxis: Object.assign(commonValueAxis('近期均值 = 100'), {
-          scale: true,
+        yAxis: Object.assign(commonValueAxis('亿美元'), {
+          min: 0,
           axisLabel: Object.assign({}, commonValueAxis('').axisLabel, {
             formatter: function (value) { return formatAxisNumber(value); }
           })
         }),
         series: series
       },
-      media: responsiveMedia()
+      media: turnoverResponsiveMedia()
     };
   }
 

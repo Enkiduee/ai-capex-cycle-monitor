@@ -503,6 +503,42 @@
     }).format(scaled)} ${unit}`;
   }
 
+  function turnoverFxRate(data, currency) {
+    if (currency === 'USD') return 1;
+    const rate = toFiniteNumber(data && data.fx && data.fx.rates && data.fx.rates[currency] && data.fx.rates[currency].rate);
+    return rate !== null && rate > 0 ? rate : null;
+  }
+
+  function turnoverUsdAmount(value, currency, data) {
+    const amount = toFiniteNumber(value);
+    const rate = turnoverFxRate(data, currency);
+    return amount !== null && rate !== null ? amount / rate : null;
+  }
+
+  function rollingQuarterStartDate(latestDate) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(latestDate || ''))) return '';
+    const value = new Date(`${latestDate}T00:00:00.000Z`);
+    const day = value.getUTCDate();
+    value.setUTCDate(1);
+    value.setUTCMonth(value.getUTCMonth() - 3);
+    const lastDay = new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth() + 1, 0)).getUTCDate();
+    value.setUTCDate(Math.min(day, lastDay));
+    return value.toISOString().slice(0, 10);
+  }
+
+  function rollingQuarterObservations(observations) {
+    const latestDate = observations.at(-1)?.date;
+    const startDate = rollingQuarterStartDate(latestDate);
+    return startDate ? observations.filter((item) => item.date >= startDate) : observations;
+  }
+
+  function turnoverTableAmountMarkup(item, market, data) {
+    if (!item) return '—';
+    const usdLabel = turnoverAmountLabel(turnoverUsdAmount(item.turnover, market.currency, data), 'USD');
+    const original = market.currency === 'USD' ? '' : turnoverAmountLabel(item.turnover, market.currency);
+    return `<span class="turnover-table-primary">${escapeHTML(usdLabel)}</span>${original ? `<small class="turnover-table-original">${escapeHTML(original)}</small>` : ''}`;
+  }
+
   function signedTurnoverPercent(value) {
     const percent = toFiniteNumber(value);
     if (percent === null) return '—';
@@ -536,12 +572,15 @@
       const observations = normalizedTurnoverObservations(market);
       const latest = observations.at(-1);
       const previous = observations.at(-2);
-      const averageWindow = observations.slice(-20);
+      const averageWindow = rollingQuarterObservations(observations);
       const average = averageWindow.length
         ? averageWindow.reduce((sum, item) => sum + item.turnover, 0) / averageWindow.length
         : null;
+      const latestUsd = turnoverUsdAmount(latest && latest.turnover, market.currency, data);
+      const averageUsd = turnoverUsdAmount(average, market.currency, data);
       const dayChange = latest && previous ? ((latest.turnover / previous.turnover) - 1) * 100 : null;
       const versusAverage = latest && average ? ((latest.turnover / average) - 1) * 100 : null;
+      const originalLabel = market.currency === 'USD' || !latest ? '' : turnoverAmountLabel(latest.turnover, market.currency);
       const appearance = marketAppearance[market.id] || { emblem: String(index + 1).padStart(2, '0'), pulse: `MARKET PULSE · ${String(index + 1).padStart(2, '0')}` };
       return `
         <article class="turnover-market-card" data-market="${escapeHTML(market.id)}">
@@ -556,12 +595,15 @@
             <time datetime="${escapeHTML(latest && latest.date)}">${escapeHTML(latest ? formatDate(latest.date) : '待更新')}</time>
           </div>
           <div class="turnover-latest-row">
-            <span class="turnover-value">${escapeHTML(turnoverAmountLabel(latest && latest.turnover, market.currency))}</span>
+            <div class="turnover-value-stack">
+              <span class="turnover-value">${escapeHTML(turnoverAmountLabel(latestUsd, 'USD'))}</span>
+              ${originalLabel ? `<span class="turnover-original-value">原币 ${escapeHTML(originalLabel)}</span>` : '<span class="turnover-original-value">原币同为美元</span>'}
+            </div>
             <span class="turnover-change ${turnoverChangeClass(dayChange)}" title="较上一有效交易日">${escapeHTML(signedTurnoverPercent(dayChange))}</span>
           </div>
           <dl class="turnover-stats">
-            <div><dt>近期日均</dt><dd>${escapeHTML(turnoverAmountLabel(average, market.currency))}</dd></div>
-            <div><dt>相对近期均值</dt><dd>${escapeHTML(signedTurnoverPercent(versusAverage))}</dd></div>
+            <div><dt>季度日均（美元）</dt><dd>${escapeHTML(turnoverAmountLabel(averageUsd, 'USD'))}</dd></div>
+            <div><dt>相对季度均值</dt><dd>${escapeHTML(signedTurnoverPercent(versusAverage))}</dd></div>
           </dl>
           <p class="turnover-card-definition">${escapeHTML(market.definition)}</p>
           <span class="turnover-card-source">${turnoverSourceMarkup(market)}</span>
@@ -584,7 +626,7 @@
         <td><time datetime="${escapeHTML(date)}">${escapeHTML(formatDate(date))}</time></td>
         ${marketModels.map((market) => {
           const item = byMarketAndDate.get(`${market.id}:${date}`);
-          return `<td>${escapeHTML(item ? turnoverAmountLabel(item.turnover, market.currency) : '—')}</td>`;
+          return `<td>${turnoverTableAmountMarkup(item, market, data)}</td>`;
         }).join('')}
       </tr>
     `).join('') || '<tr><td colspan="4" class="table-empty">暂无成交额历史记录。</td></tr>';
@@ -593,7 +635,12 @@
     fetchedAt.dateTime = data.fetchedAt || data.updatedAt || '';
     fetchedAt.textContent = data.fetchedAt ? `抓取于 ${formatDate(data.fetchedAt)}` : `更新于 ${formatDate(data.updatedAt)}`;
     const methodology = data.methodology || {};
-    byId('turnover-method-copy').textContent = [methodology.comparison, methodology.caveat, methodology.retention]
+    const fxRates = data.fx && data.fx.rates || {};
+    const fxSummary = ['CNY', 'HKD'].map((currency) => {
+      const snapshot = fxRates[currency];
+      return snapshot && toFiniteNumber(snapshot.rate) !== null ? `${snapshot.pair} ${formatNumber(snapshot.rate, 4)}` : '';
+    }).filter(Boolean).join('，');
+    byId('turnover-method-copy').textContent = [methodology.comparison, fxSummary ? `当前折算汇率：${fxSummary}。` : '', methodology.caveat, methodology.retention]
       .filter(Boolean)
       .join(' ');
 

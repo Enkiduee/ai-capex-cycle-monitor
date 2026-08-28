@@ -53,6 +53,21 @@ const MARKET_METADATA = Object.freeze({
   }
 });
 
+const FX_CONFIG = Object.freeze({
+  CNY: {
+    currency: 'CNY',
+    pair: 'USD/CNY',
+    series: 'DEXCHUS',
+    sourceUrl: 'https://fred.stlouisfed.org/series/DEXCHUS'
+  },
+  HKD: {
+    currency: 'HKD',
+    pair: 'USD/HKD',
+    series: 'DEXHKUS',
+    sourceUrl: 'https://fred.stlouisfed.org/series/DEXHKUS'
+  }
+});
+
 function isoDateInTimezone(value, timezone) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: timezone,
@@ -287,6 +302,48 @@ export function normalizeNasdaqFile(text) {
   }).sort((left, right) => left.date.localeCompare(right.date));
 }
 
+export function normalizeTurnoverFx(text, currency, fetchedAt) {
+  const config = FX_CONFIG[String(currency || '').toUpperCase()];
+  if (!config) throw new Error(`不支持的成交额换算币种：${currency}`);
+  const observations = String(text || '').trim().split(/\r?\n/).slice(1).flatMap((line) => {
+    const [date, rawRate] = line.split(',');
+    const rate = Number(rawRate);
+    return /^\d{4}-\d{2}-\d{2}$/.test(date) && Number.isFinite(rate) && rate > 0 ? [{ date, rate }] : [];
+  });
+  const latest = observations.at(-1);
+  if (!latest) {
+    throw new Error(`${config.pair} 汇率或时间无效`);
+  }
+  return {
+    pair: config.pair,
+    rate: Math.round(latest.rate * 10000) / 10000,
+    quoteTime: `${latest.date}T00:00:00.000Z`,
+    fetchedAt,
+    sourceUrl: config.sourceUrl
+  };
+}
+
+async function loadFxSnapshot(fetchedAt) {
+  const entries = await Promise.all(Object.values(FX_CONFIG).map(async (config) => {
+    const url = `https://fred.stlouisfed.org/graph/fredgraph.csv?id=${encodeURIComponent(config.series)}`;
+    const text = await fetchText(url, {
+      retries: 3,
+      timeoutMs: 20000,
+      headers: {
+        'User-Agent': USER_AGENT,
+        'Accept-Language': 'en-US,en;q=0.8'
+      }
+    });
+    return [config.currency, normalizeTurnoverFx(text, config.currency, fetchedAt)];
+  }));
+  return {
+    base: 'USD',
+    basis: 'latest_constant_rate',
+    sourceLabel: 'Federal Reserve H.10 via FRED',
+    rates: Object.fromEntries(entries)
+  };
+}
+
 async function loadNasdaqObservations(referenceDate) {
   const years = [Number(referenceDate.slice(0, 4))];
   if (referenceDate.slice(5, 7) === '01') years.push(years[0] - 1);
@@ -333,20 +390,39 @@ function selectedMarkets(requested) {
 function basePayload(current) {
   const existingById = new Map((current && Array.isArray(current.markets) ? current.markets : []).map((market) => [market.id, market]));
   return {
-    version: 1,
+    version: 2,
     updatedAt: current?.updatedAt || dateOnly(now()),
     fetchedAt: current?.fetchedAt || null,
     isDemoData: false,
+    fx: current?.fx || null,
     methodology: {
-      comparison: '趋势图以各市场最近最多 20 个有效交易日的平均成交额为 100；卡片和明细表保留各市场原币种。',
+      comparison: '卡片、图表与明细表按美联储 H.10 的最新可用 USD/CNY、USD/HKD 快照统一折算为美元；A 股和港股同时保留人民币、港元原值。',
       retention: `每个市场最多保留最近 ${MAX_OBSERVATIONS} 个交易日。`,
-      caveat: '三地统计范围不同，适合观察各自流动性变化，不适合直接比较绝对金额大小。'
+      caveat: '趋势图显示滚动最近一个季度，并以恒定快照汇率排除日间汇率波动；三地统计范围仍不完全相同。'
     },
     markets: Object.keys(MARKET_METADATA).map((id) => ({
       ...MARKET_METADATA[id],
       observations: existingById.get(id)?.observations || []
     }))
   };
+}
+
+function fxFingerprint(snapshot) {
+  if (!snapshot) return '';
+  return JSON.stringify({
+    base: snapshot.base,
+    basis: snapshot.basis,
+    sourceLabel: snapshot.sourceLabel,
+    rates: Object.fromEntries(['CNY', 'HKD'].map((currency) => {
+      const rate = snapshot.rates && snapshot.rates[currency] || {};
+      return [currency, {
+        pair: rate.pair,
+        rate: rate.rate,
+        quoteTime: rate.quoteTime,
+        sourceUrl: rate.sourceUrl
+      }];
+    }))
+  });
 }
 
 export async function refreshMarketTurnover(options = {}) {
@@ -363,6 +439,17 @@ export async function refreshMarketTurnover(options = {}) {
   const next = basePayload(current);
   const marketById = new Map(next.markets.map((market) => [market.id, market]));
   const updatedMarkets = [];
+  const previousFx = next.fx;
+  const previousFxFingerprint = fxFingerprint(previousFx);
+
+  try {
+    next.fx = await loadFxSnapshot(checkedAt);
+  } catch (error) {
+    if (!next.fx) throw new Error(`美元换算汇率不可用，拒绝写入不完整数据：${error.message}`);
+    console.warn(`[turnover] 汇率抓取失败，继续使用最近有效快照：${error.message}`);
+  }
+  const fxChanged = fxFingerprint(next.fx) !== previousFxFingerprint;
+  if (!fxChanged && previousFx) next.fx = previousFx;
 
   for (const marketId of targets) {
     const market = marketById.get(marketId);
@@ -402,7 +489,7 @@ export async function refreshMarketTurnover(options = {}) {
     throw new Error('三地市场至少各需要一条有效成交额记录，未写入不完整数据。');
   }
 
-  if (!updatedMarkets.length) {
+  if (!updatedMarkets.length && !fxChanged) {
     await setActionOutput('changed', false);
     await setActionOutput('markets', targets.join(','));
     await setActionOutput('latest_dates', next.markets.map((market) => `${market.id}:${market.observations.at(-1)?.date}`).join(','));
@@ -412,6 +499,7 @@ export async function refreshMarketTurnover(options = {}) {
       backfill,
       dryRun,
       updatedMarkets: [],
+      fxChanged: false,
       changed: false,
       reason: 'no-new-turnover-records'
     }, null, 2));
@@ -432,6 +520,7 @@ export async function refreshMarketTurnover(options = {}) {
     backfill,
     dryRun,
     updatedMarkets,
+    fxChanged,
     changed,
     latestDates: Object.fromEntries(next.markets.map((market) => [market.id, market.observations.at(-1)?.date]))
   }, null, 2));

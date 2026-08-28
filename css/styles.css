@@ -1915,6 +1915,10 @@ a:hover {
   margin-top: 22px;
 }
 
+.turnover-value-stack {
+  min-width: 0;
+}
+
 .turnover-value {
   display: block;
   overflow-wrap: anywhere;
@@ -1923,6 +1927,16 @@ a:hover {
   font-weight: 800;
   letter-spacing: -0.045em;
   line-height: 1;
+}
+
+.turnover-original-value {
+  display: block;
+  margin-top: 8px;
+  color: color-mix(in srgb, var(--turnover-glow) 62%, var(--text-secondary));
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.015em;
 }
 
 .turnover-change {
@@ -2046,6 +2060,18 @@ a:hover {
 .turnover-history-table td:not(:first-child) {
   font-family: var(--font-mono);
   font-weight: 700;
+}
+
+.turnover-table-primary,
+.turnover-table-original {
+  display: block;
+}
+
+.turnover-table-original {
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 650;
 }
 
 .turnover-history-table td:first-child {

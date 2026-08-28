@@ -1,12 +1,33 @@
 {
-  "version": 1,
+  "version": 2,
   "updatedAt": "2026-08-28",
-  "fetchedAt": "2026-08-28T08:41:27.900Z",
+  "fetchedAt": "2026-08-28T09:01:12.350Z",
   "isDemoData": false,
+  "fx": {
+    "base": "USD",
+    "basis": "latest_constant_rate",
+    "sourceLabel": "Federal Reserve H.10 via FRED",
+    "rates": {
+      "CNY": {
+        "pair": "USD/CNY",
+        "rate": 6.721,
+        "quoteTime": "2026-08-21T00:00:00.000Z",
+        "fetchedAt": "2026-08-28T09:01:12.350Z",
+        "sourceUrl": "https://fred.stlouisfed.org/series/DEXCHUS"
+      },
+      "HKD": {
+        "pair": "USD/HKD",
+        "rate": 7.8397,
+        "quoteTime": "2026-08-21T00:00:00.000Z",
+        "fetchedAt": "2026-08-28T09:01:12.350Z",
+        "sourceUrl": "https://fred.stlouisfed.org/series/DEXHKUS"
+      }
+    }
+  },
   "methodology": {
-    "comparison": "趋势图以各市场最近最多 20 个有效交易日的平均成交额为 100；卡片和明细表保留各市场原币种。",
+    "comparison": "卡片、图表与明细表按美联储 H.10 的最新可用 USD/CNY、USD/HKD 快照统一折算为美元；A 股和港股同时保留人民币、港元原值。",
     "retention": "每个市场最多保留最近 260 个交易日。",
-    "caveat": "三地统计范围不同，适合观察各自流动性变化，不适合直接比较绝对金额大小。"
+    "caveat": "趋势图显示滚动最近一个季度，并以恒定快照汇率排除日间汇率波动；三地统计范围仍不完全相同。"
   },
   "markets": [
     {
@@ -20,6 +41,411 @@
       "sourceUrl": "https://www.sse.com.cn/market/stockdata/overview/day/",
       "secondarySourceUrl": "https://www.szse.cn/market/stock/situation/daily/index.html",
       "observations": [
+        {
+          "date": "2026-05-28",
+          "turnover": 2969959000000,
+          "breakdown": {
+            "sseMainBoardA": 892884000000,
+            "sseStarMarket": 469482000000,
+            "szseStocks": 1607593000000
+          }
+        },
+        {
+          "date": "2026-05-29",
+          "turnover": 3320626000000,
+          "breakdown": {
+            "sseMainBoardA": 1035157000000,
+            "sseStarMarket": 497513000000,
+            "szseStocks": 1787956000000
+          }
+        },
+        {
+          "date": "2026-06-01",
+          "turnover": 2878520000000,
+          "breakdown": {
+            "sseMainBoardA": 896372000000,
+            "sseStarMarket": 423710000000,
+            "szseStocks": 1558438000000
+          }
+        },
+        {
+          "date": "2026-06-02",
+          "turnover": 2793925000000,
+          "breakdown": {
+            "sseMainBoardA": 904681000000,
+            "sseStarMarket": 376398000000,
+            "szseStocks": 1512846000000
+          }
+        },
+        {
+          "date": "2026-06-03",
+          "turnover": 3133506000000,
+          "breakdown": {
+            "sseMainBoardA": 977599000000,
+            "sseStarMarket": 454168000000,
+            "szseStocks": 1701739000000
+          }
+        },
+        {
+          "date": "2026-06-04",
+          "turnover": 2763789000000,
+          "breakdown": {
+            "sseMainBoardA": 890945000000,
+            "sseStarMarket": 386867000000,
+            "szseStocks": 1485977000000
+          }
+        },
+        {
+          "date": "2026-06-05",
+          "turnover": 3070413000000,
+          "breakdown": {
+            "sseMainBoardA": 947602000000,
+            "sseStarMarket": 416730000000,
+            "szseStocks": 1706081000000
+          }
+        },
+        {
+          "date": "2026-06-08",
+          "turnover": 2793612000000,
+          "breakdown": {
+            "sseMainBoardA": 884452000000,
+            "sseStarMarket": 383259000000,
+            "szseStocks": 1525901000000
+          }
+        },
+        {
+          "date": "2026-06-09",
+          "turnover": 2642520000000,
+          "breakdown": {
+            "sseMainBoardA": 801795000000,
+            "sseStarMarket": 372755000000,
+            "szseStocks": 1467970000000
+          }
+        },
+        {
+          "date": "2026-06-10",
+          "turnover": 2621164000000,
+          "breakdown": {
+            "sseMainBoardA": 829386000000,
+            "sseStarMarket": 398830000000,
+            "szseStocks": 1392948000000
+          }
+        },
+        {
+          "date": "2026-06-11",
+          "turnover": 2554120000000,
+          "breakdown": {
+            "sseMainBoardA": 799996000000,
+            "sseStarMarket": 386548000000,
+            "szseStocks": 1367576000000
+          }
+        },
+        {
+          "date": "2026-06-12",
+          "turnover": 3219450000000,
+          "breakdown": {
+            "sseMainBoardA": 1024650000000,
+            "sseStarMarket": 515202000000,
+            "szseStocks": 1679598000000
+          }
+        },
+        {
+          "date": "2026-06-15",
+          "turnover": 3033936000000,
+          "breakdown": {
+            "sseMainBoardA": 964047000000,
+            "sseStarMarket": 440913000000,
+            "szseStocks": 1628976000000
+          }
+        },
+        {
+          "date": "2026-06-16",
+          "turnover": 3066841000000,
+          "breakdown": {
+            "sseMainBoardA": 926448000000,
+            "sseStarMarket": 444372000000,
+            "szseStocks": 1696021000000
+          }
+        },
+        {
+          "date": "2026-06-17",
+          "turnover": 3094138000000,
+          "breakdown": {
+            "sseMainBoardA": 927302000000,
+            "sseStarMarket": 476569000000,
+            "szseStocks": 1690267000000
+          }
+        },
+        {
+          "date": "2026-06-18",
+          "turnover": 3311941000000,
+          "breakdown": {
+            "sseMainBoardA": 1032191000000,
+            "sseStarMarket": 528745000000,
+            "szseStocks": 1751005000000
+          }
+        },
+        {
+          "date": "2026-06-22",
+          "turnover": 3738983000000,
+          "breakdown": {
+            "sseMainBoardA": 1146989000000,
+            "sseStarMarket": 557631000000,
+            "szseStocks": 2034363000000
+          }
+        },
+        {
+          "date": "2026-06-23",
+          "turnover": 3443873000000,
+          "breakdown": {
+            "sseMainBoardA": 1112718000000,
+            "sseStarMarket": 482949000000,
+            "szseStocks": 1848206000000
+          }
+        },
+        {
+          "date": "2026-06-24",
+          "turnover": 3288015000000,
+          "breakdown": {
+            "sseMainBoardA": 1006557000000,
+            "sseStarMarket": 509314000000,
+            "szseStocks": 1772144000000
+          }
+        },
+        {
+          "date": "2026-06-25",
+          "turnover": 3597829000000,
+          "breakdown": {
+            "sseMainBoardA": 1062947000000,
+            "sseStarMarket": 558070000000,
+            "szseStocks": 1976812000000
+          }
+        },
+        {
+          "date": "2026-06-26",
+          "turnover": 3554277000000,
+          "breakdown": {
+            "sseMainBoardA": 1082152000000,
+            "sseStarMarket": 539785000000,
+            "szseStocks": 1932340000000
+          }
+        },
+        {
+          "date": "2026-06-29",
+          "turnover": 3520353000000,
+          "breakdown": {
+            "sseMainBoardA": 1060741000000,
+            "sseStarMarket": 606842000000,
+            "szseStocks": 1852770000000
+          }
+        },
+        {
+          "date": "2026-06-30",
+          "turnover": 3278071000000,
+          "breakdown": {
+            "sseMainBoardA": 941909000000,
+            "sseStarMarket": 589944000000,
+            "szseStocks": 1746218000000
+          }
+        },
+        {
+          "date": "2026-07-01",
+          "turnover": 3662751000000,
+          "breakdown": {
+            "sseMainBoardA": 1068184000000,
+            "sseStarMarket": 630751000000,
+            "szseStocks": 1963816000000
+          }
+        },
+        {
+          "date": "2026-07-02",
+          "turnover": 3452217000000,
+          "breakdown": {
+            "sseMainBoardA": 994942000000,
+            "sseStarMarket": 582605000000,
+            "szseStocks": 1874670000000
+          }
+        },
+        {
+          "date": "2026-07-03",
+          "turnover": 3185382000000,
+          "breakdown": {
+            "sseMainBoardA": 952967000000,
+            "sseStarMarket": 513692000000,
+            "szseStocks": 1718723000000
+          }
+        },
+        {
+          "date": "2026-07-06",
+          "turnover": 3094568000000,
+          "breakdown": {
+            "sseMainBoardA": 923481000000,
+            "sseStarMarket": 509510000000,
+            "szseStocks": 1661577000000
+          }
+        },
+        {
+          "date": "2026-07-07",
+          "turnover": 2585024000000,
+          "breakdown": {
+            "sseMainBoardA": 765623000000,
+            "sseStarMarket": 432489000000,
+            "szseStocks": 1386912000000
+          }
+        },
+        {
+          "date": "2026-07-08",
+          "turnover": 2568088000000,
+          "breakdown": {
+            "sseMainBoardA": 741103000000,
+            "sseStarMarket": 454449000000,
+            "szseStocks": 1372536000000
+          }
+        },
+        {
+          "date": "2026-07-09",
+          "turnover": 2917919000000,
+          "breakdown": {
+            "sseMainBoardA": 827953000000,
+            "sseStarMarket": 538448000000,
+            "szseStocks": 1551518000000
+          }
+        },
+        {
+          "date": "2026-07-10",
+          "turnover": 3392553000000,
+          "breakdown": {
+            "sseMainBoardA": 960399000000,
+            "sseStarMarket": 603934000000,
+            "szseStocks": 1828220000000
+          }
+        },
+        {
+          "date": "2026-07-13",
+          "turnover": 2820782000000,
+          "breakdown": {
+            "sseMainBoardA": 820823000000,
+            "sseStarMarket": 515377000000,
+            "szseStocks": 1484582000000
+          }
+        },
+        {
+          "date": "2026-07-14",
+          "turnover": 2708119000000,
+          "breakdown": {
+            "sseMainBoardA": 802309000000,
+            "sseStarMarket": 470961000000,
+            "szseStocks": 1434849000000
+          }
+        },
+        {
+          "date": "2026-07-15",
+          "turnover": 2573146000000,
+          "breakdown": {
+            "sseMainBoardA": 800489000000,
+            "sseStarMarket": 426569000000,
+            "szseStocks": 1346088000000
+          }
+        },
+        {
+          "date": "2026-07-16",
+          "turnover": 2407544000000,
+          "breakdown": {
+            "sseMainBoardA": 715173000000,
+            "sseStarMarket": 409817000000,
+            "szseStocks": 1282554000000
+          }
+        },
+        {
+          "date": "2026-07-17",
+          "turnover": 2657609000000,
+          "breakdown": {
+            "sseMainBoardA": 792373000000,
+            "sseStarMarket": 455382000000,
+            "szseStocks": 1409854000000
+          }
+        },
+        {
+          "date": "2026-07-20",
+          "turnover": 2703875000000,
+          "breakdown": {
+            "sseMainBoardA": 850089000000,
+            "sseStarMarket": 445547000000,
+            "szseStocks": 1408239000000
+          }
+        },
+        {
+          "date": "2026-07-21",
+          "turnover": 2960431000000,
+          "breakdown": {
+            "sseMainBoardA": 910066000000,
+            "sseStarMarket": 488280000000,
+            "szseStocks": 1562085000000
+          }
+        },
+        {
+          "date": "2026-07-22",
+          "turnover": 2655565000000,
+          "breakdown": {
+            "sseMainBoardA": 818634000000,
+            "sseStarMarket": 440473000000,
+            "szseStocks": 1396458000000
+          }
+        },
+        {
+          "date": "2026-07-23",
+          "turnover": 2197875000000,
+          "breakdown": {
+            "sseMainBoardA": 709279000000,
+            "sseStarMarket": 317499000000,
+            "szseStocks": 1171097000000
+          }
+        },
+        {
+          "date": "2026-07-24",
+          "turnover": 1933010000000,
+          "breakdown": {
+            "sseMainBoardA": 626715000000,
+            "sseStarMarket": 289415000000,
+            "szseStocks": 1016880000000
+          }
+        },
+        {
+          "date": "2026-07-27",
+          "turnover": 2079402000000,
+          "breakdown": {
+            "sseMainBoardA": 591097000000,
+            "sseStarMarket": 441919000000,
+            "szseStocks": 1046386000000
+          }
+        },
+        {
+          "date": "2026-07-28",
+          "turnover": 2027713000000,
+          "breakdown": {
+            "sseMainBoardA": 592444000000,
+            "sseStarMarket": 358458000000,
+            "szseStocks": 1076811000000
+          }
+        },
+        {
+          "date": "2026-07-29",
+          "turnover": 2298801000000,
+          "breakdown": {
+            "sseMainBoardA": 697892000000,
+            "sseStarMarket": 390640000000,
+            "szseStocks": 1210269000000
+          }
+        },
+        {
+          "date": "2026-07-30",
+          "turnover": 2345110000000,
+          "breakdown": {
+            "sseMainBoardA": 718731000000,
+            "sseStarMarket": 389020000000,
+            "szseStocks": 1237359000000
+          }
+        },
         {
           "date": "2026-07-31",
           "turnover": 2545105000000,
@@ -222,6 +648,328 @@
       "sourceUrl": "https://quote.eastmoney.com/zsHSI.html",
       "observations": [
         {
+          "date": "2026-05-27",
+          "turnover": 320758185984,
+          "breakdown": {
+            "shareVolume": 17481873920
+          }
+        },
+        {
+          "date": "2026-05-28",
+          "turnover": 356344627200,
+          "breakdown": {
+            "shareVolume": 20306392576
+          }
+        },
+        {
+          "date": "2026-05-29",
+          "turnover": 462070120448,
+          "breakdown": {
+            "shareVolume": 29725484800
+          }
+        },
+        {
+          "date": "2026-06-01",
+          "turnover": 330936778752,
+          "breakdown": {
+            "shareVolume": 17994034944
+          }
+        },
+        {
+          "date": "2026-06-02",
+          "turnover": 373780054016,
+          "breakdown": {
+            "shareVolume": 16614816256
+          }
+        },
+        {
+          "date": "2026-06-03",
+          "turnover": 322921037824,
+          "breakdown": {
+            "shareVolume": 16077718272
+          }
+        },
+        {
+          "date": "2026-06-04",
+          "turnover": 270230405120,
+          "breakdown": {
+            "shareVolume": 14686990336
+          }
+        },
+        {
+          "date": "2026-06-05",
+          "turnover": 342805381120,
+          "breakdown": {
+            "shareVolume": 17020122112
+          }
+        },
+        {
+          "date": "2026-06-08",
+          "turnover": 363974721536,
+          "breakdown": {
+            "shareVolume": 18050322432
+          }
+        },
+        {
+          "date": "2026-06-09",
+          "turnover": 308916060160,
+          "breakdown": {
+            "shareVolume": 15035716352
+          }
+        },
+        {
+          "date": "2026-06-10",
+          "turnover": 320553877504,
+          "breakdown": {
+            "shareVolume": 17427034112
+          }
+        },
+        {
+          "date": "2026-06-11",
+          "turnover": 288573751296,
+          "breakdown": {
+            "shareVolume": 16546173952
+          }
+        },
+        {
+          "date": "2026-06-12",
+          "turnover": 316438282240,
+          "breakdown": {
+            "shareVolume": 16655015168
+          }
+        },
+        {
+          "date": "2026-06-15",
+          "turnover": 283353415680,
+          "breakdown": {
+            "shareVolume": 14719329792
+          }
+        },
+        {
+          "date": "2026-06-16",
+          "turnover": 249884950528,
+          "breakdown": {
+            "shareVolume": 13800492544
+          }
+        },
+        {
+          "date": "2026-06-17",
+          "turnover": 270412070912,
+          "breakdown": {
+            "shareVolume": 14046734080
+          }
+        },
+        {
+          "date": "2026-06-18",
+          "turnover": 358714540032,
+          "breakdown": {
+            "shareVolume": 19580929280
+          }
+        },
+        {
+          "date": "2026-06-22",
+          "turnover": 348616491008,
+          "breakdown": {
+            "shareVolume": 18165251072
+          }
+        },
+        {
+          "date": "2026-06-23",
+          "turnover": 334361231360,
+          "breakdown": {
+            "shareVolume": 15860300032
+          }
+        },
+        {
+          "date": "2026-06-24",
+          "turnover": 322918154240,
+          "breakdown": {
+            "shareVolume": 14352201216
+          }
+        },
+        {
+          "date": "2026-06-25",
+          "turnover": 325784666112,
+          "breakdown": {
+            "shareVolume": 17599742720
+          }
+        },
+        {
+          "date": "2026-06-26",
+          "turnover": 342100770816,
+          "breakdown": {
+            "shareVolume": 17811806720
+          }
+        },
+        {
+          "date": "2026-06-29",
+          "turnover": 315378597888,
+          "breakdown": {
+            "shareVolume": 15044810240
+          }
+        },
+        {
+          "date": "2026-06-30",
+          "turnover": 308049543168,
+          "breakdown": {
+            "shareVolume": 18162985216
+          }
+        },
+        {
+          "date": "2026-07-02",
+          "turnover": 369633001472,
+          "breakdown": {
+            "shareVolume": 16288741376
+          }
+        },
+        {
+          "date": "2026-07-03",
+          "turnover": 304953851904,
+          "breakdown": {
+            "shareVolume": 15093113856
+          }
+        },
+        {
+          "date": "2026-07-06",
+          "turnover": 314717405184,
+          "breakdown": {
+            "shareVolume": 13056514816
+          }
+        },
+        {
+          "date": "2026-07-07",
+          "turnover": 319711051776,
+          "breakdown": {
+            "shareVolume": 13708316160
+          }
+        },
+        {
+          "date": "2026-07-08",
+          "turnover": 375835066368,
+          "breakdown": {
+            "shareVolume": 14896385280
+          }
+        },
+        {
+          "date": "2026-07-09",
+          "turnover": 377247531008,
+          "breakdown": {
+            "shareVolume": 13513894400
+          }
+        },
+        {
+          "date": "2026-07-10",
+          "turnover": 339592380416,
+          "breakdown": {
+            "shareVolume": 14427890432
+          }
+        },
+        {
+          "date": "2026-07-13",
+          "turnover": 309514600448,
+          "breakdown": {
+            "shareVolume": 13065609472
+          }
+        },
+        {
+          "date": "2026-07-14",
+          "turnover": 312915558400,
+          "breakdown": {
+            "shareVolume": 15072688384
+          }
+        },
+        {
+          "date": "2026-07-15",
+          "turnover": 304297148416,
+          "breakdown": {
+            "shareVolume": 13401802752
+          }
+        },
+        {
+          "date": "2026-07-16",
+          "turnover": 322892431360,
+          "breakdown": {
+            "shareVolume": 15218924288
+          }
+        },
+        {
+          "date": "2026-07-17",
+          "turnover": 347325300736,
+          "breakdown": {
+            "shareVolume": 19798990592
+          }
+        },
+        {
+          "date": "2026-07-20",
+          "turnover": 306413338624,
+          "breakdown": {
+            "shareVolume": 13605786112
+          }
+        },
+        {
+          "date": "2026-07-21",
+          "turnover": 289942667264,
+          "breakdown": {
+            "shareVolume": 13521088256
+          }
+        },
+        {
+          "date": "2026-07-22",
+          "turnover": 312763088896,
+          "breakdown": {
+            "shareVolume": 14050333440
+          }
+        },
+        {
+          "date": "2026-07-23",
+          "turnover": 233480355840,
+          "breakdown": {
+            "shareVolume": 11322240256
+          }
+        },
+        {
+          "date": "2026-07-24",
+          "turnover": 209876828160,
+          "breakdown": {
+            "shareVolume": 11816349696
+          }
+        },
+        {
+          "date": "2026-07-27",
+          "turnover": 210499944448,
+          "breakdown": {
+            "shareVolume": 11182573056
+          }
+        },
+        {
+          "date": "2026-07-28",
+          "turnover": 250632536064,
+          "breakdown": {
+            "shareVolume": 14511961856
+          }
+        },
+        {
+          "date": "2026-07-29",
+          "turnover": 312233295872,
+          "breakdown": {
+            "shareVolume": 13952327680
+          }
+        },
+        {
+          "date": "2026-07-30",
+          "turnover": 304894246912,
+          "breakdown": {
+            "shareVolume": 14030452224
+          }
+        },
+        {
+          "date": "2026-07-31",
+          "turnover": 328177680384,
+          "breakdown": {
+            "shareVolume": 15476219392
+          }
+        },
+        {
           "date": "2026-08-03",
           "turnover": 255178948608,
           "breakdown": {
@@ -373,6 +1121,328 @@
       "sourceLabel": "Nasdaq Trader Daily Market Statistics",
       "sourceUrl": "https://www.nasdaqtrader.com/Trader.aspx?id=DailyMarketFiles",
       "observations": [
+        {
+          "date": "2026-05-21",
+          "turnover": 516636468691,
+          "breakdown": {
+            "shareVolume": 8895646420
+          }
+        },
+        {
+          "date": "2026-05-22",
+          "turnover": 484510579639,
+          "breakdown": {
+            "shareVolume": 9516331286
+          }
+        },
+        {
+          "date": "2026-05-26",
+          "turnover": 602959819275,
+          "breakdown": {
+            "shareVolume": 10116496863
+          }
+        },
+        {
+          "date": "2026-05-27",
+          "turnover": 582089180184,
+          "breakdown": {
+            "shareVolume": 9575950123
+          }
+        },
+        {
+          "date": "2026-05-28",
+          "turnover": 578877435738,
+          "breakdown": {
+            "shareVolume": 9597508084
+          }
+        },
+        {
+          "date": "2026-05-29",
+          "turnover": 794775621703,
+          "breakdown": {
+            "shareVolume": 12430448876
+          }
+        },
+        {
+          "date": "2026-06-01",
+          "turnover": 651945517720,
+          "breakdown": {
+            "shareVolume": 10551985123
+          }
+        },
+        {
+          "date": "2026-06-02",
+          "turnover": 639045486356,
+          "breakdown": {
+            "shareVolume": 10114433086
+          }
+        },
+        {
+          "date": "2026-06-03",
+          "turnover": 651715760279,
+          "breakdown": {
+            "shareVolume": 9780022413
+          }
+        },
+        {
+          "date": "2026-06-04",
+          "turnover": 626369641496,
+          "breakdown": {
+            "shareVolume": 9442227051
+          }
+        },
+        {
+          "date": "2026-06-05",
+          "turnover": 783043268454,
+          "breakdown": {
+            "shareVolume": 11984054017
+          }
+        },
+        {
+          "date": "2026-06-08",
+          "turnover": 580160119433,
+          "breakdown": {
+            "shareVolume": 10609665636
+          }
+        },
+        {
+          "date": "2026-06-09",
+          "turnover": 730836082772,
+          "breakdown": {
+            "shareVolume": 12593400434
+          }
+        },
+        {
+          "date": "2026-06-10",
+          "turnover": 591114165811,
+          "breakdown": {
+            "shareVolume": 9976236020
+          }
+        },
+        {
+          "date": "2026-06-11",
+          "turnover": 649042978970,
+          "breakdown": {
+            "shareVolume": 10532677579
+          }
+        },
+        {
+          "date": "2026-06-12",
+          "turnover": 646381999976,
+          "breakdown": {
+            "shareVolume": 10690873546
+          }
+        },
+        {
+          "date": "2026-06-15",
+          "turnover": 653417677644,
+          "breakdown": {
+            "shareVolume": 11120184813
+          }
+        },
+        {
+          "date": "2026-06-16",
+          "turnover": 641460762707,
+          "breakdown": {
+            "shareVolume": 11801606916
+          }
+        },
+        {
+          "date": "2026-06-17",
+          "turnover": 646625580150,
+          "breakdown": {
+            "shareVolume": 12243887324
+          }
+        },
+        {
+          "date": "2026-06-18",
+          "turnover": 1083425417973,
+          "breakdown": {
+            "shareVolume": 19322600233
+          }
+        },
+        {
+          "date": "2026-06-22",
+          "turnover": 679140097329,
+          "breakdown": {
+            "shareVolume": 13516224919
+          }
+        },
+        {
+          "date": "2026-06-23",
+          "turnover": 684657022283,
+          "breakdown": {
+            "shareVolume": 15535596849
+          }
+        },
+        {
+          "date": "2026-06-24",
+          "turnover": 646048443632,
+          "breakdown": {
+            "shareVolume": 15903482010
+          }
+        },
+        {
+          "date": "2026-06-25",
+          "turnover": 717182726458,
+          "breakdown": {
+            "shareVolume": 10303874045
+          }
+        },
+        {
+          "date": "2026-06-26",
+          "turnover": 1156071562196,
+          "breakdown": {
+            "shareVolume": 17753274687
+          }
+        },
+        {
+          "date": "2026-06-29",
+          "turnover": 662868642383,
+          "breakdown": {
+            "shareVolume": 10162867115
+          }
+        },
+        {
+          "date": "2026-06-30",
+          "turnover": 656760770910,
+          "breakdown": {
+            "shareVolume": 10342514645
+          }
+        },
+        {
+          "date": "2026-07-01",
+          "turnover": 659341391598,
+          "breakdown": {
+            "shareVolume": 9505644158
+          }
+        },
+        {
+          "date": "2026-07-02",
+          "turnover": 678067436234,
+          "breakdown": {
+            "shareVolume": 9980018179
+          }
+        },
+        {
+          "date": "2026-07-06",
+          "turnover": 541405275280,
+          "breakdown": {
+            "shareVolume": 8177830790
+          }
+        },
+        {
+          "date": "2026-07-07",
+          "turnover": 560508574487,
+          "breakdown": {
+            "shareVolume": 8511292635
+          }
+        },
+        {
+          "date": "2026-07-08",
+          "turnover": 496377590250,
+          "breakdown": {
+            "shareVolume": 8174141541
+          }
+        },
+        {
+          "date": "2026-07-09",
+          "turnover": 521436129671,
+          "breakdown": {
+            "shareVolume": 7679304910
+          }
+        },
+        {
+          "date": "2026-07-10",
+          "turnover": 445786026959,
+          "breakdown": {
+            "shareVolume": 7333367491
+          }
+        },
+        {
+          "date": "2026-07-13",
+          "turnover": 474747651977,
+          "breakdown": {
+            "shareVolume": 7480499611
+          }
+        },
+        {
+          "date": "2026-07-14",
+          "turnover": 456582467601,
+          "breakdown": {
+            "shareVolume": 7699304483
+          }
+        },
+        {
+          "date": "2026-07-15",
+          "turnover": 540254906139,
+          "breakdown": {
+            "shareVolume": 7644884775
+          }
+        },
+        {
+          "date": "2026-07-16",
+          "turnover": 546637732625,
+          "breakdown": {
+            "shareVolume": 8585221949
+          }
+        },
+        {
+          "date": "2026-07-17",
+          "turnover": 607315630716,
+          "breakdown": {
+            "shareVolume": 8076531719
+          }
+        },
+        {
+          "date": "2026-07-20",
+          "turnover": 432670272522,
+          "breakdown": {
+            "shareVolume": 7428106708
+          }
+        },
+        {
+          "date": "2026-07-21",
+          "turnover": 484121460690,
+          "breakdown": {
+            "shareVolume": 8418629238
+          }
+        },
+        {
+          "date": "2026-07-22",
+          "turnover": 438814420485,
+          "breakdown": {
+            "shareVolume": 7763905847
+          }
+        },
+        {
+          "date": "2026-07-23",
+          "turnover": 533872115396,
+          "breakdown": {
+            "shareVolume": 7894806126
+          }
+        },
+        {
+          "date": "2026-07-24",
+          "turnover": 478748613588,
+          "breakdown": {
+            "shareVolume": 7564615554
+          }
+        },
+        {
+          "date": "2026-07-27",
+          "turnover": 529767227321,
+          "breakdown": {
+            "shareVolume": 8103955715
+          }
+        },
+        {
+          "date": "2026-07-28",
+          "turnover": 574270069380,
+          "breakdown": {
+            "shareVolume": 8896485102
+          }
+        },
         {
           "date": "2026-07-29",
           "turnover": 606248781292,
