@@ -1638,7 +1638,7 @@ a:hover {
   border-radius: 24px;
   background:
     linear-gradient(90deg, rgb(6 13 22 / 8%) 0 25%, rgb(7 13 24 / 80%) 43%, rgb(7 13 24 / 90%) 72%, rgb(7 13 24 / 62%) 100%),
-    url("../assets/readme-anime-banner.png") 50% center / cover no-repeat;
+    url("../assets/turnover-rin-banner.png") 50% center / cover no-repeat;
   box-shadow: 0 24px 70px rgb(0 0 0 / 35%), inset 0 0 0 1px rgb(255 255 255 / 4%);
   isolation: isolate;
 }
@@ -4737,7 +4737,7 @@ a.buy-zone-reference:focus-visible {
     border-radius: 20px;
     background:
       linear-gradient(180deg, rgb(5 11 19 / 2%) 0 35%, rgb(6 12 21 / 77%) 58%, rgb(6 12 21 / 96%) 83%),
-      url("../assets/readme-anime-banner.png") 18% center / auto 100% no-repeat;
+      url("../assets/turnover-rin-banner.png") 18% center / auto 100% no-repeat;
   }
 
   .turnover-hero-copy {
