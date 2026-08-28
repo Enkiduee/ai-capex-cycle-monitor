@@ -74,6 +74,7 @@ routes.forEach((route, index) => {
 assert(html.includes('class="brand" href="#/overview"'), '品牌入口必须返回 #/overview');
 assert(html.includes('id="main-content" class="dashboard-shell" tabindex="-1"'), 'main 必须可由跳过链接聚焦');
 assert(html.includes('document.documentElement.dataset.initialRoute'), 'head 中必须预先标记首屏路由，避免长页面闪烁');
+assert(html.includes('./js/charts.js?v=') && html.includes('./js/app.js?v='), '核心前端脚本必须带发布版本，避免 GitHub Pages 缓存旧图表逻辑');
 assert(!/<a\b[^>]*href="#(?:overview|hyperscalers|turnover|supply-chain|insider-sales|macro|events|methodology)"/.test(html), '不能保留旧式页面路由 hash');
 assert(app.includes("window.addEventListener('hashchange'"), 'app.js 必须处理浏览器前进/后退');
 assert(app.includes("link.setAttribute('aria-current', 'page')"), 'app.js 必须同步 aria-current');
