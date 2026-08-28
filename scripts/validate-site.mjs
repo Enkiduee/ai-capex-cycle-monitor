@@ -5,6 +5,7 @@ import { ROOT_DIR } from './lib/refresh-utils.mjs';
 const routes = [
   { id: 'overview', titleId: 'overview-title' },
   { id: 'hyperscalers', titleId: 'hyperscalers-title' },
+  { id: 'turnover', titleId: 'turnover-title' },
   { id: 'supply-chain', titleId: 'supply-chain-title' },
   { id: 'insider-sales', titleId: 'insider-sales-title' },
   { id: 'macro', titleId: 'macro-title' },
@@ -73,10 +74,15 @@ routes.forEach((route, index) => {
 assert(html.includes('class="brand" href="#/overview"'), '品牌入口必须返回 #/overview');
 assert(html.includes('id="main-content" class="dashboard-shell" tabindex="-1"'), 'main 必须可由跳过链接聚焦');
 assert(html.includes('document.documentElement.dataset.initialRoute'), 'head 中必须预先标记首屏路由，避免长页面闪烁');
-assert(!/<a\b[^>]*href="#(?:overview|hyperscalers|supply-chain|insider-sales|macro|events|methodology)"/.test(html), '不能保留旧式页面路由 hash');
+assert(!/<a\b[^>]*href="#(?:overview|hyperscalers|turnover|supply-chain|insider-sales|macro|events|methodology)"/.test(html), '不能保留旧式页面路由 hash');
 assert(app.includes("window.addEventListener('hashchange'"), 'app.js 必须处理浏览器前进/后退');
 assert(app.includes("link.setAttribute('aria-current', 'page')"), 'app.js 必须同步 aria-current');
 assert(app.includes('chartApi.resizeAll()'), '进入图表视图后必须触发 ECharts resize');
+assert(app.includes("marketTurnover: { path: './data/market-turnover.json'"), '前端必须加载每日成交额快照');
+assert(app.includes('function renderMarketTurnover(data)'), '前端必须渲染三地市场每日成交额');
+assert(html.includes('id="market-turnover-chart"') && html.includes('id="turnover-history-body"'), '每日成交额视图必须包含趋势图与历史明细表');
+assert(charts.includes('initTurnoverChart'), '图表模块必须绘制成交额相对近期均值趋势');
+assert(styles.includes('.turnover-market-grid') && styles.includes('.turnover-history-table'), 'CSS 缺少每日成交额核心样式');
 assert(app.includes('renderSelectedValuation({ forceChart: true })'), '进入供应链视图后必须刷新 TradingView');
 assert(app.includes('calculatePePriceModel'), '估值页面必须从 EPS 与 P/E 计算价格带');
 assert(app.includes('normalizeResearchBands'), '估值页面必须校验人工财报/指引研究区间');

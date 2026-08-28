@@ -1,27 +1,29 @@
-name: Refresh A-share and US market quotes
+name: Refresh daily market turnover
 
 on:
   schedule:
-    - cron: '7,37 9-11,13-14 * * 1-5'
-      timezone: 'Asia/Shanghai'
-    - cron: '17 15 * * 1-5'
-      timezone: 'Asia/Shanghai'
-    - cron: '7,37 9-15 * * 1-5'
-      timezone: 'America/New_York'
-    - cron: '17 16 * * 1-5'
+    - cron: '17 19 * * 1-5'
+      timezone: 'Asia/Hong_Kong'
+    - cron: '30 18 * * 1-5'
       timezone: 'America/New_York'
   workflow_dispatch:
     inputs:
       market:
-        description: Market to refresh
+        description: Market turnover to refresh
         required: true
         default: all
         type: choice
         options:
           - all
+          - asia
           - cn
-          - us
-          - auto
+          - hk
+          - nasdaq
+      backfill:
+        description: Number of recent trading days to request
+        required: true
+        default: '1'
+        type: string
       dry_run:
         description: Fetch and validate without committing changes
         required: true
@@ -42,9 +44,8 @@ jobs:
       contents: write
     outputs:
       changed: ${{ steps.publish.outputs.changed }}
-      commit_sha: ${{ steps.publish.outputs.commit_sha }}
-      markets: ${{ steps.quotes.outputs.markets }}
-      updated_tickers: ${{ steps.quotes.outputs.updated_tickers }}
+      markets: ${{ steps.turnover.outputs.markets }}
+      latest_dates: ${{ steps.turnover.outputs.latest_dates }}
     steps:
       - name: Check out main with history
         uses: actions/checkout@v7
@@ -57,37 +58,51 @@ jobs:
         with:
           node-version: 24
 
-      - name: Validate current site and data
+      - name: Validate current site and turnover parsers
         run: |
           node scripts/validate-site.mjs
           node scripts/validate-data.mjs
-          node scripts/test-market-quotes.mjs
           node scripts/test-market-turnover.mjs
 
-      - name: Refresh market quote snapshot
-        id: quotes
+      - name: Select scheduled market
+        id: selection
         env:
-          MARKET: ${{ github.event_name == 'workflow_dispatch' && inputs.market || 'auto' }}
-          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
-          IS_MANUAL: ${{ github.event_name == 'workflow_dispatch' }}
+          EVENT_NAME: ${{ github.event_name }}
+          SCHEDULE: ${{ github.event.schedule }}
+          MANUAL_MARKET: ${{ inputs.market }}
+          MANUAL_BACKFILL: ${{ inputs.backfill }}
         run: |
-          args=(--market "$MARKET")
+          market=nasdaq
+          backfill=1
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            market="$MANUAL_MARKET"
+            backfill="$MANUAL_BACKFILL"
+          elif [ "$SCHEDULE" = "17 19 * * 1-5" ]; then
+            market=asia
+          fi
+          echo "market=$market" >> "$GITHUB_OUTPUT"
+          echo "backfill=$backfill" >> "$GITHUB_OUTPUT"
+
+      - name: Refresh market turnover snapshot
+        id: turnover
+        env:
+          MARKET: ${{ steps.selection.outputs.market }}
+          BACKFILL: ${{ steps.selection.outputs.backfill }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+        run: |
+          args=(--market "$MARKET" --backfill "$BACKFILL")
           if [ "$DRY_RUN" = "true" ]; then
             args+=(--dry-run)
           fi
-          if [ "$IS_MANUAL" = "true" ]; then
-            args+=(--force)
-          fi
-          node scripts/refresh-market-quotes.mjs "${args[@]}"
+          node scripts/refresh-market-turnover.mjs "${args[@]}"
 
       - name: Validate refreshed data
         run: |
           node scripts/validate-data.mjs
           node scripts/validate-site.mjs
-          node scripts/test-market-quotes.mjs
           node scripts/test-market-turnover.mjs
 
-      - name: Commit and push changed quotes
+      - name: Commit and push changed turnover
         id: publish
         env:
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
@@ -98,26 +113,25 @@ jobs:
             exit 0
           fi
 
-          git add -- data/market-quotes.json
+          git add -- data/market-turnover.json
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "No new quote timestamps detected."
+            echo "No new end-of-day turnover records detected."
             exit 0
           fi
 
-          git config user.name "ai-capex-market-bot"
+          git config user.name "ai-capex-turnover-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "chore(data): refresh market quotes"
+          git commit -m "chore(data): refresh daily market turnover"
           pushed=false
           for attempt in 1 2 3; do
             if ! git fetch origin main; then
-              echo "Fetch attempt $attempt failed; retrying." >&2
               sleep $((attempt * 2))
               continue
             fi
             if ! git rebase origin/main; then
               git rebase --abort || true
-              echo "Market data conflicts with a newer main commit; refusing to overwrite it." >&2
+              echo "Turnover data conflicts with a newer main commit; refusing to overwrite it." >&2
               exit 1
             fi
             if git push origin HEAD:main; then
@@ -127,26 +141,25 @@ jobs:
             sleep $((attempt * 2))
           done
           if [ "$pushed" != "true" ]; then
-            echo "Unable to push market data after 3 attempts." >&2
+            echo "Unable to push turnover data after 3 attempts." >&2
             exit 1
           fi
           echo "changed=true" >> "$GITHUB_OUTPUT"
-          echo "commit_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Write run summary
         if: always()
         env:
           CHANGED: ${{ steps.publish.outputs.changed }}
-          MARKETS: ${{ steps.quotes.outputs.markets }}
-          UPDATED_TICKERS: ${{ steps.quotes.outputs.updated_tickers }}
+          MARKETS: ${{ steps.turnover.outputs.markets }}
+          LATEST_DATES: ${{ steps.turnover.outputs.latest_dates }}
         run: |
           {
-            echo "## Market quote refresh"
+            echo "## Daily market turnover refresh"
             echo "- Markets: \`${MARKETS:-none}\`"
-            echo "- Updated tickers: \`${UPDATED_TICKERS:-none}\`"
+            echo "- Latest dates: \`${LATEST_DATES:-none}\`"
             echo "- Data changed: \`${CHANGED:-false}\`"
-            echo "- A shares: every 30 minutes during the session + 15:17 Asia/Shanghai"
-            echo "- US shares: every 30 minutes during the core session + 16:17 America/New_York"
+            echo "- A shares and Hong Kong: after the Asia close"
+            echo "- Nasdaq: after the New York close"
           } >> "$GITHUB_STEP_SUMMARY"
 
   deploy:
@@ -178,10 +191,8 @@ jobs:
 
       - name: Validate latest main before deployment
         run: |
-          node scripts/validate-site.mjs
           node scripts/validate-data.mjs
-          node scripts/test-sec-monitor.mjs
-          node scripts/test-market-quotes.mjs
+          node scripts/validate-site.mjs
           node scripts/test-market-turnover.mjs
 
       - name: Configure GitHub Pages
@@ -192,6 +203,6 @@ jobs:
         with:
           path: .
 
-      - name: Deploy refreshed data to Pages
+      - name: Deploy refreshed turnover data to Pages
         id: deployment
         uses: actions/deploy-pages@v5

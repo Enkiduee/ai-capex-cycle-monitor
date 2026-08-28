@@ -36,10 +36,11 @@ AI CapEx Cycle Monitor 将分散的产业信号整理为统一的风险研究框
 ## 2. ✨ 当前功能 / Features
 
 - 周期总览：综合风险分数、周期阶段、CapEx 动量与信用压力
-- 七视图导航：总览、云巨头、供应链与估值、减持雷达、宏观、事件、方法通过 GitHub Pages Hash 路由独立切换，支持刷新、分享与浏览器前进/后退
+- 八视图导航：总览、云巨头、每日成交额、供应链与估值、减持雷达、宏观、事件、方法通过 GitHub Pages Hash 路由独立切换，支持刷新、分享与浏览器前进/后退
 - 风险评分拆解：五项风险贡献、权重、等级与解释
 - 云巨头 CapEx 趋势：Microsoft、Amazon、Alphabet、Meta 与 Oracle 的季度演示数据
 - CapEx 增速与云收入增速对比：自动判断两者差值并生成提示
+- 三地市场每日成交额：收盘后更新 A 股、港股主板和 Nasdaq 上市证券的日成交额，显示原币金额、较前一交易日变化、近期日均、标准化热度趋势与最近交易日明细
 - 供应链风险：排序、产业链环节筛选、风险等级筛选与移动端横向滚动
 - 股票资料目录：根据用户提供的代码录入 87 个沪深标的、34 个港股/主题标的和 87 个美股/指数/主题标的，共 208 个；按市场分类展示名称、代码、交易所、证券类型、已有分类和交易币种，并支持在当前市场搜索
 - 208 只股票估值与买入区间速览：股票资料目录中的沪深、港股和美股标的全部建立三档区间并支持搜索；AAOI、SKHY、LITE、兴森科技、深南电路、通富微电、AXTI、ASTS、Intel、Nebius、CoreWeave 与 Corning 使用财报与业务研究区间，其余 196 只使用近一年价格分布或低置信度参考价阶梯，并显示方法、样本量和置信度
@@ -113,6 +114,7 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 
 - [总览](https://enkiduee.github.io/ai-capex-cycle-monitor/#/overview)
 - [云巨头 CapEx](https://enkiduee.github.io/ai-capex-cycle-monitor/#/hyperscalers)
+- [每日成交额](https://enkiduee.github.io/ai-capex-cycle-monitor/#/turnover)
 - [供应链与估值](https://enkiduee.github.io/ai-capex-cycle-monitor/#/supply-chain)
 - [减持雷达](https://enkiduee.github.io/ai-capex-cycle-monitor/#/insider-sales)
 - [宏观环境](https://enkiduee.github.io/ai-capex-cycle-monitor/#/macro)
@@ -125,6 +127,7 @@ https://YOUR_GITHUB_USERNAME.github.io/ai-capex-cycle-monitor/
 | --- | --- |
 | `data/risk-score.json` | 更新时间、周期阶段、综合判断、手动分数与五项风险分数 |
 | `data/hyperscalers.json` | 云巨头季度 CapEx、合计 CapEx 增速与云收入增速 |
+| `data/market-turnover.json` | A 股、港股主板与 Nasdaq 的日终成交额、市场口径、来源及最多 260 个交易日的历史记录 |
 | `data/supply-chain.json` | 供应链公司、经营趋势、资产负债风险、综合等级，以及由 SEC 财报行项目计算的最新季度毛利率 |
 | `data/stock-watchlist.json` | 用户指定的 87 个沪深股票、ETF 与指数基础资料，以及沪深、港股、美股三类展示配置 |
 | `data/hk-watchlist.json` | 用户指定的 34 个港股、ETF、杠杆产品、人民币柜台与主题板块基础资料 |
@@ -176,7 +179,16 @@ P/E 只在规范化 EPS 为正、核心经营盈利可复核、数据覆盖至�
 
 ### 🤖 自动更新机制
 
-仓库提供两套免费的无服务器自动化：`.github/workflows/refresh-data.yml` 负责 SEC 披露巡检，`.github/workflows/refresh-market-data.yml` 负责重点标的行情快照。
+仓库提供三套免费的无服务器自动化：`.github/workflows/refresh-data.yml` 负责 SEC 披露巡检，`.github/workflows/refresh-market-data.yml` 负责重点标的行情快照，`.github/workflows/refresh-market-turnover.yml` 负责三地市场日终成交额。
+
+成交额工作流：
+
+- A 股在亚洲交易日收盘后的 19:17（香港时间）更新，口径为上交所主板 A 股与科创板加深交所股票，不含上交所 B 股
+- 港股在同一批次更新，口径为恒生指数行情附带的港股主板成交额，不含 GEM；数据来自东方财富日线快照
+- Nasdaq 在纽约交易日收盘后的 18:30（纽约时间）更新，采用 Nasdaq Trader 官方 consolidated dollar volume，即 Nasdaq 上市证券在所有交易场所的美元成交额
+- 每个市场最多保留最近 260 个有效交易日；来源尚未发布新交易日时不会制造重复提交
+- 三地绝对金额使用 CNY、HKD、USD 原币展示；跨市场趋势只比较相对各自最近 20 个有效交易日均值的热度
+- GitHub Actions 定时任务可能排队延迟且没有准时 SLA，也可能受上游日终文件发布时间影响
 
 行情工作流：
 
@@ -218,8 +230,10 @@ node scripts/validate-data.mjs
 node scripts/validate-site.mjs
 node scripts/test-sec-monitor.mjs
 node scripts/test-market-quotes.mjs
+node scripts/test-market-turnover.mjs
 node scripts/build-valuation-coverage.mjs
 node scripts/refresh-market-quotes.mjs --market all --force --dry-run
+node scripts/refresh-market-turnover.mjs --market all --backfill 20 --dry-run
 node scripts/check-sec-filings.mjs --mode events --dry-run
 ```
 

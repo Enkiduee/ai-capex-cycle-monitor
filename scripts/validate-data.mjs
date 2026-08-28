@@ -3,6 +3,7 @@ import { readJson } from './lib/refresh-utils.mjs';
 const files = [
   'data/risk-score.json',
   'data/hyperscalers.json',
+  'data/market-turnover.json',
   'data/supply-chain.json',
   'data/stock-watchlist.json',
   'data/hk-watchlist.json',
@@ -18,6 +19,7 @@ const files = [
 const payloads = Object.fromEntries(await Promise.all(files.map(async (file) => [file, await readJson(file)])));
 const supply = payloads['data/supply-chain.json'];
 const hyperscalers = payloads['data/hyperscalers.json'];
+const marketTurnover = payloads['data/market-turnover.json'];
 const stockWatchlist = payloads['data/stock-watchlist.json'];
 const hkWatchlist = payloads['data/hk-watchlist.json'];
 const usWatchlist = payloads['data/us-watchlist.json'];
@@ -51,6 +53,53 @@ for (const [file, payload] of Object.entries(payloads)) {
 
 assert(hyperscalers.units && hyperscalers.units.capex === '亿美元', '云巨头 CapEx 必须以亿美元为单位');
 assert(!/(?:十|百|千|万)亿|(?:十|百|千)万/.test(JSON.stringify(payloads)), '数据文本不能使用复合中文数量级');
+
+assert(marketTurnover.version === 1, 'market-turnover.version 必须为 1');
+assert(marketTurnover.isDemoData === false, 'market-turnover 必须明确标为真实数据');
+assert(validIso(marketTurnover.fetchedAt), 'market-turnover.fetchedAt 必须为 ISO UTC 时间');
+for (const key of ['comparison', 'retention', 'caveat']) {
+  assert(
+    typeof (marketTurnover.methodology && marketTurnover.methodology[key]) === 'string'
+      && marketTurnover.methodology[key].trim(),
+    `market-turnover.methodology.${key} 不能为空`
+  );
+}
+const turnoverMarkets = Array.isArray(marketTurnover.markets) ? marketTurnover.markets : [];
+assert(
+  JSON.stringify(turnoverMarkets.map((market) => market.id)) === JSON.stringify(['cn', 'hk', 'nasdaq']),
+  'market-turnover.markets 必须按 cn、hk、nasdaq 排列'
+);
+const turnoverCurrencies = { cn: 'CNY', hk: 'HKD', nasdaq: 'USD' };
+const turnoverTimezones = { cn: 'Asia/Shanghai', hk: 'Asia/Hong_Kong', nasdaq: 'America/New_York' };
+for (const market of turnoverMarkets) {
+  const marketId = String(market && market.id || '');
+  assert(typeof market.name === 'string' && market.name.trim(), `${marketId}.name 不能为空`);
+  assert(market.currency === turnoverCurrencies[marketId], `${marketId}.currency 无效`);
+  assert(market.timezone === turnoverTimezones[marketId], `${marketId}.timezone 无效`);
+  assert(/^\d{2}:\d{2}$/.test(String(market.closeTime || '')), `${marketId}.closeTime 无效`);
+  assert(typeof market.definition === 'string' && market.definition.trim(), `${marketId}.definition 不能为空`);
+  assert(typeof market.sourceLabel === 'string' && market.sourceLabel.trim(), `${marketId}.sourceLabel 不能为空`);
+  try {
+    const sourceUrl = new URL(market.sourceUrl);
+    assert(sourceUrl.protocol === 'https:', `${marketId}.sourceUrl 必须使用 HTTPS`);
+  } catch (error) {
+    errors.push(`${marketId}.sourceUrl 无效`);
+  }
+  const observations = Array.isArray(market.observations) ? market.observations : [];
+  assert(observations.length >= 2 && observations.length <= 260, `${marketId}.observations 必须包含 2..260 条记录`);
+  assert(new Set(observations.map((item) => item.date)).size === observations.length, `${marketId}.observations 日期不能重复`);
+  for (let index = 0; index < observations.length; index += 1) {
+    const item = observations[index];
+    assert(validDate(item.date), `${marketId} 成交额日期无效：${item.date}`);
+    assert(item.date <= marketTurnover.updatedAt, `${marketId} 成交额日期晚于 updatedAt：${item.date}`);
+    if (index > 0) assert(observations[index - 1].date < item.date, `${marketId}.observations 必须按日期升序`);
+    assert(Number.isSafeInteger(item.turnover) && item.turnover > 0, `${marketId} ${item.date} turnover 必须是安全正整数`);
+    assert(item.breakdown && typeof item.breakdown === 'object' && !Array.isArray(item.breakdown), `${marketId} ${item.date} breakdown 必须是对象`);
+    for (const [key, value] of Object.entries(item.breakdown || {})) {
+      assert(Number.isSafeInteger(value) && value >= 0, `${marketId} ${item.date} breakdown.${key} 必须是安全非负整数`);
+    }
+  }
+}
 
 assert(insiderSales.version === 1, 'insider-sales.version 必须为 1');
 assert(validDate(insiderSales.window && insiderSales.window.start), 'insider-sales.window.start 无效');

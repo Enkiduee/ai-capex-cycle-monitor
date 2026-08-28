@@ -1,0 +1,519 @@
+{
+  "version": 1,
+  "updatedAt": "2026-08-28",
+  "fetchedAt": "2026-08-28T08:41:27.900Z",
+  "isDemoData": false,
+  "methodology": {
+    "comparison": "趋势图以各市场最近最多 20 个有效交易日的平均成交额为 100；卡片和明细表保留各市场原币种。",
+    "retention": "每个市场最多保留最近 260 个交易日。",
+    "caveat": "三地统计范围不同，适合观察各自流动性变化，不适合直接比较绝对金额大小。"
+  },
+  "markets": [
+    {
+      "id": "cn",
+      "name": "A 股",
+      "currency": "CNY",
+      "timezone": "Asia/Shanghai",
+      "closeTime": "15:00",
+      "definition": "上交所主板 A 股与科创板成交额，加上深交所股票成交额；不含上交所 B 股。",
+      "sourceLabel": "上海证券交易所 + 深圳证券交易所",
+      "sourceUrl": "https://www.sse.com.cn/market/stockdata/overview/day/",
+      "secondarySourceUrl": "https://www.szse.cn/market/stock/situation/daily/index.html",
+      "observations": [
+        {
+          "date": "2026-07-31",
+          "turnover": 2545105000000,
+          "breakdown": {
+            "sseMainBoardA": 756729000000,
+            "sseStarMarket": 432926000000,
+            "szseStocks": 1355450000000
+          }
+        },
+        {
+          "date": "2026-08-03",
+          "turnover": 1999427000000,
+          "breakdown": {
+            "sseMainBoardA": 625450000000,
+            "sseStarMarket": 328035000000,
+            "szseStocks": 1045942000000
+          }
+        },
+        {
+          "date": "2026-08-04",
+          "turnover": 2215274000000,
+          "breakdown": {
+            "sseMainBoardA": 668168000000,
+            "sseStarMarket": 340795000000,
+            "szseStocks": 1206311000000
+          }
+        },
+        {
+          "date": "2026-08-05",
+          "turnover": 2662262000000,
+          "breakdown": {
+            "sseMainBoardA": 798910000000,
+            "sseStarMarket": 410697000000,
+            "szseStocks": 1452655000000
+          }
+        },
+        {
+          "date": "2026-08-06",
+          "turnover": 2532234000000,
+          "breakdown": {
+            "sseMainBoardA": 793430000000,
+            "sseStarMarket": 375349000000,
+            "szseStocks": 1363455000000
+          }
+        },
+        {
+          "date": "2026-08-07",
+          "turnover": 2667080000000,
+          "breakdown": {
+            "sseMainBoardA": 795445000000,
+            "sseStarMarket": 415567000000,
+            "szseStocks": 1456068000000
+          }
+        },
+        {
+          "date": "2026-08-10",
+          "turnover": 2525852000000,
+          "breakdown": {
+            "sseMainBoardA": 780962000000,
+            "sseStarMarket": 387291000000,
+            "szseStocks": 1357599000000
+          }
+        },
+        {
+          "date": "2026-08-11",
+          "turnover": 2323499000000,
+          "breakdown": {
+            "sseMainBoardA": 733456000000,
+            "sseStarMarket": 334222000000,
+            "szseStocks": 1255821000000
+          }
+        },
+        {
+          "date": "2026-08-12",
+          "turnover": 2154703000000,
+          "breakdown": {
+            "sseMainBoardA": 659680000000,
+            "sseStarMarket": 327522000000,
+            "szseStocks": 1167501000000
+          }
+        },
+        {
+          "date": "2026-08-13",
+          "turnover": 2553889000000,
+          "breakdown": {
+            "sseMainBoardA": 776018000000,
+            "sseStarMarket": 389983000000,
+            "szseStocks": 1387888000000
+          }
+        },
+        {
+          "date": "2026-08-14",
+          "turnover": 2145061000000,
+          "breakdown": {
+            "sseMainBoardA": 673709000000,
+            "sseStarMarket": 317972000000,
+            "szseStocks": 1153380000000
+          }
+        },
+        {
+          "date": "2026-08-17",
+          "turnover": 2390236000000,
+          "breakdown": {
+            "sseMainBoardA": 710992000000,
+            "sseStarMarket": 403304000000,
+            "szseStocks": 1275940000000
+          }
+        },
+        {
+          "date": "2026-08-18",
+          "turnover": 2402677000000,
+          "breakdown": {
+            "sseMainBoardA": 731507000000,
+            "sseStarMarket": 404477000000,
+            "szseStocks": 1266693000000
+          }
+        },
+        {
+          "date": "2026-08-19",
+          "turnover": 2512734000000,
+          "breakdown": {
+            "sseMainBoardA": 775313000000,
+            "sseStarMarket": 443735000000,
+            "szseStocks": 1293686000000
+          }
+        },
+        {
+          "date": "2026-08-20",
+          "turnover": 2081633000000,
+          "breakdown": {
+            "sseMainBoardA": 668216000000,
+            "sseStarMarket": 351691000000,
+            "szseStocks": 1061726000000
+          }
+        },
+        {
+          "date": "2026-08-21",
+          "turnover": 1881862000000,
+          "breakdown": {
+            "sseMainBoardA": 591768000000,
+            "sseStarMarket": 292590000000,
+            "szseStocks": 997504000000
+          }
+        },
+        {
+          "date": "2026-08-24",
+          "turnover": 2008701000000,
+          "breakdown": {
+            "sseMainBoardA": 645394000000,
+            "sseStarMarket": 307224000000,
+            "szseStocks": 1056083000000
+          }
+        },
+        {
+          "date": "2026-08-25",
+          "turnover": 1835025000000,
+          "breakdown": {
+            "sseMainBoardA": 597513000000,
+            "sseStarMarket": 263410000000,
+            "szseStocks": 974102000000
+          }
+        },
+        {
+          "date": "2026-08-26",
+          "turnover": 1810421000000,
+          "breakdown": {
+            "sseMainBoardA": 603425000000,
+            "sseStarMarket": 254626000000,
+            "szseStocks": 952370000000
+          }
+        },
+        {
+          "date": "2026-08-27",
+          "turnover": 2128359000000,
+          "breakdown": {
+            "sseMainBoardA": 684936000000,
+            "sseStarMarket": 326363000000,
+            "szseStocks": 1117060000000
+          }
+        },
+        {
+          "date": "2026-08-28",
+          "turnover": 2103747000000,
+          "breakdown": {
+            "sseMainBoardA": 673282000000,
+            "sseStarMarket": 298056000000,
+            "szseStocks": 1132409000000
+          }
+        }
+      ]
+    },
+    {
+      "id": "hk",
+      "name": "港股",
+      "currency": "HKD",
+      "timezone": "Asia/Hong_Kong",
+      "closeTime": "16:00",
+      "definition": "恒生指数行情口径附带的港股主板成交额；不含 GEM，使用第三方日线快照。",
+      "sourceLabel": "东方财富港股主板日线快照",
+      "sourceUrl": "https://quote.eastmoney.com/zsHSI.html",
+      "observations": [
+        {
+          "date": "2026-08-03",
+          "turnover": 255178948608,
+          "breakdown": {
+            "shareVolume": 14127852288
+          }
+        },
+        {
+          "date": "2026-08-04",
+          "turnover": 257819459584,
+          "breakdown": {
+            "shareVolume": 13408822016
+          }
+        },
+        {
+          "date": "2026-08-05",
+          "turnover": 278042705920,
+          "breakdown": {
+            "shareVolume": 15741252864
+          }
+        },
+        {
+          "date": "2026-08-06",
+          "turnover": 255226757120,
+          "breakdown": {
+            "shareVolume": 12681785088
+          }
+        },
+        {
+          "date": "2026-08-07",
+          "turnover": 259685728256,
+          "breakdown": {
+            "shareVolume": 12727954176
+          }
+        },
+        {
+          "date": "2026-08-10",
+          "turnover": 240279666688,
+          "breakdown": {
+            "shareVolume": 17255230720
+          }
+        },
+        {
+          "date": "2026-08-11",
+          "turnover": 210942459904,
+          "breakdown": {
+            "shareVolume": 13580373504
+          }
+        },
+        {
+          "date": "2026-08-12",
+          "turnover": 216779079680,
+          "breakdown": {
+            "shareVolume": 12873014016
+          }
+        },
+        {
+          "date": "2026-08-13",
+          "turnover": 263710064640,
+          "breakdown": {
+            "shareVolume": 12618305280
+          }
+        },
+        {
+          "date": "2026-08-14",
+          "turnover": 254179229696,
+          "breakdown": {
+            "shareVolume": 10856506368
+          }
+        },
+        {
+          "date": "2026-08-17",
+          "turnover": 210770395136,
+          "breakdown": {
+            "shareVolume": 12562218752
+          }
+        },
+        {
+          "date": "2026-08-18",
+          "turnover": 255540854784,
+          "breakdown": {
+            "shareVolume": 12659520768
+          }
+        },
+        {
+          "date": "2026-08-19",
+          "turnover": 253174988800,
+          "breakdown": {
+            "shareVolume": 13933081600
+          }
+        },
+        {
+          "date": "2026-08-20",
+          "turnover": 269118537728,
+          "breakdown": {
+            "shareVolume": 14338874368
+          }
+        },
+        {
+          "date": "2026-08-21",
+          "turnover": 257277427712,
+          "breakdown": {
+            "shareVolume": 13786804992
+          }
+        },
+        {
+          "date": "2026-08-24",
+          "turnover": 291151413248,
+          "breakdown": {
+            "shareVolume": 13189452288
+          }
+        },
+        {
+          "date": "2026-08-25",
+          "turnover": 254079238144,
+          "breakdown": {
+            "shareVolume": 14105327360
+          }
+        },
+        {
+          "date": "2026-08-26",
+          "turnover": 254823563264,
+          "breakdown": {
+            "shareVolume": 13442982144
+          }
+        },
+        {
+          "date": "2026-08-27",
+          "turnover": 233514827776,
+          "breakdown": {
+            "shareVolume": 12245992960
+          }
+        },
+        {
+          "date": "2026-08-28",
+          "turnover": 231209336832,
+          "breakdown": {
+            "shareVolume": 14391320576
+          }
+        }
+      ]
+    },
+    {
+      "id": "nasdaq",
+      "name": "纳斯达克",
+      "currency": "USD",
+      "timezone": "America/New_York",
+      "closeTime": "16:00",
+      "definition": "Nasdaq 上市证券在所有交易场所成交的 consolidated dollar volume。",
+      "sourceLabel": "Nasdaq Trader Daily Market Statistics",
+      "sourceUrl": "https://www.nasdaqtrader.com/Trader.aspx?id=DailyMarketFiles",
+      "observations": [
+        {
+          "date": "2026-07-29",
+          "turnover": 606248781292,
+          "breakdown": {
+            "shareVolume": 8634822409
+          }
+        },
+        {
+          "date": "2026-07-30",
+          "turnover": 678071430029,
+          "breakdown": {
+            "shareVolume": 9522682656
+          }
+        },
+        {
+          "date": "2026-07-31",
+          "turnover": 626624999488,
+          "breakdown": {
+            "shareVolume": 12243044462
+          }
+        },
+        {
+          "date": "2026-08-03",
+          "turnover": 567377013329,
+          "breakdown": {
+            "shareVolume": 11703492900
+          }
+        },
+        {
+          "date": "2026-08-04",
+          "turnover": 662604996565,
+          "breakdown": {
+            "shareVolume": 10226381867
+          }
+        },
+        {
+          "date": "2026-08-05",
+          "turnover": 551647767972,
+          "breakdown": {
+            "shareVolume": 9551000511
+          }
+        },
+        {
+          "date": "2026-08-06",
+          "turnover": 511317496791,
+          "breakdown": {
+            "shareVolume": 9319332617
+          }
+        },
+        {
+          "date": "2026-08-07",
+          "turnover": 505537245885,
+          "breakdown": {
+            "shareVolume": 8547157656
+          }
+        },
+        {
+          "date": "2026-08-10",
+          "turnover": 460185872917,
+          "breakdown": {
+            "shareVolume": 7984770018
+          }
+        },
+        {
+          "date": "2026-08-11",
+          "turnover": 424730036918,
+          "breakdown": {
+            "shareVolume": 8022214990
+          }
+        },
+        {
+          "date": "2026-08-12",
+          "turnover": 508506629642,
+          "breakdown": {
+            "shareVolume": 8382124086
+          }
+        },
+        {
+          "date": "2026-08-13",
+          "turnover": 494735297541,
+          "breakdown": {
+            "shareVolume": 8681982892
+          }
+        },
+        {
+          "date": "2026-08-14",
+          "turnover": 425701726739,
+          "breakdown": {
+            "shareVolume": 7412934210
+          }
+        },
+        {
+          "date": "2026-08-17",
+          "turnover": 471266176048,
+          "breakdown": {
+            "shareVolume": 7896660992
+          }
+        },
+        {
+          "date": "2026-08-18",
+          "turnover": 512322881680,
+          "breakdown": {
+            "shareVolume": 7591287288
+          }
+        },
+        {
+          "date": "2026-08-19",
+          "turnover": 537686828647,
+          "breakdown": {
+            "shareVolume": 8591961723
+          }
+        },
+        {
+          "date": "2026-08-20",
+          "turnover": 452327898592,
+          "breakdown": {
+            "shareVolume": 8545269226
+          }
+        },
+        {
+          "date": "2026-08-21",
+          "turnover": 455152137487,
+          "breakdown": {
+            "shareVolume": 7626354524
+          }
+        },
+        {
+          "date": "2026-08-24",
+          "turnover": 439846811052,
+          "breakdown": {
+            "shareVolume": 7628670194
+          }
+        },
+        {
+          "date": "2026-08-25",
+          "turnover": 385124684516,
+          "breakdown": {
+            "shareVolume": 7772096156
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -4,6 +4,7 @@
   const CAPEX_CONTAINER_ID = 'capex-chart';
   const CAPEX_CONTROLS_ID = 'capex-series-controls';
   const GROWTH_CONTAINER_ID = 'growth-chart';
+  const TURNOVER_CONTAINER_ID = 'market-turnover-chart';
   const MIN_QUARTERS = 8;
   const RESIZE_DEBOUNCE_MS = 160;
 
@@ -29,6 +30,7 @@
 
   let capexChart = null;
   let growthChart = null;
+  let turnoverChart = null;
   let resizeTimer = null;
 
   function getContainer(id) {
@@ -134,6 +136,11 @@
   function resetGrowthChart(container) {
     disposeContainerChart(container, growthChart);
     growthChart = null;
+  }
+
+  function resetTurnoverChart(container) {
+    disposeContainerChart(container, turnoverChart);
+    turnoverChart = null;
   }
 
   function formatDecimal(value) {
@@ -602,6 +609,127 @@
     };
   }
 
+  function formatTurnoverAmount(value, currency) {
+    const amount = toFiniteNumber(value);
+    if (amount === null) return '—';
+    const scaled = amount / 1e8;
+    const decimals = scaled >= 1000 ? 0 : scaled >= 100 ? 1 : 2;
+    const unit = currency === 'CNY' ? '亿元' : currency === 'HKD' ? '亿港元' : '亿美元';
+    return scaled.toLocaleString('zh-CN', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    }) + ' ' + unit;
+  }
+
+  function buildTurnoverModel(data) {
+    if (!data || !Array.isArray(data.markets)) return null;
+    const markets = data.markets.flatMap(function (market, index) {
+      const observations = Array.isArray(market && market.observations)
+        ? market.observations
+          .map(function (item) {
+            return {
+              date: safeLabel(item && item.date, ''),
+              turnover: toFiniteNumber(item && item.turnover)
+            };
+          })
+          .filter(function (item) {
+            return /^\d{4}-\d{2}-\d{2}$/.test(item.date) && item.turnover !== null && item.turnover > 0;
+          })
+          .sort(function (left, right) { return left.date.localeCompare(right.date); })
+          .slice(-40)
+        : [];
+      if (observations.length < 2) return [];
+      const baselineWindow = observations.slice(-20);
+      const baseline = baselineWindow.reduce(function (sum, item) { return sum + item.turnover; }, 0) / baselineWindow.length;
+      if (!Number.isFinite(baseline) || baseline <= 0) return [];
+      return [{
+        id: safeLabel(market.id, 'market-' + String(index + 1)),
+        name: safeLabel(market.name, '市场 ' + String(index + 1)),
+        currency: safeLabel(market.currency, ''),
+        baseline: baseline,
+        observations: observations
+      }];
+    });
+    if (!markets.length) return null;
+    const dates = Array.from(new Set(markets.flatMap(function (market) {
+      return market.observations.map(function (item) { return item.date; });
+    }))).sort();
+    return dates.length >= 2 ? { dates: dates, markets: markets } : null;
+  }
+
+  function buildTurnoverOption(model) {
+    const colors = [COLORS.accent, COLORS.yellow, COLORS.purple];
+    const series = model.markets.map(function (market, index) {
+      const byDate = new Map(market.observations.map(function (item) { return [item.date, item]; }));
+      const line = Object.assign(commonSeriesStyle(colors[index % colors.length]), {
+        name: market.name,
+        data: model.dates.map(function (date) {
+          const item = byDate.get(date);
+          if (!item) return null;
+          return {
+            value: Number(((item.turnover / market.baseline) * 100).toFixed(1)),
+            rawTurnover: item.turnover,
+            currency: market.currency
+          };
+        })
+      });
+      if (index === 0) {
+        line.markLine = {
+          silent: true,
+          symbol: ['none', 'none'],
+          label: {
+            show: true,
+            position: 'insideEndTop',
+            formatter: '近期均值 100',
+            color: COLORS.textMuted,
+            fontFamily: MONO_FONT_FAMILY,
+            fontSize: 9
+          },
+          lineStyle: { color: COLORS.textMuted, type: 'dashed', width: 1, opacity: 0.8 },
+          data: [{ yAxis: 100 }]
+        };
+      }
+      return line;
+    });
+
+    return {
+      baseOption: {
+        backgroundColor: 'transparent',
+        color: [COLORS.accent, COLORS.yellow, COLORS.purple],
+        animationDuration: 420,
+        animationEasing: 'cubicOut',
+        textStyle: { color: COLORS.text, fontFamily: FONT_FAMILY },
+        aria: { enabled: true, decal: { show: false } },
+        tooltip: commonTooltip(function (parameters) {
+          const items = (Array.isArray(parameters) ? parameters : [parameters]).filter(function (item) {
+            return item && item.data && toFiniteNumber(item.data.rawTurnover) !== null;
+          });
+          const date = items.length ? safeLabel(items[0].axisValueLabel || items[0].name, '交易日') : '交易日';
+          const lines = ['交易日：' + date];
+          items.forEach(function (item) {
+            lines.push(
+              '● ' + safeLabel(item.seriesName, '市场') + '：'
+              + formatTurnoverAmount(item.data.rawTurnover, item.data.currency)
+              + '（' + formatDecimal(getAxisValue(item)) + '）'
+            );
+          });
+          return lines.join('\n');
+        }),
+        legend: commonLegend(),
+        grid: { top: 62, right: 24, bottom: 40, left: 62, containLabel: true },
+        xAxis: commonCategoryAxis(model.dates),
+        yAxis: Object.assign(commonValueAxis('近期均值 = 100'), {
+          scale: true,
+          axisLabel: Object.assign({}, commonValueAxis('').axisLabel, {
+            formatter: function (value) { return formatAxisNumber(value); }
+          })
+        }),
+        series: series
+      },
+      media: responsiveMedia()
+    };
+  }
+
   function createChart(container, option) {
     container.textContent = '';
     container.setAttribute('aria-busy', 'false');
@@ -717,6 +845,29 @@
     }
   }
 
+  function initTurnoverChart(data) {
+    const container = getContainer(TURNOVER_CONTAINER_ID);
+    if (!container) return null;
+    resetTurnoverChart(container);
+    if (!hasECharts()) {
+      showPlaceholder(container, '图表组件加载失败，请检查网络连接后刷新页面。');
+      return null;
+    }
+    const model = buildTurnoverModel(data);
+    if (!model) {
+      showPlaceholder(container, '成交额趋势暂不可用（每个市场至少需要 2 个有效交易日）。');
+      return null;
+    }
+    try {
+      turnoverChart = createChart(container, buildTurnoverOption(model));
+      return turnoverChart;
+    } catch (error) {
+      resetTurnoverChart(container);
+      showPlaceholder(container, '成交额趋势暂时无法绘制，请稍后刷新重试。');
+      return null;
+    }
+  }
+
   function resizeChart(chart) {
     if (!chart || typeof chart.resize !== 'function') {
       return;
@@ -734,11 +885,13 @@
   function resizeAll() {
     resizeChart(capexChart);
     resizeChart(growthChart);
+    resizeChart(turnoverChart);
   }
 
   function disposeAll() {
     resetCapexChart(getContainer(CAPEX_CONTAINER_ID));
     resetGrowthChart(getContainer(GROWTH_CONTAINER_ID));
+    resetTurnoverChart(getContainer(TURNOVER_CONTAINER_ID));
 
     if (resizeTimer !== null) {
       global.clearTimeout(resizeTimer);
@@ -764,6 +917,7 @@
   global.CapExCharts = {
     initCapexChart: initCapexChart,
     initGrowthChart: initGrowthChart,
+    initTurnoverChart: initTurnoverChart,
     setCapexSeriesVisible: setCapexSeriesVisible,
     resizeAll: resizeAll,
     disposeAll: disposeAll

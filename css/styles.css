@@ -288,6 +288,7 @@ a:hover {
 
 :root[data-initial-route="overview"] .route-view[data-route="overview"],
 :root[data-initial-route="hyperscalers"] .route-view[data-route="hyperscalers"],
+:root[data-initial-route="turnover"] .route-view[data-route="turnover"],
 :root[data-initial-route="supply-chain"] .route-view[data-route="supply-chain"],
 :root[data-initial-route="insider-sales"] .route-view[data-route="insider-sales"],
 :root[data-initial-route="macro"] .route-view[data-route="macro"],
@@ -1624,6 +1625,468 @@ a:hover {
   margin: 8px 0 0;
   color: var(--text-muted);
   font-size: 11px;
+}
+
+.turnover-anime-hero {
+  position: relative;
+  display: grid;
+  min-height: 318px;
+  align-items: center;
+  overflow: hidden;
+  padding: 44px clamp(28px, 4.2vw, 64px);
+  border: 1px solid #4a6475;
+  border-radius: 24px;
+  background:
+    linear-gradient(90deg, rgb(6 13 22 / 8%) 0 25%, rgb(7 13 24 / 80%) 43%, rgb(7 13 24 / 90%) 72%, rgb(7 13 24 / 62%) 100%),
+    url("../assets/readme-anime-banner.png") 50% center / cover no-repeat;
+  box-shadow: 0 24px 70px rgb(0 0 0 / 35%), inset 0 0 0 1px rgb(255 255 255 / 4%);
+  isolation: isolate;
+}
+
+.turnover-anime-hero::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    linear-gradient(115deg, transparent 0 62%, rgb(118 101 255 / 12%) 62.2% 62.7%, transparent 63%),
+    radial-gradient(circle at 57% 24%, rgb(97 227 243 / 17%), transparent 30%);
+  content: "";
+  pointer-events: none;
+}
+
+.turnover-anime-hero::after {
+  position: absolute;
+  z-index: -1;
+  right: 0;
+  bottom: 0;
+  width: 48%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #75e7f3, #a98cff);
+  content: "";
+}
+
+.turnover-hero-copy {
+  width: min(610px, 58%);
+  margin-left: auto;
+}
+
+.turnover-anime-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 7px;
+  color: #a7f3f4;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.turnover-anime-label span {
+  color: #c9b0ff;
+  text-shadow: 0 0 12px #a484ff;
+}
+
+.turnover-hero-copy h1 {
+  margin: 0;
+  font-size: clamp(35px, 4.2vw, 58px);
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+}
+
+.turnover-hero-copy h1 span {
+  background: linear-gradient(94deg, #ffffff 7%, #9ff5f4 52%, #c5b5ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.turnover-hero-copy > p:not(.turnover-anime-label) {
+  max-width: 590px;
+  margin: 17px 0 0;
+  color: #c2ced9;
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.turnover-hero-markets {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.turnover-hero-markets span {
+  min-width: 56px;
+  padding: 4px 11px;
+  border: 1px solid rgb(156 235 242 / 34%);
+  border-radius: 999px;
+  background: rgb(8 20 33 / 63%);
+  color: #d6f9fa;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.turnover-live-chip {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-color: rgb(133 236 207 / 25%);
+  background: rgb(7 19 27 / 72%);
+  color: #bff9e3;
+  backdrop-filter: blur(10px);
+}
+
+.turnover-live-chip > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 4px rgb(91 211 154 / 12%);
+}
+
+.turnover-sparkle {
+  position: absolute;
+  color: #e0d2ff;
+  line-height: 1;
+  opacity: 0.72;
+  text-shadow: 0 0 16px #9c81ff;
+  pointer-events: none;
+}
+
+.turnover-sparkle-one {
+  top: 52px;
+  left: 44%;
+  font-size: 19px;
+}
+
+.turnover-sparkle-two {
+  right: 32%;
+  bottom: 30px;
+  font-size: 25px;
+}
+
+.turnover-market-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.turnover-market-grid > .loading-block {
+  grid-column: 1 / -1;
+}
+
+.turnover-market-card {
+  --turnover-glow: #79dce6;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 88% 8%, color-mix(in srgb, var(--turnover-glow) 16%, transparent), transparent 34%),
+    linear-gradient(145deg, rgb(255 255 255 / 3%), transparent 45%),
+    var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.turnover-market-card::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 88px;
+  height: 88px;
+  border-radius: 0 0 0 100%;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--turnover-glow) 35%, transparent) 1px, transparent 1.5px) 0 0 / 9px 9px;
+  content: "";
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.turnover-market-card::after {
+  position: absolute;
+  right: 16px;
+  bottom: 11px;
+  color: color-mix(in srgb, var(--turnover-glow) 50%, transparent);
+  content: "✦";
+  font-size: 13px;
+  text-shadow: 0 0 10px var(--turnover-glow);
+}
+
+.turnover-market-card[data-market="cn"] {
+  --turnover-glow: #75e8ea;
+  border-color: #345762;
+  background: #102029;
+  background:
+    radial-gradient(circle at 88% 8%, rgb(117 232 234 / 15%), transparent 34%),
+    linear-gradient(145deg, rgb(255 255 255 / 3%), transparent 45%),
+    #102029;
+}
+
+.turnover-market-card[data-market="hk"] {
+  --turnover-glow: #f2cc70;
+  border-color: #594d32;
+  background: #201c14;
+  background:
+    radial-gradient(circle at 88% 8%, rgb(242 204 112 / 15%), transparent 34%),
+    linear-gradient(145deg, rgb(255 255 255 / 3%), transparent 45%),
+    #201c14;
+}
+
+.turnover-market-card[data-market="nasdaq"] {
+  --turnover-glow: #b99bff;
+  border-color: #4a3f62;
+  background: #191725;
+  background:
+    radial-gradient(circle at 88% 8%, rgb(185 155 255 / 16%), transparent 34%),
+    linear-gradient(145deg, rgb(255 255 255 / 3%), transparent 45%),
+    #191725;
+}
+
+.turnover-card-topline,
+.turnover-latest-row,
+.turnover-table-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.turnover-card-topline strong {
+  display: block;
+  margin-top: 1px;
+  font-size: 17px;
+}
+
+.turnover-market-identity {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 11px;
+}
+
+.turnover-market-emblem {
+  display: grid;
+  width: 43px;
+  height: 43px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--turnover-glow) 65%, #ffffff 10%);
+  border-radius: 50% 50% 46% 54% / 48% 44% 56% 52%;
+  background: color-mix(in srgb, var(--turnover-glow) 10%, #0a121c);
+  box-shadow: inset 0 0 15px color-mix(in srgb, var(--turnover-glow) 10%, transparent), 0 0 18px color-mix(in srgb, var(--turnover-glow) 9%, transparent);
+  color: color-mix(in srgb, var(--turnover-glow) 82%, white);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  transform: rotate(-3deg);
+}
+
+.turnover-pulse-label {
+  display: block;
+  color: color-mix(in srgb, var(--turnover-glow) 72%, #81909e);
+  font-family: var(--font-mono);
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.turnover-card-topline time,
+.turnover-table-heading time {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.turnover-latest-row {
+  align-items: flex-end;
+  margin-top: 22px;
+}
+
+.turnover-value {
+  display: block;
+  overflow-wrap: anywhere;
+  font-family: var(--font-mono);
+  font-size: clamp(27px, 2.7vw, 37px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.turnover-change {
+  padding: 3px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.turnover-change.is-up {
+  border-color: #285c48;
+  background: var(--green-bg);
+  color: var(--green);
+}
+
+.turnover-change.is-down {
+  border-color: #793c43;
+  background: var(--red-bg);
+  color: var(--red);
+}
+
+.turnover-change.is-flat {
+  color: var(--gray);
+}
+
+.turnover-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 18px 0 0;
+}
+
+.turnover-stats > div {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgb(255 255 255 / 7%);
+  border-radius: var(--radius-sm);
+  background: rgb(0 0 0 / 12%);
+}
+
+.turnover-stats dt {
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.turnover-stats dd {
+  margin: 3px 0 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.turnover-card-definition {
+  min-height: 54px;
+  margin: 16px 0 0;
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.turnover-card-source {
+  display: inline-flex;
+  margin-top: 8px;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.turnover-chart-card {
+  position: relative;
+  overflow: hidden;
+  margin-top: 18px;
+  border-color: #304756;
+  background:
+    linear-gradient(135deg, rgb(98 220 230 / 4%), transparent 36%),
+    var(--surface);
+}
+
+.turnover-chart-card::before,
+.turnover-table-card::before {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 20px;
+  width: 82px;
+  height: 2px;
+  background: linear-gradient(90deg, #70e5ea, #b095ff);
+  content: "";
+  box-shadow: 0 0 12px rgb(112 229 234 / 45%);
+}
+
+.turnover-chart {
+  height: 390px;
+}
+
+.turnover-table-card {
+  position: relative;
+  overflow: hidden;
+  margin-top: 12px;
+  border-color: #303d54;
+}
+
+.turnover-table-heading {
+  align-items: center;
+  margin: 0;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-muted);
+}
+
+.turnover-table-heading h2 {
+  margin: 2px 0 0;
+  font-size: 18px;
+}
+
+.turnover-history-table td:not(:first-child) {
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.turnover-history-table td:first-child {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.turnover-method-note {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(190px, 0.34fr) 1fr;
+  align-items: center;
+  gap: 28px;
+  margin-top: 12px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 7% 50%, rgb(178 145 255 / 9%), transparent 26%),
+    var(--surface-muted);
+}
+
+.turnover-method-note::after {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  color: #aa96da;
+  content: "✦";
+  font-size: 12px;
+}
+
+.turnover-method-note h2 {
+  margin: 2px 0 0;
+  font-size: 17px;
+}
+
+.turnover-method-note > p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
 }
 
 .series-controls {
@@ -4127,6 +4590,10 @@ a.buy-zone-reference:focus-visible {
     padding-top: 38px;
   }
 
+  .turnover-hero-copy {
+    width: min(620px, 67%);
+  }
+
   .risk-component {
     grid-template-columns: 1fr auto;
   }
@@ -4237,6 +4704,45 @@ a.buy-zone-reference:focus-visible {
     padding-top: 28px;
   }
 
+  .turnover-anime-hero {
+    min-height: 438px;
+    align-items: end;
+    padding: 194px 18px 22px;
+    border-radius: 20px;
+    background:
+      linear-gradient(180deg, rgb(5 11 19 / 2%) 0 35%, rgb(6 12 21 / 77%) 58%, rgb(6 12 21 / 96%) 83%),
+      url("../assets/readme-anime-banner.png") 18% center / auto 100% no-repeat;
+  }
+
+  .turnover-hero-copy {
+    width: 100%;
+    margin: 0;
+  }
+
+  .turnover-hero-copy h1 {
+    font-size: 36px;
+  }
+
+  .turnover-hero-copy > p:not(.turnover-anime-label) {
+    margin-top: 12px;
+    font-size: 11px;
+    line-height: 1.65;
+  }
+
+  .turnover-hero-markets {
+    margin-top: 13px;
+  }
+
+  .turnover-sparkle-one {
+    top: 83px;
+    left: auto;
+    right: 18px;
+  }
+
+  .turnover-sparkle-two {
+    display: none;
+  }
+
   .section-heading,
   .subsection-heading,
   .card-heading {
@@ -4256,6 +4762,19 @@ a.buy-zone-reference:focus-visible {
 
   .overview-grid {
     grid-template-columns: 1fr;
+  }
+
+  .turnover-market-grid,
+  .turnover-method-note {
+    grid-template-columns: 1fr;
+  }
+
+  .turnover-market-card {
+    padding: 18px;
+  }
+
+  .turnover-card-definition {
+    min-height: 0;
   }
 
   .metric-card {

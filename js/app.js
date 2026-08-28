@@ -4,6 +4,7 @@
   const DATA_SOURCES = {
     risk: { path: './data/risk-score.json', label: '风险评分' },
     hyperscalers: { path: './data/hyperscalers.json', label: '云巨头 CapEx' },
+    marketTurnover: { path: './data/market-turnover.json', label: '三地市场每日成交额' },
     supplyChain: { path: './data/supply-chain.json', label: '供应链风险' },
     stockWatchlist: { path: './data/stock-watchlist.json', label: '沪深股票资料' },
     hkWatchlist: { path: './data/hk-watchlist.json', label: '港股资料' },
@@ -20,6 +21,7 @@
   const ROUTES = Object.freeze({
     overview: { label: '周期总览', titleId: 'overview-title' },
     hyperscalers: { label: '云巨头 CapEx', titleId: 'hyperscalers-title' },
+    turnover: { label: '三地市场每日成交额', titleId: 'turnover-title' },
     'supply-chain': { label: '供应链风险与估值', titleId: 'supply-chain-title' },
     'insider-sales': { label: '减持雷达', titleId: 'insider-sales-title' },
     macro: { label: '宏观与利率环境', titleId: 'macro-title' },
@@ -130,7 +132,7 @@
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
         if (state.routing.active !== route) return;
-        if (route === 'hyperscalers') {
+        if (route === 'hyperscalers' || route === 'turnover') {
           const chartApi = charts();
           if (chartApi && typeof chartApi.resizeAll === 'function') {
             chartApi.resizeAll();
@@ -477,6 +479,128 @@
       });
       container.append(button);
     });
+  }
+
+  function normalizedTurnoverObservations(market) {
+    return (Array.isArray(market && market.observations) ? market.observations : [])
+      .map((item) => ({
+        date: String(item && item.date || ''),
+        turnover: toFiniteNumber(item && item.turnover)
+      }))
+      .filter((item) => /^\d{4}-\d{2}-\d{2}$/.test(item.date) && item.turnover !== null && item.turnover > 0)
+      .sort((left, right) => left.date.localeCompare(right.date));
+  }
+
+  function turnoverAmountLabel(value, currency) {
+    const amount = toFiniteNumber(value);
+    if (amount === null) return '—';
+    const scaled = amount / 1e8;
+    const decimals = scaled >= 1000 ? 0 : scaled >= 100 ? 1 : 2;
+    const unit = currency === 'CNY' ? '亿元' : currency === 'HKD' ? '亿港元' : '亿美元';
+    return `${new Intl.NumberFormat('zh-CN', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    }).format(scaled)} ${unit}`;
+  }
+
+  function signedTurnoverPercent(value) {
+    const percent = toFiniteNumber(value);
+    if (percent === null) return '—';
+    return `${percent > 0 ? '+' : ''}${formatNumber(percent, 1, '%')}`;
+  }
+
+  function turnoverChangeClass(value) {
+    const percent = toFiniteNumber(value);
+    if (percent === null || Math.abs(percent) < 0.05) return 'is-flat';
+    return percent > 0 ? 'is-up' : 'is-down';
+  }
+
+  function turnoverSourceMarkup(market) {
+    const primary = safeExternalUrl(market && market.sourceUrl);
+    const secondary = safeExternalUrl(market && market.secondarySourceUrl);
+    const links = [];
+    if (primary) links.push(`<a href="${escapeHTML(primary)}" target="_blank" rel="noopener noreferrer nofollow">${escapeHTML(market.sourceLabel || '数据来源')} ↗</a>`);
+    if (secondary) links.push(`<a href="${escapeHTML(secondary)}" target="_blank" rel="noopener noreferrer nofollow">深交所 ↗</a>`);
+    return links.join('<span aria-hidden="true"> · </span>');
+  }
+
+  function renderMarketTurnover(data) {
+    const markets = Array.isArray(data && data.markets) ? data.markets : [];
+    const grid = byId('turnover-market-grid');
+    const marketAppearance = {
+      cn: { emblem: '沪深', pulse: 'MARKET PULSE · 01' },
+      hk: { emblem: 'HK', pulse: 'MARKET PULSE · 02' },
+      nasdaq: { emblem: 'NQ', pulse: 'MARKET PULSE · 03' }
+    };
+    grid.innerHTML = markets.map((market, index) => {
+      const observations = normalizedTurnoverObservations(market);
+      const latest = observations.at(-1);
+      const previous = observations.at(-2);
+      const averageWindow = observations.slice(-20);
+      const average = averageWindow.length
+        ? averageWindow.reduce((sum, item) => sum + item.turnover, 0) / averageWindow.length
+        : null;
+      const dayChange = latest && previous ? ((latest.turnover / previous.turnover) - 1) * 100 : null;
+      const versusAverage = latest && average ? ((latest.turnover / average) - 1) * 100 : null;
+      const appearance = marketAppearance[market.id] || { emblem: String(index + 1).padStart(2, '0'), pulse: `MARKET PULSE · ${String(index + 1).padStart(2, '0')}` };
+      return `
+        <article class="turnover-market-card" data-market="${escapeHTML(market.id)}">
+          <div class="turnover-card-topline">
+            <div class="turnover-market-identity">
+              <span class="turnover-market-emblem" aria-hidden="true">${escapeHTML(appearance.emblem)}</span>
+              <div>
+                <span class="turnover-pulse-label">${escapeHTML(appearance.pulse)}</span>
+                <strong>${escapeHTML(market.name)}</strong>
+              </div>
+            </div>
+            <time datetime="${escapeHTML(latest && latest.date)}">${escapeHTML(latest ? formatDate(latest.date) : '待更新')}</time>
+          </div>
+          <div class="turnover-latest-row">
+            <span class="turnover-value">${escapeHTML(turnoverAmountLabel(latest && latest.turnover, market.currency))}</span>
+            <span class="turnover-change ${turnoverChangeClass(dayChange)}" title="较上一有效交易日">${escapeHTML(signedTurnoverPercent(dayChange))}</span>
+          </div>
+          <dl class="turnover-stats">
+            <div><dt>近期日均</dt><dd>${escapeHTML(turnoverAmountLabel(average, market.currency))}</dd></div>
+            <div><dt>相对近期均值</dt><dd>${escapeHTML(signedTurnoverPercent(versusAverage))}</dd></div>
+          </dl>
+          <p class="turnover-card-definition">${escapeHTML(market.definition)}</p>
+          <span class="turnover-card-source">${turnoverSourceMarkup(market)}</span>
+        </article>
+      `;
+    }).join('') || '<div class="loading-block">暂无可用的日终成交额记录。</div>';
+
+    const marketModels = markets.map((market) => ({
+      ...market,
+      observations: normalizedTurnoverObservations(market)
+    }));
+    const dates = Array.from(new Set(marketModels.flatMap((market) => market.observations.map((item) => item.date))))
+      .sort()
+      .slice(-12)
+      .reverse();
+    const byMarketAndDate = new Map(marketModels.flatMap((market) => market.observations.map((item) => [`${market.id}:${item.date}`, item])));
+    const body = byId('turnover-history-body');
+    body.innerHTML = dates.map((date) => `
+      <tr>
+        <td><time datetime="${escapeHTML(date)}">${escapeHTML(formatDate(date))}</time></td>
+        ${marketModels.map((market) => {
+          const item = byMarketAndDate.get(`${market.id}:${date}`);
+          return `<td>${escapeHTML(item ? turnoverAmountLabel(item.turnover, market.currency) : '—')}</td>`;
+        }).join('')}
+      </tr>
+    `).join('') || '<tr><td colspan="4" class="table-empty">暂无成交额历史记录。</td></tr>';
+
+    const fetchedAt = byId('turnover-fetched-at');
+    fetchedAt.dateTime = data.fetchedAt || data.updatedAt || '';
+    fetchedAt.textContent = data.fetchedAt ? `抓取于 ${formatDate(data.fetchedAt)}` : `更新于 ${formatDate(data.updatedAt)}`;
+    const methodology = data.methodology || {};
+    byId('turnover-method-copy').textContent = [methodology.comparison, methodology.caveat, methodology.retention]
+      .filter(Boolean)
+      .join(' ');
+
+    const chartApi = charts();
+    if (chartApi && typeof chartApi.initTurnoverChart === 'function') {
+      chartApi.initTurnoverChart(data);
+    }
   }
 
   function populateSelect(select, values, defaultLabel) {
@@ -2223,6 +2347,12 @@
         chartApi.initGrowthChart(null);
       }
       byId('growth-diagnostic').innerHTML = `<span class="diagnostic-icon">!</span><div><strong>增速诊断不可用</strong><p>${escapeHTML(message)}</p></div>`;
+    } else if (key === 'marketTurnover') {
+      api.renderSectionError('turnover-market-grid', message);
+      byId('turnover-history-body').innerHTML = `<tr><td colspan="4" class="table-empty">${escapeHTML(message)}</td></tr>`;
+      byId('turnover-method-copy').textContent = message;
+      const chartApi = charts();
+      if (chartApi && typeof chartApi.initTurnoverChart === 'function') chartApi.initTurnoverChart(null);
     } else if (key === 'supplyChain') {
       byId('supply-chain-body').innerHTML = `<tr><td colspan="12" class="table-empty">${escapeHTML(message)}</td></tr>`;
       api.renderSectionError('supply-chain-heatmap', message);
@@ -2448,6 +2578,7 @@
     const renderers = {
       risk: renderOverview,
       hyperscalers: renderHyperscalers,
+      marketTurnover: renderMarketTurnover,
       supplyChain: renderSupplyChain,
       stockWatchlist: renderStockWatchlist,
       hkWatchlist: () => {},

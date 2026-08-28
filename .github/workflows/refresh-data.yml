@@ -93,6 +93,7 @@ jobs:
           node scripts/validate-site.mjs
           node scripts/test-sec-monitor.mjs
           node scripts/test-market-quotes.mjs
+          node scripts/test-market-turnover.mjs
 
       - name: Check SEC filings and refresh status
         env:
@@ -203,6 +204,7 @@ jobs:
           node scripts/validate-site.mjs
           node scripts/validate-data.mjs
           node scripts/test-sec-monitor.mjs
+          node scripts/test-market-turnover.mjs
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6

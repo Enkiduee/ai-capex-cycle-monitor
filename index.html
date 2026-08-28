@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="./css/styles.css">
     <script>
       (function () {
-        var routes = ['overview', 'hyperscalers', 'supply-chain', 'insider-sales', 'macro', 'events', 'methodology'];
+        var routes = ['overview', 'hyperscalers', 'turnover', 'supply-chain', 'insider-sales', 'macro', 'events', 'methodology'];
         var hash = window.location.hash || '';
         var candidate = hash.indexOf('#/') === 0 ? hash.slice(2).split(/[?&]/, 1)[0].replace(/\/+$/, '') : hash.slice(1);
         document.documentElement.dataset.initialRoute = routes.indexOf(candidate) >= 0 ? candidate : 'overview';
@@ -55,6 +55,7 @@
         <nav class="section-nav" aria-label="看板页面">
           <a href="#/overview" data-route="overview" aria-controls="overview">总览</a>
           <a href="#/hyperscalers" data-route="hyperscalers" aria-controls="hyperscalers">云巨头</a>
+          <a href="#/turnover" data-route="turnover" aria-controls="turnover">每日成交额</a>
           <a href="#/supply-chain" data-route="supply-chain" aria-controls="supply-chain">供应链与估值</a>
           <a href="#/insider-sales" data-route="insider-sales" aria-controls="insider-sales">减持雷达</a>
           <a href="#/macro" data-route="macro" aria-controls="macro">宏观</a>
@@ -202,6 +203,81 @@
             </div>
           </div>
         </article>
+      </section>
+
+      <section id="turnover" class="dashboard-section route-view" data-route="turnover" aria-labelledby="turnover-title">
+        <div class="turnover-anime-hero">
+          <div class="turnover-hero-copy">
+            <p class="turnover-anime-label"><span aria-hidden="true">✦</span> Liquidity observatory <span aria-hidden="true">✦</span></p>
+            <h1 id="turnover-title" tabindex="-1">三地市场<br><span>每日成交额</span></h1>
+            <p>收盘铃响后，确认 A 股、港股与纳斯达克的资金星轨；金额保留原币种，趋势按各自近期均值标准化。</p>
+            <div class="turnover-hero-markets" aria-label="覆盖市场">
+              <span>A 股</span>
+              <span>港 股</span>
+              <span>NASDAQ</span>
+            </div>
+          </div>
+          <span class="demo-chip turnover-live-chip"><span aria-hidden="true"></span>日终自动更新</span>
+          <span class="turnover-sparkle turnover-sparkle-one" aria-hidden="true">✦</span>
+          <span class="turnover-sparkle turnover-sparkle-two" aria-hidden="true">✧</span>
+        </div>
+
+        <div id="turnover-market-grid" class="turnover-market-grid" aria-live="polite">
+          <div class="loading-block">正在读取三地市场日终成交额…</div>
+        </div>
+
+        <article class="chart-card turnover-chart-card" aria-labelledby="turnover-chart-title">
+          <div class="card-heading">
+            <div>
+              <p class="panel-kicker">Liquidity versus recent baseline</p>
+              <h2 id="turnover-chart-title">成交活跃度趋势</h2>
+            </div>
+            <span class="unit-label">各市场近期均值 = 100</span>
+          </div>
+          <div
+            id="market-turnover-chart"
+            class="chart turnover-chart"
+            role="img"
+            aria-label="A 股、港股与纳斯达克每日成交额相对各自近期均值的趋势图"
+          >
+            <div class="chart-placeholder">成交额趋势加载中…</div>
+          </div>
+          <p class="chart-note">图表只比较各市场相对自身近期均值的热度；悬停或轻触可查看当日原币成交额。</p>
+        </article>
+
+        <article class="table-card turnover-table-card" aria-labelledby="turnover-history-title">
+          <div class="card-heading turnover-table-heading">
+            <div>
+              <p class="panel-kicker">Latest close ledger</p>
+              <h2 id="turnover-history-title">最近交易日明细</h2>
+            </div>
+            <time id="turnover-fetched-at" datetime="">加载中…</time>
+          </div>
+          <div class="table-scroll" tabindex="0" aria-label="可横向滚动的三地市场每日成交额明细表">
+            <table class="turnover-history-table">
+              <caption>按交易日期对齐的 A 股、港股与纳斯达克每日成交额；休市或尚未发布时显示为空</caption>
+              <thead>
+                <tr>
+                  <th scope="col">交易日期</th>
+                  <th scope="col">A 股</th>
+                  <th scope="col">港股</th>
+                  <th scope="col">纳斯达克</th>
+                </tr>
+              </thead>
+              <tbody id="turnover-history-body">
+                <tr><td colspan="4" class="table-empty">正在整理最近交易日成交额…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <aside class="turnover-method-note" aria-labelledby="turnover-method-title">
+          <div>
+            <p class="panel-kicker">Coverage &amp; comparability</p>
+            <h2 id="turnover-method-title">怎样读这组数字</h2>
+          </div>
+          <p id="turnover-method-copy">正在加载统计范围与可比性说明…</p>
+        </aside>
       </section>
 
       <section id="supply-chain" class="dashboard-section route-view" data-route="supply-chain" aria-labelledby="supply-chain-title">
