@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#0b1017">
     <title>AI CapEx Cycle Monitor｜AI 数据中心资本开支周期雷达</title>
     <link rel="icon" type="image/svg+xml" href="./assets/logo.svg">
-    <link rel="stylesheet" href="./css/styles.css?v=20260828-annual-v2">
+    <link rel="stylesheet" href="./css/styles.css?v=20260828-annual-v3">
     <script>
       (function () {
         var routes = ['overview', 'hyperscalers', 'turnover', 'supply-chain', 'insider-sales', 'macro', 'events', 'methodology'];
@@ -24,7 +24,7 @@
     <script defer src="./js/utils.js?v=20260828-annual-v2"></script>
     <script defer src="./js/scoring.js?v=20260828-annual-v2"></script>
     <script defer src="./js/charts.js?v=20260828-annual-v2"></script>
-    <script defer src="./js/app.js?v=20260828-annual-v2"></script>
+    <script defer src="./js/app.js?v=20260828-annual-v3"></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
@@ -569,15 +569,15 @@
         <div class="sale-kpi-grid" aria-live="polite">
           <article class="sale-kpi sale-kpi-primary">
             <div class="sale-kpi-topline">
-              <span>已确认出售</span>
+              <span>近一年已确认出售</span>
               <span class="sale-kpi-index">01</span>
             </div>
             <strong id="sale-executed-value">—</strong>
-            <p><span id="sale-executed-shares">—</span> 股 · Form 4 / 已实施公告</p>
+            <p><span id="sale-executed-shares">—</span> <span id="sale-executed-basis">股 · Form 4 / 已实施公告</span></p>
           </article>
           <article class="sale-kpi sale-kpi-warning">
             <div class="sale-kpi-topline">
-              <span>待确认拟售</span>
+              <span>期末待确认拟售</span>
               <span class="sale-kpi-index">02</span>
             </div>
             <strong id="sale-pending-value">—</strong>
@@ -688,7 +688,7 @@
           </div>
           <div class="sale-table-scroll" tabindex="0" aria-label="可横向滚动的重点标的减持与融资表">
             <table class="sale-company-table">
-              <caption>重点标的最近一个月减持与滚动十二个月公司融资核对表</caption>
+              <caption>重点标的滚动十二个月减持与公司融资核对表</caption>
               <thead>
                 <tr>
                   <th scope="col">标的</th>
@@ -714,7 +714,7 @@
                 <p class="panel-kicker">Capital action ledger</p>
                 <h2 id="sale-ledger-title">减持与融资披露流水</h2>
               </div>
-              <span class="sale-ledger-note">内部人 31D · 公司融资 12M</span>
+              <span class="sale-ledger-note">内部人 12M · 公司融资 12M</span>
             </div>
             <div id="sale-ledger" class="sale-ledger" aria-live="polite">
               <div class="loading-block">正在加载披露流水…</div>

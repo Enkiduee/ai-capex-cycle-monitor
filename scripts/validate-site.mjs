@@ -168,6 +168,8 @@ assert(styles.includes('.buy-zones-table'), 'CSS 缺少重点标的买入区间�
 assert(app.includes("insiderSales: { path: './data/insider-sales.json'"), '前端必须加载减持雷达数据');
 assert(app.includes('function renderInsiderSales(data)'), '前端必须渲染减持雷达');
 assert(html.includes('id="sale-company-body"') && html.includes('id="sale-ledger"'), '减持雷达必须包含公司核对表与披露流水');
+assert(html.includes('内部人 12M · 公司融资 12M') && html.includes('滚动十二个月减持与公司融资核对表'), '减持雷达页面必须明确使用滚动十二个月口径');
+assert(app.includes('formatSaleCny') && app.includes('executedValueCny'), '减持雷达必须保留 A 股人民币原值');
 assert(html.includes('data-sale-status="pending"') && html.includes('id="sale-company-search"'), '减持雷达必须支持状态筛选与公司搜索');
 assert(styles.includes('.sale-kpi-grid') && styles.includes('.sale-company-table'), 'CSS 缺少减持雷达核心样式');
 assert(html.includes('id="financing-company-bars"') && html.includes('data-sale-status="financing"'), '减持与融资雷达必须包含公司融资对比与融资筛选');

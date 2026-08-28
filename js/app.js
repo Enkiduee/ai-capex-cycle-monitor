@@ -2233,6 +2233,24 @@
     return new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 0 }).format(amount);
   }
 
+  function formatSaleCny(value, options = {}) {
+    const amount = toFiniteNumber(value);
+    if (amount === null) return '—';
+    if (amount === 0) return '¥0';
+    const absolute = Math.abs(amount);
+    const sign = amount < 0 ? '−' : '';
+    if (absolute >= 1e9) return `${sign}¥${formatNumber(absolute / 1e9, 2)}B`;
+    if (absolute >= 1e6) return `${sign}¥${formatNumber(absolute / 1e6, options.compact ? 1 : 2)}M`;
+    if (absolute >= 1e3) return `${sign}¥${formatNumber(absolute / 1e3, options.compact ? 0 : 1)}K`;
+    return `${sign}¥${formatNumber(absolute, 0)}`;
+  }
+
+  function formatSaleAmount(valueUsd, valueCny, options = {}) {
+    const usd = formatSaleUsd(valueUsd, options);
+    const cny = Number(valueCny) > 0 ? formatSaleCny(valueCny, options) : '';
+    return cny ? `${usd} / ${cny}` : usd;
+  }
+
   function formatFinancingCurrency(value, currency = '$') {
     const amount = toFiniteNumber(value);
     if (amount === null || amount === 0) return '';
@@ -2303,7 +2321,7 @@
             <span>${escapeHTML(company.name)}</span>
           </div>
           <div class="sale-bar-track-group">
-            <div class="sale-bar-track" title="已售 ${escapeHTML(formatSaleUsd(executed))}">
+            <div class="sale-bar-track" title="已售 ${escapeHTML(formatSaleAmount(executed, company.executed.valueCny))}">
               <span class="is-executed" style="width:${executedWidth.toFixed(2)}%"></span>
             </div>
             <div class="sale-bar-track" title="待确认拟售 ${escapeHTML(formatSaleUsd(pending))}">
@@ -2312,11 +2330,15 @@
           </div>
           <div class="sale-bar-values">
             <strong>${escapeHTML(formatSaleUsd(executed))}</strong>
-            <span>${pending > 0 ? `+ ${escapeHTML(formatSaleUsd(pending))} 待确认` : '拟售已匹配'}</span>
+            <span>${pending > 0
+              ? `+ ${escapeHTML(formatSaleUsd(pending))} 待确认`
+              : Number(company.executed.valueCny) > 0
+                ? `${escapeHTML(formatSaleCny(company.executed.valueCny))} 原值`
+                : '拟售已匹配'}</span>
           </div>
         </div>
       `;
-    }).join('') + `<p class="sale-scale-note">条形按金额平方根缩放，便于同时辨认小额交易；精确值以右侧数字和下表为准。</p>`;
+    }).join('') + `<p class="sale-scale-note">条形按美元可比金额平方根缩放；A 股人民币成交使用交易日 ECB 参考汇率折算，原币金额同时保留。</p>`;
   }
 
   function renderFinancingCompanyBars(data) {
@@ -2416,7 +2438,7 @@
     body.innerHTML = companies.map((company) => {
       const status = saleStatusMeta(company);
       const executedShares = company.executed ? formatSaleShares(company.executed.shares) : '—';
-      const executedValue = company.executed ? formatSaleUsd(company.executed.valueUsd) : '—';
+      const executedValue = company.executed ? formatSaleAmount(company.executed.valueUsd, company.executed.valueCny) : '—';
       const pendingShares = company.pending ? formatSaleShares(company.pending.shares) : '—';
       const pendingValue = company.pending ? formatSaleUsd(company.pending.valueUsd) : '—';
       const companyFinancingEvents = financingEventsForTicker(data, company.ticker);
@@ -2460,7 +2482,7 @@
       ledgerKind: item.kind,
       kindLabel: item.kind === 'pending' ? '拟售' : item.kind === 'executed-discretionary' ? '非计划' : '已售',
       title: `${item.ticker} · ${item.person}`,
-      amountLine: `${item.label} · ${formatSaleShares(item.shares)} 股 · ${formatSaleUsd(item.valueUsd)}`
+      amountLine: `${item.label} · ${formatSaleShares(item.shares)} 股 · ${item.valueEstimated ? '约 ' : ''}${formatSaleAmount(item.valueUsd, item.valueCny)}`
     }));
     const financingItems = (((data || {}).financing || {}).events || []).map((item) => ({
       ...item,
@@ -2508,6 +2530,9 @@
     byId('sale-coverage-label').textContent = `${scope.comparableCoverage} / ${scope.total} 只减持可比 · ${financingScope.enteredCompanies || 0} / ${scope.total} 只融资已录入；未录入不按零处理`;
     byId('sale-executed-value').textContent = formatSaleUsd(summary.executedValueUsd);
     byId('sale-executed-shares').textContent = formatSaleShares(summary.executedShares);
+    byId('sale-executed-basis').textContent = Number(summary.executedValueCny) > 0
+      ? `股 · 含 A 股 ${formatSaleCny(summary.executedValueCny)} 原值`
+      : '股 · Form 4 / 已实施公告';
     byId('sale-pending-value').textContent = formatSaleUsd(summary.pendingValueUsd);
     byId('sale-pending-shares').textContent = formatSaleShares(summary.pendingShares);
     byId('sale-planned-share').textContent = formatNumber(summary.plannedExecutionSharePct, 1, '%');
@@ -2520,7 +2545,7 @@
     byId('financing-company-count').textContent = `${financingScope.enteredCompanies || 0} 家`;
     byId('financing-coverage-value').textContent = `${financingScope.enteredCompanies || 0} / ${scope.total || 0}`;
     byId('sale-concentration-orbit-value').textContent = formatNumber(summary.topCompanyConcentrationPct, 1, '%');
-    byId('sale-concentration-copy').textContent = `CRWV 占样本已售金额 ${formatNumber(summary.topCompanyConcentrationPct, 1, '%')}。集中度远高于其余标的，读数应被视为单一公司事件，而不是整个 AI 供应链的普遍抛压。`;
+    byId('sale-concentration-copy').textContent = `${summary.topCompanyTicker || '首位公司'} 占样本美元可比已售金额 ${formatNumber(summary.topCompanyConcentrationPct, 1, '%')}。集中度远高于其余标的，读数应被视为单一公司事件，而不是整个 AI 供应链的普遍抛压。`;
     byId('sale-company-count').textContent = `${summary.companiesWithSales} 家`;
     byId('sale-pending-company-count').textContent = `${summary.companiesWithPendingNotices} 家`;
     byId('sale-method-executed').textContent = data.methodology.executed;
