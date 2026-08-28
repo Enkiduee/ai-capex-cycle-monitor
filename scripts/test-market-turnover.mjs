@@ -2,10 +2,10 @@ import assert from 'node:assert/strict';
 import {
   normalizeHkexReport,
   normalizeEastmoneyHkFile,
-  normalizeNasdaqFile,
+  normalizeEcbFxHistory,
+  normalizeCboeMarketHistory,
   normalizeSseTurnover,
-  normalizeSzseTurnover,
-  normalizeTurnoverFx
+  normalizeSzseTurnover
 } from './refresh-market-turnover.mjs';
 
 const sse = normalizeSseTurnover({
@@ -50,33 +50,37 @@ const eastmoneyHk = normalizeEastmoneyHkFile({
 assert.equal(eastmoneyHk[1].turnover, 233_514_827_776);
 assert.equal(eastmoneyHk[1].breakdown.shareVolume, 12_245_992_960);
 
-const nasdaq = normalizeNasdaqFile(`"Date","Volume","DolVol"
-8/24/2026 0:00:00,7628670194.00,439846811052.00
-8/25/2026 0:00:00,7772096156.00,385124684516.00`);
+const nasdaq = normalizeCboeMarketHistory(`Day,Market Participant,Tape A Shares,Tape B Shares,Tape C Shares,Total Shares,Tape A Notional,Tape B Notional,Tape C Notional,Total Notional
+2026-08-25,NASDAQ,1,2,300,303,10,20,4000,4030
+2026-08-25,NYSE Arca,4,5,600,609,40,50,7000,7090
+2026-08-24,NASDAQ,7,8,900,915,70,80,10000,10150`);
 assert.deepEqual(nasdaq, [
   {
     date: '2026-08-24',
-    turnover: 439_846_811_052,
-    breakdown: { shareVolume: 7_628_670_194 }
+    turnover: 10_000,
+    breakdown: { shareVolume: 900 }
   },
   {
     date: '2026-08-25',
-    turnover: 385_124_684_516,
-    breakdown: { shareVolume: 7_772_096_156 }
+    turnover: 11_000,
+    breakdown: { shareVolume: 900 }
   }
 ]);
 
-const cnyFx = normalizeTurnoverFx(`DATE,DEXCHUS
-2026-08-20,6.7225
-2026-08-21,6.7210`, 'CNY', '2026-08-28T08:00:00.000Z');
-assert.equal(cnyFx.pair, 'USD/CNY');
-assert.equal(cnyFx.rate, 6.721);
-assert.equal(cnyFx.quoteTime, '2026-08-21T00:00:00.000Z');
+const fx = normalizeEcbFxHistory(`<?xml version="1.0"?>
+<Cube>
+  <Cube time="2026-08-27"><Cube currency="USD" rate="1.1645"/><Cube currency="CNY" rate="7.8258"/><Cube currency="HKD" rate="9.1282"/></Cube>
+  <Cube time="2026-08-26"><Cube currency="USD" rate="1.1600"/><Cube currency="CNY" rate="7.8010"/><Cube currency="HKD" rate="9.0900"/></Cube>
+</Cube>`, '2026-08-28T08:00:00.000Z');
+assert.equal(fx.base, 'USD');
+assert.equal(fx.basis, 'daily_reference_rate');
+assert.equal(fx.rates.CNY.pair, 'USD/CNY');
+assert.equal(fx.rates.CNY.rate, 6.720309);
+assert.equal(fx.rates.CNY.quoteTime, '2026-08-27T00:00:00.000Z');
+assert.deepEqual(fx.rates.CNY.observations, [
+  { date: '2026-08-26', rate: 6.725 },
+  { date: '2026-08-27', rate: 6.720309 }
+]);
+assert.equal(fx.rates.HKD.rate, 7.838729);
 
-const hkdFx = normalizeTurnoverFx(`DATE,DEXHKUS
-2026-08-20,7.8425
-2026-08-21,7.8397`, 'HKD', '2026-08-28T08:00:00.000Z');
-assert.equal(hkdFx.pair, 'USD/HKD');
-assert.equal(hkdFx.rate, 7.8397);
-
-console.log('validated SSE, SZSE, HKEX, Nasdaq, and USD FX normalization');
+console.log('validated SSE, SZSE, HKEX, Cboe Tape C, and ECB daily USD FX normalization');

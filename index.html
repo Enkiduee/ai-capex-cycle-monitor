@@ -210,7 +210,7 @@
           <div class="turnover-hero-copy">
             <p class="turnover-anime-label"><span aria-hidden="true">✦</span> Liquidity observatory <span aria-hidden="true">✦</span></p>
             <h1 id="turnover-title" tabindex="-1">三地市场<br><span>每日成交额</span></h1>
-            <p>收盘铃响后，确认 A 股、港股与纳斯达克的资金星轨；统一换算为美元比较，同时保留人民币与港元原值。</p>
+            <p>收盘铃响后，确认 A 股、港股与纳斯达克的资金星轨；按每日汇率统一换算为美元，并明确显示人民币与港元金额。</p>
             <div class="turnover-hero-markets" aria-label="覆盖市场">
               <span>A 股</span>
               <span>港 股</span>
@@ -229,8 +229,8 @@
         <article class="chart-card turnover-chart-card" aria-labelledby="turnover-chart-title">
           <div class="card-heading">
             <div>
-              <p class="panel-kicker">Rolling quarter in constant USD</p>
-              <h2 id="turnover-chart-title">最近一季度成交额</h2>
+              <p class="panel-kicker">Rolling year with daily FX</p>
+              <h2 id="turnover-chart-title">最近一年成交额</h2>
             </div>
             <span class="unit-label">统一口径：亿美元</span>
           </div>
@@ -238,11 +238,11 @@
             id="market-turnover-chart"
             class="chart turnover-chart"
             role="img"
-            aria-label="A 股、港股与纳斯达克最近一个季度按美元统一折算的每日成交额趋势图"
+            aria-label="A 股、港股与纳斯达克最近一年按每日汇率折算为美元的成交额趋势图"
           >
             <div class="chart-placeholder">成交额趋势加载中…</div>
           </div>
-          <p class="chart-note">使用最新可用汇率对整个季度做恒定汇率折算；悬停或轻触可同时查看美元与人民币、港元原值。</p>
+          <p class="chart-note">每个交易日使用当日或此前最近一个有效 ECB 参考汇率；悬停或轻触可查看人民币、港元金额，美股同时显示折合人民币金额。</p>
         </article>
 
         <article class="table-card turnover-table-card" aria-labelledby="turnover-history-title">
@@ -255,7 +255,7 @@
           </div>
           <div class="table-scroll" tabindex="0" aria-label="可横向滚动的三地市场每日成交额明细表">
             <table class="turnover-history-table">
-              <caption>按交易日期对齐的 A 股、港股与纳斯达克每日成交额；美元为统一口径，A 股与港股同时显示原币</caption>
+              <caption>按交易日期对齐的三地市场每日成交额；美元为统一口径，A 股显示人民币、港股显示港元、纳斯达克显示折合人民币</caption>
               <thead>
                 <tr>
                   <th scope="col">交易日期</th>

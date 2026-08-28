@@ -81,8 +81,8 @@ assert(app.includes('chartApi.resizeAll()'), '进入图表视图后必须触发 
 assert(app.includes("marketTurnover: { path: './data/market-turnover.json'"), '前端必须加载每日成交额快照');
 assert(app.includes('function renderMarketTurnover(data)'), '前端必须渲染三地市场每日成交额');
 assert(html.includes('id="market-turnover-chart"') && html.includes('id="turnover-history-body"'), '每日成交额视图必须包含趋势图与历史明细表');
-assert(charts.includes('initTurnoverChart') && charts.includes("commonValueAxis('亿美元')"), '图表模块必须以亿美元绘制最近一季度成交额');
-assert(app.includes('turnoverUsdAmount') && app.includes('turnover-original-value'), '成交额卡片必须以美元为统一口径并保留原币金额');
+assert(charts.includes('initTurnoverChart') && charts.includes("commonValueAxis('亿美元')") && charts.includes('rollingYearStartDate'), '图表模块必须以每日汇率和亿美元绘制最近一年成交额');
+assert(app.includes('turnoverUsdAmount') && app.includes('turnoverCnyAmount') && app.includes('人民币金额：') && app.includes('港元金额：') && app.includes('折合人民币：'), '成交额卡片必须明确显示人民币、港元及美股折合人民币金额');
 assert(styles.includes('.turnover-market-grid') && styles.includes('.turnover-history-table'), 'CSS 缺少每日成交额核心样式');
 assert(app.includes('renderSelectedValuation({ forceChart: true })'), '进入供应链视图后必须刷新 TradingView');
 assert(app.includes('calculatePePriceModel'), '估值页面必须从 EPS 与 P/E 计算价格带');

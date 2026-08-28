@@ -12,8 +12,11 @@ import {
 
 const OUTPUT_FILE = 'data/market-turnover.json';
 const MAX_OBSERVATIONS = 260;
+const MAX_FX_OBSERVATIONS = 400;
 const DEFAULT_BACKFILL = 1;
 const USER_AGENT = 'Mozilla/5.0 (compatible; AI-CapEx-Cycle-Monitor/1.0)';
+const ECB_FX_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml';
+const ECB_FX_SOURCE_URL = 'https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html';
 const MONTHS = Object.freeze({
   JAN: '01', FEB: '02', MAR: '03', APR: '04', MAY: '05', JUN: '06',
   JUL: '07', AUG: '08', SEP: '09', OCT: '10', NOV: '11', DEC: '12'
@@ -47,24 +50,9 @@ const MARKET_METADATA = Object.freeze({
     currency: 'USD',
     timezone: 'America/New_York',
     closeTime: '16:00',
-    definition: 'Nasdaq 上市证券在所有交易场所成交的 consolidated dollar volume。',
-    sourceLabel: 'Nasdaq Trader Daily Market Statistics',
-    sourceUrl: 'https://www.nasdaqtrader.com/Trader.aspx?id=DailyMarketFiles'
-  }
-});
-
-const FX_CONFIG = Object.freeze({
-  CNY: {
-    currency: 'CNY',
-    pair: 'USD/CNY',
-    series: 'DEXCHUS',
-    sourceUrl: 'https://fred.stlouisfed.org/series/DEXCHUS'
-  },
-  HKD: {
-    currency: 'HKD',
-    pair: 'USD/HKD',
-    series: 'DEXHKUS',
-    sourceUrl: 'https://fred.stlouisfed.org/series/DEXHKUS'
+    definition: '美国合并行情 Tape C（Nasdaq 上市证券）在所有交易场所成交的美元名义金额。',
+    sourceLabel: 'Cboe Historical Market Volume（Tape C）',
+    sourceUrl: 'https://www.cboe.com/markets/us/equities/market-statistics/historical-market-volume/'
   }
 });
 
@@ -278,78 +266,99 @@ function csvColumns(line) {
   return String(line || '').split(',').map((value) => value.replace(/^"|"$/g, '').trim());
 }
 
-export function normalizeNasdaqFile(text) {
+export function normalizeCboeMarketHistory(text) {
   const lines = String(text || '').trim().split(/\r?\n/);
   if (lines.length < 2) return [];
   const headers = csvColumns(lines[0]);
-  const dateIndex = headers.indexOf('Date');
-  const volumeIndex = headers.indexOf('Volume');
-  const dollarVolumeIndex = headers.indexOf('DolVol');
+  const dateIndex = headers.indexOf('Day');
+  const volumeIndex = headers.indexOf('Tape C Shares');
+  const dollarVolumeIndex = headers.indexOf('Tape C Notional');
   if ([dateIndex, volumeIndex, dollarVolumeIndex].some((index) => index < 0)) return [];
 
-  return lines.slice(1).flatMap((line) => {
+  const byDate = new Map();
+  lines.slice(1).forEach((line) => {
     const columns = csvColumns(line);
-    const match = columns[dateIndex]?.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    const date = columns[dateIndex];
     const turnover = numeric(columns[dollarVolumeIndex]);
     const shareVolume = numeric(columns[volumeIndex]);
-    if (!match || turnover === null || turnover <= 0 || shareVolume === null || shareVolume <= 0) return [];
-    const date = `${match[3]}-${match[1].padStart(2, '0')}-${match[2].padStart(2, '0')}`;
-    return [{
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || turnover === null || turnover <= 0 || shareVolume === null || shareVolume <= 0) return;
+    const existing = byDate.get(date) || { turnover: 0, shareVolume: 0 };
+    existing.turnover += turnover;
+    existing.shareVolume += shareVolume;
+    byDate.set(date, existing);
+  });
+  return Array.from(byDate, ([date, values]) => ({
       date,
-      turnover: Math.round(turnover),
-      breakdown: { shareVolume: Math.round(shareVolume) }
-    }];
-  }).sort((left, right) => left.date.localeCompare(right.date));
+      turnover: Math.round(values.turnover),
+      breakdown: { shareVolume: Math.round(values.shareVolume) }
+    }))
+    .sort((left, right) => left.date.localeCompare(right.date));
 }
 
-export function normalizeTurnoverFx(text, currency, fetchedAt) {
-  const config = FX_CONFIG[String(currency || '').toUpperCase()];
-  if (!config) throw new Error(`不支持的成交额换算币种：${currency}`);
-  const observations = String(text || '').trim().split(/\r?\n/).slice(1).flatMap((line) => {
-    const [date, rawRate] = line.split(',');
-    const rate = Number(rawRate);
-    return /^\d{4}-\d{2}-\d{2}$/.test(date) && Number.isFinite(rate) && rate > 0 ? [{ date, rate }] : [];
-  });
-  const latest = observations.at(-1);
-  if (!latest) {
-    throw new Error(`${config.pair} 汇率或时间无效`);
+export function normalizeEcbFxHistory(text, fetchedAt) {
+  const observations = { CNY: [], HKD: [] };
+  const dayPattern = /<Cube time="(\d{4}-\d{2}-\d{2})">([\s\S]*?)<\/Cube>/g;
+  let dayMatch;
+  while ((dayMatch = dayPattern.exec(String(text || ''))) !== null) {
+    const [, date, block] = dayMatch;
+    const rateFor = (currency) => {
+      const match = block.match(new RegExp(`<Cube currency="${currency}" rate="([^"]+)"\\s*/>`));
+      const rate = Number(match && match[1]);
+      return Number.isFinite(rate) && rate > 0 ? rate : null;
+    };
+    const eurUsd = rateFor('USD');
+    const eurCny = rateFor('CNY');
+    const eurHkd = rateFor('HKD');
+    if ([eurUsd, eurCny, eurHkd].some((rate) => rate === null)) continue;
+    observations.CNY.push({ date, rate: Math.round((eurCny / eurUsd) * 1e6) / 1e6 });
+    observations.HKD.push({ date, rate: Math.round((eurHkd / eurUsd) * 1e6) / 1e6 });
   }
+
+  for (const currency of Object.keys(observations)) {
+    observations[currency] = observations[currency]
+      .sort((left, right) => left.date.localeCompare(right.date))
+      .slice(-MAX_FX_OBSERVATIONS);
+  }
+  if (!observations.CNY.length || !observations.HKD.length) {
+    throw new Error('ECB USD/CNY、USD/HKD 日汇率历史无效');
+  }
+
+  const rates = Object.fromEntries(['CNY', 'HKD'].map((currency) => {
+    const latest = observations[currency].at(-1);
+    return [currency, {
+      pair: `USD/${currency}`,
+      rate: latest.rate,
+      quoteTime: `${latest.date}T00:00:00.000Z`,
+      fetchedAt,
+      sourceUrl: ECB_FX_SOURCE_URL,
+      observations: observations[currency]
+    }];
+  }));
   return {
-    pair: config.pair,
-    rate: Math.round(latest.rate * 10000) / 10000,
-    quoteTime: `${latest.date}T00:00:00.000Z`,
-    fetchedAt,
-    sourceUrl: config.sourceUrl
+    base: 'USD',
+    basis: 'daily_reference_rate',
+    sourceLabel: 'European Central Bank daily reference rates',
+    sourceUrl: ECB_FX_SOURCE_URL,
+    rates
   };
 }
 
 async function loadFxSnapshot(fetchedAt) {
-  const entries = await Promise.all(Object.values(FX_CONFIG).map(async (config) => {
-    const url = `https://fred.stlouisfed.org/graph/fredgraph.csv?id=${encodeURIComponent(config.series)}`;
-    const text = await fetchText(url, {
-      retries: 3,
-      timeoutMs: 20000,
-      headers: {
-        'User-Agent': USER_AGENT,
-        'Accept-Language': 'en-US,en;q=0.8'
-      }
-    });
-    return [config.currency, normalizeTurnoverFx(text, config.currency, fetchedAt)];
-  }));
-  return {
-    base: 'USD',
-    basis: 'latest_constant_rate',
-    sourceLabel: 'Federal Reserve H.10 via FRED',
-    rates: Object.fromEntries(entries)
-  };
+  const text = await fetchText(ECB_FX_URL, {
+    retries: 3,
+    timeoutMs: 30000,
+    headers: { 'Accept-Language': 'en-US,en;q=0.8' }
+  });
+  return normalizeEcbFxHistory(text, fetchedAt);
 }
 
-async function loadNasdaqObservations(referenceDate) {
-  const years = [Number(referenceDate.slice(0, 4))];
-  if (referenceDate.slice(5, 7) === '01') years.push(years[0] - 1);
+async function loadNasdaqObservations(referenceDate, backfill) {
+  const startYear = Number(shiftDate(referenceDate, -Math.max(backfill * 2, 45)).slice(0, 4));
+  const endYear = Number(referenceDate.slice(0, 4));
+  const years = Array.from({ length: endYear - startYear + 1 }, (_, index) => startYear + index);
   const batches = await Promise.all(years.map(async (year) => {
-    const url = `https://www.nasdaqtrader.com/dynamic/dailyfiles/daily${year}.txt`;
-    return normalizeNasdaqFile(await fetchText(url));
+    const url = `https://cdn.cboe.com/resources/us/equities/market-statistics/historical-market-volume/market_history_${year}.csv`;
+    return normalizeCboeMarketHistory(await fetchText(url));
   }));
   return batches.flat().sort((left, right) => left.date.localeCompare(right.date));
 }
@@ -390,15 +399,15 @@ function selectedMarkets(requested) {
 function basePayload(current) {
   const existingById = new Map((current && Array.isArray(current.markets) ? current.markets : []).map((market) => [market.id, market]));
   return {
-    version: 2,
+    version: 3,
     updatedAt: current?.updatedAt || dateOnly(now()),
     fetchedAt: current?.fetchedAt || null,
     isDemoData: false,
     fx: current?.fx || null,
     methodology: {
-      comparison: '卡片、图表与明细表按美联储 H.10 的最新可用 USD/CNY、USD/HKD 快照统一折算为美元；A 股和港股同时保留人民币、港元原值。',
+      comparison: '卡片、图表与明细表按 ECB 每个交易日的参考汇率统一折算为美元；A 股明确显示人民币原值，港股明确显示港元原值，纳斯达克同时显示当日折合人民币金额。',
       retention: `每个市场最多保留最近 ${MAX_OBSERVATIONS} 个交易日。`,
-      caveat: '趋势图显示滚动最近一个季度，并以恒定快照汇率排除日间汇率波动；三地统计范围仍不完全相同。'
+      caveat: '趋势图显示滚动最近一年；若市场交易日没有 ECB 汇率，则使用该日之前最近一个有效参考汇率。三地统计范围仍不完全相同。'
     },
     markets: Object.keys(MARKET_METADATA).map((id) => ({
       ...MARKET_METADATA[id],
@@ -419,7 +428,8 @@ function fxFingerprint(snapshot) {
         pair: rate.pair,
         rate: rate.rate,
         quoteTime: rate.quoteTime,
-        sourceUrl: rate.sourceUrl
+        sourceUrl: rate.sourceUrl,
+        observations: rate.observations
       }];
     }))
   });
@@ -467,7 +477,7 @@ export async function refreshMarketTurnover(options = {}) {
         incoming = (await loadHkObservations(localDate, backfill)).slice(-backfill);
       } else if (marketId === 'nasdaq') {
         const localDate = isoDateInTimezone(checkedAtDate, MARKET_METADATA.nasdaq.timezone);
-        incoming = (await loadNasdaqObservations(localDate)).slice(-backfill);
+        incoming = (await loadNasdaqObservations(localDate, backfill)).slice(-backfill);
       }
     } catch (error) {
       console.warn(`[turnover] ${MARKET_METADATA[marketId].name} 上游请求失败，保留最近有效快照：${error.message}`);

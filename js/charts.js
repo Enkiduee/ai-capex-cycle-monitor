@@ -639,20 +639,19 @@
     }) + ' ' + unit;
   }
 
-  function turnoverFxRate(data, currency) {
+  function turnoverFxRate(data, currency, date) {
     if (currency === 'USD') return 1;
-    const rate = toFiniteNumber(data && data.fx && data.fx.rates && data.fx.rates[currency] && data.fx.rates[currency].rate);
+    const snapshot = data && data.fx && data.fx.rates && data.fx.rates[currency];
+    const observations = Array.isArray(snapshot && snapshot.observations) ? snapshot.observations : [];
+    const datedRate = date ? observations.slice().reverse().find(function (item) { return item && item.date <= date; }) : null;
+    const rate = toFiniteNumber(datedRate ? datedRate.rate : snapshot && snapshot.rate);
     return rate !== null && rate > 0 ? rate : null;
   }
 
-  function rollingQuarterStartDate(latestDate) {
+  function rollingYearStartDate(latestDate) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(String(latestDate || ''))) return '';
     const value = new Date(latestDate + 'T00:00:00.000Z');
-    const day = value.getUTCDate();
-    value.setUTCDate(1);
-    value.setUTCMonth(value.getUTCMonth() - 3);
-    const lastDay = new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth() + 1, 0)).getUTCDate();
-    value.setUTCDate(Math.min(day, lastDay));
+    value.setUTCFullYear(value.getUTCFullYear() - 1);
     return value.toISOString().slice(0, 10);
   }
 
@@ -660,15 +659,19 @@
     if (!data || !Array.isArray(data.markets)) return null;
     const rawMarkets = data.markets.flatMap(function (market, index) {
       const currency = safeLabel(market.currency, '');
-      const fxRate = turnoverFxRate(data, currency);
-      if (fxRate === null) return [];
       const observations = Array.isArray(market && market.observations)
         ? market.observations
           .map(function (item) {
+            const date = safeLabel(item && item.date, '');
+            const turnover = toFiniteNumber(item && item.turnover);
+            const fxRate = turnoverFxRate(data, currency, date);
+            const cnyRate = turnoverFxRate(data, 'CNY', date);
+            const turnoverUsd = turnover !== null && fxRate !== null ? turnover / fxRate : null;
             return {
-              date: safeLabel(item && item.date, ''),
-              turnover: toFiniteNumber(item && item.turnover),
-              turnoverUsd: toFiniteNumber(item && item.turnover) / fxRate
+              date: date,
+              turnover: turnover,
+              turnoverUsd: turnoverUsd,
+              turnoverCny: turnoverUsd !== null && cnyRate !== null ? turnoverUsd * cnyRate : null
             };
           })
           .filter(function (item) {
@@ -676,7 +679,9 @@
               && item.turnover !== null
               && item.turnover > 0
               && Number.isFinite(item.turnoverUsd)
-              && item.turnoverUsd > 0;
+              && item.turnoverUsd > 0
+              && Number.isFinite(item.turnoverCny)
+              && item.turnoverCny > 0;
           })
           .sort(function (left, right) { return left.date.localeCompare(right.date); })
         : [];
@@ -685,14 +690,13 @@
         id: safeLabel(market.id, 'market-' + String(index + 1)),
         name: safeLabel(market.name, '市场 ' + String(index + 1)),
         currency: currency,
-        fxRate: fxRate,
         observations: observations
       }];
     });
     const latestDate = rawMarkets.flatMap(function (market) {
       return market.observations.map(function (item) { return item.date; });
     }).sort().at(-1);
-    const startDate = rollingQuarterStartDate(latestDate);
+    const startDate = rollingYearStartDate(latestDate);
     const markets = rawMarkets.flatMap(function (market) {
       const observations = market.observations.filter(function (item) { return item.date >= startDate; });
       return observations.length >= 2 ? [Object.assign({}, market, { observations: observations })] : [];
@@ -717,6 +721,7 @@
             value: Number((item.turnoverUsd / 1e8).toFixed(2)),
             rawTurnover: item.turnover,
             usdTurnover: item.turnoverUsd,
+            cnyTurnover: item.turnoverCny,
             currency: market.currency
           };
         })
@@ -739,10 +744,15 @@
           const date = items.length ? safeLabel(items[0].axisValueLabel || items[0].name, '交易日') : '交易日';
           const lines = ['交易日：' + date];
           items.forEach(function (item) {
+            const currencyDetail = item.data.currency === 'CNY'
+              ? '人民币金额：' + formatTurnoverAmount(item.data.rawTurnover, 'CNY')
+              : item.data.currency === 'HKD'
+                ? '港元金额：' + formatTurnoverAmount(item.data.rawTurnover, 'HKD')
+                : '折合人民币：' + formatTurnoverAmount(item.data.cnyTurnover, 'CNY');
             lines.push(
               '● ' + safeLabel(item.seriesName, '市场') + '：'
               + formatTurnoverAmount(item.data.usdTurnover, 'USD')
-              + (item.data.currency === 'USD' ? '' : ' · 原币 ' + formatTurnoverAmount(item.data.rawTurnover, item.data.currency))
+              + ' · ' + currencyDetail
             );
           });
           return lines.join('\n');
