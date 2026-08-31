@@ -1,7 +1,7 @@
 {
   "version": 4,
   "updatedAt": "2026-08-28",
-  "fetchedAt": "2026-08-29T03:46:22.798Z",
+  "fetchedAt": "2026-08-31T17:59:50.353Z",
   "isDemoData": false,
   "fx": {
     "base": "USD",
@@ -11,15 +11,11 @@
     "rates": {
       "CNY": {
         "pair": "USD/CNY",
-        "rate": 6.720862,
-        "quoteTime": "2026-08-28T00:00:00.000Z",
-        "fetchedAt": "2026-08-28T21:21:24.290Z",
+        "rate": 6.719731,
+        "quoteTime": "2026-08-31T00:00:00.000Z",
+        "fetchedAt": "2026-08-31T17:59:50.353Z",
         "sourceUrl": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html",
         "observations": [
-          {
-            "date": "2025-02-04",
-            "rate": 7.251379
-          },
           {
             "date": "2025-02-05",
             "rate": 7.272788
@@ -1615,20 +1611,20 @@
           {
             "date": "2026-08-28",
             "rate": 6.720862
+          },
+          {
+            "date": "2026-08-31",
+            "rate": 6.719731
           }
         ]
       },
       "HKD": {
         "pair": "USD/HKD",
-        "rate": 7.83956,
-        "quoteTime": "2026-08-28T00:00:00.000Z",
-        "fetchedAt": "2026-08-28T21:21:24.290Z",
+        "rate": 7.837875,
+        "quoteTime": "2026-08-31T00:00:00.000Z",
+        "fetchedAt": "2026-08-31T17:59:50.353Z",
         "sourceUrl": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html",
         "observations": [
-          {
-            "date": "2025-02-04",
-            "rate": 7.788002
-          },
           {
             "date": "2025-02-05",
             "rate": 7.787565
@@ -3224,6 +3220,10 @@
           {
             "date": "2026-08-28",
             "rate": 7.83956
+          },
+          {
+            "date": "2026-08-31",
+            "rate": 7.837875
           }
         ]
       }
