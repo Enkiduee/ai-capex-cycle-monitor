@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-31",
+  "updatedAt": "2026-09-01",
   "isDemoData": false,
   "methodologyVersion": "pe-cycle-v1",
   "dataNotice": "估值卡同时包含可复算 P/E 情景与截至 2026-07-14 的人工财报/指引研究区间；两者都是研究假设，不是目标价、收益保证、个性化建议或任何形式的买卖推荐。价格带必须在每份财报或重大事件后重算。",
@@ -320,7 +320,7 @@
     "valuationRangeMode": "P/E 情景仅在财报与重大事件后人工复核更新",
     "lastDailyCheckAt": "2026-09-01T06:17:58.448Z",
     "lastDailySecCheckAt": "2026-09-01T06:17:58.448Z",
-    "lastEventDetectedAt": "2026-08-31T17:42:31.659Z"
+    "lastEventDetectedAt": "2026-09-01T21:21:42.830Z"
   },
   "companies": [
     {
@@ -580,11 +580,11 @@
       "segment": "高速连接",
       "tradingViewSymbol": "NASDAQ:CRDO",
       "secCik": "0001807794",
-      "reviewStatus": "reviewed",
+      "reviewStatus": "needs-review",
       "reviewedAt": "2026-07-12",
       "reviewedBy": "项目估值研究",
       "reviewEvidenceUrl": "https://www.sec.gov/Archives/edgar/data/1807794/000162828026043303/crdo-20260502.htm",
-      "reviewReason": "已按 FY2026 10-K 的 GAAP 摊薄 EPS 复核；因公开盈利历史短，维持低置信度。",
+      "reviewReason": "发现新的 SEC 8-K 披露（2026-09-01），现有 EPS 与 P/E 情景已标记为待人工复核。",
       "currency": "USD",
       "confidence": "low",
       "valuationModel": {
@@ -627,7 +627,13 @@
           "url": "https://stockanalysis.com/stocks/crdo/financials/ratios/?p=quarterly",
           "type": "historical-valuation"
         }
-      ]
+      ],
+      "latestSecFiling": {
+        "form": "8-K",
+        "filingDate": "2026-09-01",
+        "accessionNumber": "0001628280-26-059795",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1807794/000162828026059795/0001628280-26-059795-index.html"
+      }
     },
     {
       "ticker": "ALAB",
@@ -837,7 +843,7 @@
       "reviewedAt": "2026-07-12",
       "reviewedBy": "项目估值研究",
       "reviewEvidenceUrl": "https://investors.ao-inc.com/node/17021/html",
-      "reviewReason": "发现新的 SEC 8-K 披露（2026-08-24），现有 EPS 与 P/E 情景已标记为待人工复核。",
+      "reviewReason": "发现新的 SEC 8-K 披露（2026-09-01），现有 EPS 与 P/E 情景已标记为待人工复核。",
       "currency": "USD",
       "confidence": "not_assessed",
       "valuationModel": {
@@ -876,9 +882,9 @@
       ],
       "latestSecFiling": {
         "form": "8-K",
-        "filingDate": "2026-08-24",
-        "accessionNumber": "0001683168-26-006693",
-        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000168316826006693/0001683168-26-006693-index.html"
+        "filingDate": "2026-09-01",
+        "accessionNumber": "0001683168-26-006862",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000168316826006862/0001683168-26-006862-index.html"
       }
     },
     {
