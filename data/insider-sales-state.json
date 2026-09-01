@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-28T10:00:00.000Z",
+  "updatedAt": "2026-09-01T22:49:52.054Z",
   "liveCoverageStart": "2026-07-01",
-  "lastSecCheckAt": "2026-08-28T10:00:00.000Z",
-  "lastSecSessionDate": "2026-08-27",
+  "lastSecCheckAt": "2026-09-01T22:49:52.054Z",
+  "lastSecSessionDate": "2026-09-01",
   "lastCninfoCheckAt": "2026-08-28T10:00:00.000Z",
   "lastCninfoSessionDate": "2026-08-28",
   "historicalTransactions": [
@@ -18103,209 +18103,90 @@
           "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000412/form4.xml"
         }
       ]
+    },
+    {
+      "ticker": "CRWV",
+      "accessionNumber": "0001769628-26-000414",
+      "filingDate": "2026-08-28",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000414/form4.xml",
+      "owner": "McVeety Kristen J",
+      "isPlan": true,
+      "transactions": [
+        {
+          "date": "2026-08-26",
+          "ticker": "CRWV",
+          "owner": "McVeety Kristen J",
+          "ownerKey": "j kristen mcveety",
+          "shares": 724,
+          "valueUsd": 63269.49,
+          "valueCny": 0,
+          "planValueUsd": 63269.49,
+          "accessionNumber": "0001769628-26-000414",
+          "filingDate": "2026-08-28",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000414/form4.xml"
+        },
+        {
+          "date": "2026-08-26",
+          "ticker": "CRWV",
+          "owner": "McVeety Kristen J",
+          "ownerKey": "j kristen mcveety",
+          "shares": 1144,
+          "valueUsd": 100880.44,
+          "valueCny": 0,
+          "planValueUsd": 100880.44,
+          "accessionNumber": "0001769628-26-000414",
+          "filingDate": "2026-08-28",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000414/form4.xml"
+        },
+        {
+          "date": "2026-08-26",
+          "ticker": "CRWV",
+          "owner": "McVeety Kristen J",
+          "ownerKey": "j kristen mcveety",
+          "shares": 232,
+          "valueUsd": 20704.58,
+          "valueCny": 0,
+          "planValueUsd": 20704.58,
+          "accessionNumber": "0001769628-26-000414",
+          "filingDate": "2026-08-28",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000414/form4.xml"
+        }
+      ]
+    },
+    {
+      "ticker": "GLW",
+      "accessionNumber": "0000024741-26-000257",
+      "filingDate": "2026-08-31",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000002474126000257/form4.xml",
+      "owner": "STEVERSON LEWIS A",
+      "isPlan": false,
+      "transactions": [
+        {
+          "date": "2026-08-28",
+          "ticker": "GLW",
+          "owner": "STEVERSON LEWIS A",
+          "ownerKey": "a lewis steverson",
+          "shares": 13100,
+          "valueUsd": 1981929.13,
+          "valueCny": 0,
+          "planValueUsd": 0,
+          "accessionNumber": "0000024741-26-000257",
+          "filingDate": "2026-08-31",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000002474126000257/form4.xml"
+        }
+      ]
+    },
+    {
+      "ticker": "ASTS",
+      "accessionNumber": "0001104659-26-104326",
+      "filingDate": "2026-09-01",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1780312/000110465926104326/tm2624604-1_4seq1.xml",
+      "owner": "Cisneros Adriana",
+      "isPlan": false,
+      "transactions": []
     }
   ],
   "form144Filings": [
-    {
-      "ticker": "AXTI",
-      "accessionNumber": "0001965301-26-000109",
-      "filingDate": "2026-08-07",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1051627/000196530126000109/primary_doc.xml",
-      "owner": "LEBLANC LEONARD J",
-      "notices": [
-        {
-          "date": "2026-08-07",
-          "ticker": "AXTI",
-          "owner": "LEBLANC LEONARD J",
-          "ownerKey": "j leblanc leonard",
-          "shares": 2000,
-          "valueUsd": 175020,
-          "accessionNumber": "0001965301-26-000109",
-          "filingDate": "2026-08-07",
-          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1051627/000196530126000109/primary_doc.xml"
-        }
-      ]
-    },
-    {
-      "ticker": "CRWV",
-      "accessionNumber": "0001950047-26-007872",
-      "filingDate": "2026-08-10",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726007872/primary_doc.xml",
-      "owner": "BRANNIN MCBEE",
-      "notices": [
-        {
-          "date": "2026-08-10",
-          "ticker": "CRWV",
-          "owner": "BRANNIN MCBEE",
-          "ownerKey": "brannin mcbee",
-          "shares": 144000,
-          "valueUsd": 13056480,
-          "accessionNumber": "0001950047-26-007872",
-          "filingDate": "2026-08-10",
-          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726007872/primary_doc.xml"
-        }
-      ]
-    },
-    {
-      "ticker": "CRWV",
-      "accessionNumber": "0001950047-26-007873",
-      "filingDate": "2026-08-10",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726007873/primary_doc.xml",
-      "owner": "MEGHAN BENNETT",
-      "notices": [
-        {
-          "date": "2026-08-10",
-          "ticker": "CRWV",
-          "owner": "MEGHAN BENNETT",
-          "ownerKey": "bennett meghan",
-          "shares": 25000,
-          "valueUsd": 2266750,
-          "accessionNumber": "0001950047-26-007873",
-          "filingDate": "2026-08-10",
-          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726007873/primary_doc.xml"
-        }
-      ]
-    },
-    {
-      "ticker": "CRWV",
-      "accessionNumber": "0001950047-26-007874",
-      "filingDate": "2026-08-10",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726007874/primary_doc.xml",
-      "owner": "CANIS MAJOR 2024 IRREVOCABLE TRUST LLC",
-      "notices": [
-        {
-          "date": "2026-08-10",
-          "ticker": "CRWV",
-          "owner": "CANIS MAJOR 2024 IRREVOCABLE TRUST LLC",
-          "ownerKey": "2024 canis irrevocable llc major trust",
-          "shares": 3000,
-          "valueUsd": 272010,
-          "accessionNumber": "0001950047-26-007874",
-          "filingDate": "2026-08-10",
-          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726007874/primary_doc.xml"
-        }
-      ]
-    },
-    {
-      "ticker": "CRWV",
-      "accessionNumber": "0001950047-26-007875",
-      "filingDate": "2026-08-10",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726007875/primary_doc.xml",
-      "owner": "CANIS MAJOR SM TRUST",
-      "notices": [
-        {
-          "date": "2026-08-10",
-          "ticker": "CRWV",
-          "owner": "CANIS MAJOR SM TRUST",
-          "ownerKey": "canis major sm trust",
-          "shares": 500,
-          "valueUsd": 45335,
-          "accessionNumber": "0001950047-26-007875",
-          "filingDate": "2026-08-10",
-          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726007875/primary_doc.xml"
-        }
-      ]
-    },
-    {
-      "ticker": "CRWV",
-      "accessionNumber": "0001950047-26-007876",
-      "filingDate": "2026-08-10",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726007876/primary_doc.xml",
-      "owner": "CANIS MINOR 2025 GRAT",
-      "notices": [
-        {
-          "date": "2026-08-10",
-          "ticker": "CRWV",
-          "owner": "CANIS MINOR 2025 GRAT",
-          "ownerKey": "2025 canis grat minor",
-          "shares": 12500,
-          "valueUsd": 1133375,
-          "accessionNumber": "0001950047-26-007876",
-          "filingDate": "2026-08-10",
-          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726007876/primary_doc.xml"
-        }
-      ]
-    },
-    {
-      "ticker": "CRWV",
-      "accessionNumber": "0001950047-26-007877",
-      "filingDate": "2026-08-10",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726007877/primary_doc.xml",
-      "owner": "CANIS MAJOR 2025 GRAT",
-      "notices": [
-        {
-          "date": "2026-08-10",
-          "ticker": "CRWV",
-          "owner": "CANIS MAJOR 2025 GRAT",
-          "ownerKey": "2025 canis grat major",
-          "shares": 40000,
-          "valueUsd": 3626800,
-          "accessionNumber": "0001950047-26-007877",
-          "filingDate": "2026-08-10",
-          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726007877/primary_doc.xml"
-        }
-      ]
-    },
-    {
-      "ticker": "CRWV",
-      "accessionNumber": "0001950047-26-007878",
-      "filingDate": "2026-08-10",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726007878/primary_doc.xml",
-      "owner": "BRANNIN J. MCBEE 2022 IRR TRUST",
-      "notices": [
-        {
-          "date": "2026-08-10",
-          "ticker": "CRWV",
-          "owner": "BRANNIN J. MCBEE 2022 IRR TRUST",
-          "ownerKey": "2022 brannin irr j mcbee trust",
-          "shares": 25000,
-          "valueUsd": 2266750,
-          "accessionNumber": "0001950047-26-007878",
-          "filingDate": "2026-08-10",
-          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726007878/primary_doc.xml"
-        }
-      ]
-    },
-    {
-      "ticker": "AAOI",
-      "accessionNumber": "0001974078-26-000300",
-      "filingDate": "2026-08-10",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000197407826000300/primary_doc.xml",
-      "owner": "Murry Stefan J.",
-      "notices": [
-        {
-          "date": "2026-08-10",
-          "ticker": "AAOI",
-          "owner": "Murry Stefan J.",
-          "ownerKey": "j murry stefan",
-          "shares": 4000,
-          "valueUsd": 579170,
-          "accessionNumber": "0001974078-26-000300",
-          "filingDate": "2026-08-10",
-          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1158114/000197407826000300/primary_doc.xml"
-        }
-      ]
-    },
-    {
-      "ticker": "CRWV",
-      "accessionNumber": "0002124855-26-000008",
-      "filingDate": "2026-08-10",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000212485526000008/primary_doc.xml",
-      "owner": "Sachin Jain",
-      "notices": [
-        {
-          "date": "2026-08-10",
-          "ticker": "CRWV",
-          "owner": "Sachin Jain",
-          "ownerKey": "jain sachin",
-          "shares": 13608,
-          "valueUsd": 1253160.72,
-          "accessionNumber": "0002124855-26-000008",
-          "filingDate": "2026-08-10",
-          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000212485526000008/primary_doc.xml"
-        }
-      ]
-    },
     {
       "ticker": "CRWV",
       "accessionNumber": "0001950047-26-007970",
@@ -19263,6 +19144,166 @@
           "accessionNumber": "0001950047-26-008740",
           "filingDate": "2026-08-27",
           "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726008740/primary_doc.xml"
+        }
+      ]
+    },
+    {
+      "ticker": "LITE",
+      "accessionNumber": "0001950047-26-008802",
+      "filingDate": "2026-08-28",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726008802/primary_doc.xml",
+      "owner": "WUPEN YUEN",
+      "notices": [
+        {
+          "date": "2026-08-28",
+          "ticker": "LITE",
+          "owner": "WUPEN YUEN",
+          "ownerKey": "wupen yuen",
+          "shares": 500,
+          "valueUsd": 470475,
+          "accessionNumber": "0001950047-26-008802",
+          "filingDate": "2026-08-28",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726008802/primary_doc.xml"
+        }
+      ]
+    },
+    {
+      "ticker": "GLW",
+      "accessionNumber": "0001969223-26-000964",
+      "filingDate": "2026-08-28",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000196922326000964/primary_doc.xml",
+      "owner": "Lewis Steverson",
+      "notices": [
+        {
+          "date": "2026-08-28",
+          "ticker": "GLW",
+          "owner": "Lewis Steverson",
+          "ownerKey": "lewis steverson",
+          "shares": 13100,
+          "valueUsd": 1981863.52,
+          "accessionNumber": "0001969223-26-000964",
+          "filingDate": "2026-08-28",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000196922326000964/primary_doc.xml"
+        }
+      ]
+    },
+    {
+      "ticker": "LITE",
+      "accessionNumber": "0001950047-26-008841",
+      "filingDate": "2026-08-31",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726008841/primary_doc.xml",
+      "owner": "WUPEN YUEN",
+      "notices": [
+        {
+          "date": "2026-08-31",
+          "ticker": "LITE",
+          "owner": "WUPEN YUEN",
+          "ownerKey": "wupen yuen",
+          "shares": 500,
+          "valueUsd": 447500,
+          "accessionNumber": "0001950047-26-008841",
+          "filingDate": "2026-08-31",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726008841/primary_doc.xml"
+        }
+      ]
+    },
+    {
+      "ticker": "NBIS",
+      "accessionNumber": "0001973379-26-000316",
+      "filingDate": "2026-08-31",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000197337926000316/primary_doc.xml",
+      "owner": "Alonso Sanchez Maria del Dado",
+      "notices": [
+        {
+          "date": "2026-09-01",
+          "ticker": "NBIS",
+          "owner": "Alonso Sanchez Maria del Dado",
+          "ownerKey": "alonso dado del maria sanchez",
+          "shares": 450,
+          "valueUsd": 90900,
+          "accessionNumber": "0001973379-26-000316",
+          "filingDate": "2026-08-31",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000197337926000316/primary_doc.xml"
+        }
+      ]
+    },
+    {
+      "ticker": "LITE",
+      "accessionNumber": "0001950047-26-008881",
+      "filingDate": "2026-09-01",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726008881/primary_doc.xml",
+      "owner": "WUPEN YUEN",
+      "notices": [
+        {
+          "date": "2026-09-01",
+          "ticker": "LITE",
+          "owner": "WUPEN YUEN",
+          "ownerKey": "wupen yuen",
+          "shares": 500,
+          "valueUsd": 450520,
+          "accessionNumber": "0001950047-26-008881",
+          "filingDate": "2026-09-01",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726008881/primary_doc.xml"
+        }
+      ]
+    },
+    {
+      "ticker": "CRWV",
+      "accessionNumber": "0001950047-26-008946",
+      "filingDate": "2026-09-01",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726008946/primary_doc.xml",
+      "owner": "OMNADORA CAPITAL LLC",
+      "notices": [
+        {
+          "date": "2026-09-01",
+          "ticker": "CRWV",
+          "owner": "OMNADORA CAPITAL LLC",
+          "ownerKey": "capital llc omnadora",
+          "shares": 107692,
+          "valueUsd": 9141973.88,
+          "accessionNumber": "0001950047-26-008946",
+          "filingDate": "2026-09-01",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726008946/primary_doc.xml"
+        }
+      ]
+    },
+    {
+      "ticker": "CRWV",
+      "accessionNumber": "0001950047-26-008947",
+      "filingDate": "2026-09-01",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726008947/primary_doc.xml",
+      "owner": "MICHAEL INTRATOR",
+      "notices": [
+        {
+          "date": "2026-09-01",
+          "ticker": "CRWV",
+          "owner": "MICHAEL INTRATOR",
+          "ownerKey": "intrator michael",
+          "shares": 200000,
+          "valueUsd": 16978000,
+          "accessionNumber": "0001950047-26-008947",
+          "filingDate": "2026-09-01",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726008947/primary_doc.xml"
+        }
+      ]
+    },
+    {
+      "ticker": "CRWV",
+      "accessionNumber": "0001968582-26-000917",
+      "filingDate": "2026-09-01",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000196858226000917/primary_doc.xml",
+      "owner": "Kristen J. McVeety",
+      "notices": [
+        {
+          "date": "2026-09-01",
+          "ticker": "CRWV",
+          "owner": "Kristen J. McVeety",
+          "ownerKey": "j kristen mcveety",
+          "shares": 156000,
+          "valueUsd": 13342840,
+          "accessionNumber": "0001968582-26-000917",
+          "filingDate": "2026-09-01",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000196858226000917/primary_doc.xml"
         }
       ]
     }

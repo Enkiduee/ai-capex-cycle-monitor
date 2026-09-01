@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-28",
+  "updatedAt": "2026-09-01",
   "window": {
-    "start": "2025-08-29",
-    "end": "2026-08-28",
+    "start": "2025-09-02",
+    "end": "2026-09-01",
     "label": "近一年（滚动 12 个月）"
   },
   "scope": {
@@ -16,19 +16,19 @@
     "notice": "美股已售按 SEC Form 4，最新 Form 144 仅作为期末待确认快照；A 股按巨潮资讯已实施减持公告；人民币成交用 ECB 交易日参考汇率折算为美元可比值。"
   },
   "summary": {
-    "executedShares": 108482565,
-    "executedValueUsd": 10369059963.32,
+    "executedShares": 108416945,
+    "executedValueUsd": 10362952228.62,
     "executedValueCny": 928238714.39,
-    "usExecutedValueUsd": 10236052369.81,
-    "noticeShares": 618512,
-    "noticeValueUsd": 94641913.28,
-    "pendingShares": 455003,
-    "pendingValueUsd": 69524498.98,
+    "usExecutedValueUsd": 10229944635.11,
+    "noticeShares": 482390,
+    "noticeValueUsd": 44534707.08,
+    "pendingShares": 479290,
+    "pendingValueUsd": 43429418.08,
     "companiesWithSales": 10,
-    "companiesWithPendingNotices": 2,
-    "plannedExecutionSharePct": 31.89,
+    "companiesWithPendingNotices": 4,
+    "plannedExecutionSharePct": 31.91,
     "topCompanyTicker": "CRWV",
-    "topCompanyConcentrationPct": 88.29,
+    "topCompanyConcentrationPct": 88.27,
     "valueBasis": "美元金额 + A 股人民币成交按交易日参考汇率折算；人民币原值另列"
   },
   "companies": [
@@ -39,23 +39,23 @@
       "coverage": "covered",
       "status": "pending",
       "executed": {
-        "shares": 79481175,
-        "valueUsd": 9155223751.67,
+        "shares": 79402455,
+        "valueUsd": 9147134087.84,
         "valueCny": 0,
         "filingCount": 329
       },
       "notices": {
-        "shares": 565301,
-        "valueUsd": 49160970.25,
-        "filingCount": 11
+        "shares": 465792,
+        "valueUsd": 39647697.88,
+        "filingCount": 4
       },
       "pending": {
-        "shares": 415792,
-        "valueUsd": 36035419,
-        "filingCount": 11
+        "shares": 463692,
+        "valueUsd": 39462813.88,
+        "filingCount": 4
       },
-      "planExecutedValueUsd": 3078424611.17,
-      "note": "滚动一年已售 79,481,175 股，美元可比金额约 $9.16B。期末仍有未匹配 Form 144。",
+      "planExecutedValueUsd": 3078609465.68,
+      "note": "滚动一年已售 79,402,455 股，美元可比金额约 $9.15B。期末仍有未匹配 Form 144。",
       "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
     },
     {
@@ -63,7 +63,7 @@
       "name": "Nebius",
       "market": "NASDAQ",
       "coverage": "covered",
-      "status": "sold",
+      "status": "pending",
       "executed": {
         "shares": 863435,
         "valueUsd": 171477027.72,
@@ -71,17 +71,17 @@
         "filingCount": 23
       },
       "notices": {
-        "shares": 0,
-        "valueUsd": 0,
-        "filingCount": 0
+        "shares": 450,
+        "valueUsd": 90900,
+        "filingCount": 1
       },
       "pending": {
-        "shares": 0,
-        "valueUsd": 0,
-        "filingCount": 0
+        "shares": 450,
+        "valueUsd": 90900,
+        "filingCount": 1
       },
       "planExecutedValueUsd": 32278687.45,
-      "note": "滚动一年已售 863,435 股，美元可比金额约 $171.48M。期末无活跃未匹配拟售。",
+      "note": "滚动一年已售 863,435 股，美元可比金额约 $171.48M。期末仍有未匹配 Form 144。",
       "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845&type=4&dateb=&owner=include&count=100"
     },
     {
@@ -123,14 +123,14 @@
         "filingCount": 36
       },
       "notices": {
-        "shares": 53211,
-        "valueUsd": 45480943.03,
-        "filingCount": 7
+        "shares": 3048,
+        "valueUsd": 2814245.68,
+        "filingCount": 6
       },
       "pending": {
-        "shares": 39211,
-        "valueUsd": 33489079.98,
-        "filingCount": 7
+        "shares": 2048,
+        "valueUsd": 1893840.68,
+        "filingCount": 6
       },
       "planExecutedValueUsd": 120619443.2,
       "note": "滚动一年已售 200,615 股，美元可比金额约 $140.17M。期末仍有未匹配 Form 144。",
@@ -219,25 +219,25 @@
       "name": "康宁",
       "market": "NYSE",
       "coverage": "covered",
-      "status": "sold",
+      "status": "pending",
       "executed": {
-        "shares": 782568,
-        "valueUsd": 111489822.93,
+        "shares": 795668,
+        "valueUsd": 113471752.06,
         "valueCny": 0,
-        "filingCount": 33
+        "filingCount": 34
       },
       "notices": {
-        "shares": 0,
-        "valueUsd": 0,
-        "filingCount": 0
+        "shares": 13100,
+        "valueUsd": 1981863.52,
+        "filingCount": 1
       },
       "pending": {
-        "shares": 0,
-        "valueUsd": 0,
-        "filingCount": 0
+        "shares": 13100,
+        "valueUsd": 1981863.52,
+        "filingCount": 1
       },
       "planExecutedValueUsd": 0,
-      "note": "滚动一年已售 782,568 股，美元可比金额约 $111.49M。期末无活跃未匹配拟售。",
+      "note": "滚动一年已售 795,668 股，美元可比金额约 $113.47M。期末仍有未匹配 Form 144。",
       "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000024741&type=4&dateb=&owner=include&count=100"
     },
     {
@@ -334,8 +334,8 @@
   ],
   "financing": {
     "window": {
-      "start": "2025-08-29",
-      "end": "2026-08-28",
+      "start": "2025-09-02",
+      "end": "2026-09-01",
       "label": "公司融资（滚动 12 个月）"
     },
     "scope": {
@@ -549,6 +549,90 @@
   },
   "timeline": [
     {
+      "date": "2026-09-01",
+      "ticker": "CRWV",
+      "person": "多位申报人",
+      "kind": "pending",
+      "shares": 463692,
+      "valueUsd": 39462813.88,
+      "valueCny": 0,
+      "label": "Form 144 待确认",
+      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000196858226000917/primary_doc.xml"
+    },
+    {
+      "date": "2026-09-01",
+      "ticker": "LITE",
+      "person": "WUPEN YUEN",
+      "kind": "pending",
+      "shares": 500,
+      "valueUsd": 450520,
+      "valueCny": 0,
+      "label": "Form 144 待确认",
+      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726008881/primary_doc.xml"
+    },
+    {
+      "date": "2026-09-01",
+      "ticker": "NBIS",
+      "person": "Alonso Sanchez Maria del Dado",
+      "kind": "pending",
+      "shares": 450,
+      "valueUsd": 90900,
+      "valueCny": 0,
+      "label": "Form 144 待确认",
+      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000197337926000316/primary_doc.xml"
+    },
+    {
+      "date": "2026-08-31",
+      "ticker": "LITE",
+      "person": "WUPEN YUEN",
+      "kind": "pending",
+      "shares": 500,
+      "valueUsd": 447500,
+      "valueCny": 0,
+      "label": "Form 144 待确认",
+      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726008841/primary_doc.xml"
+    },
+    {
+      "date": "2026-08-28",
+      "ticker": "GLW",
+      "person": "Lewis Steverson",
+      "kind": "pending",
+      "shares": 13100,
+      "valueUsd": 1981863.52,
+      "valueCny": 0,
+      "label": "Form 144 待确认",
+      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000196922326000964/primary_doc.xml"
+    },
+    {
+      "date": "2026-08-28",
+      "ticker": "GLW",
+      "person": "STEVERSON LEWIS A",
+      "kind": "executed-discretionary",
+      "shares": 13100,
+      "valueUsd": 1981929.13,
+      "valueCny": 0,
+      "label": "月度公开市场出售",
+      "detail": "2026-08 月交易代码 S 合并；未标记 10b5-1。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000002474126000257/form4.xml"
+    },
+    {
+      "date": "2026-08-28",
+      "ticker": "LITE",
+      "person": "WUPEN YUEN",
+      "kind": "pending",
+      "shares": 500,
+      "valueUsd": 470475,
+      "valueCny": 0,
+      "label": "Form 144 待确认",
+      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726008802/primary_doc.xml"
+    },
+    {
       "date": "2026-08-27",
       "ticker": "LITE",
       "person": "MICHAEL EDWARD HURLSTON",
@@ -575,62 +659,14 @@
     {
       "date": "2026-08-26",
       "ticker": "CRWV",
-      "person": "Kristen J. McVeety",
-      "kind": "pending",
-      "shares": 2100,
-      "valueUsd": 184884,
-      "valueCny": 0,
-      "label": "Form 144 待确认",
-      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000196858226000884/primary_doc.xml"
-    },
-    {
-      "date": "2026-08-25",
-      "ticker": "CRWV",
-      "person": "多位申报人",
-      "kind": "pending",
-      "shares": 307692,
-      "valueUsd": 26538435,
-      "valueCny": 0,
-      "label": "Form 144 待确认",
-      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726008687/primary_doc.xml"
-    },
-    {
-      "date": "2026-08-25",
-      "ticker": "CRWV",
       "person": "多位申报人（月度合并）",
       "kind": "executed",
-      "shares": 6711052,
-      "valueUsd": 691737917.57,
+      "shares": 6713152,
+      "valueUsd": 691922772.08,
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-08 月交易代码 S 合并；10b5-1 标记金额约占 29.9%。",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000412/form4.xml"
-    },
-    {
-      "date": "2026-08-25",
-      "ticker": "LITE",
-      "person": "VINCENT D RETORT",
-      "kind": "pending",
-      "shares": 38663,
-      "valueUsd": 32963734.3,
-      "valueCny": 0,
-      "label": "Form 144 待确认",
-      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726008659/primary_doc.xml"
-    },
-    {
-      "date": "2026-08-24",
-      "ticker": "CRWV",
-      "person": "多位申报人",
-      "kind": "pending",
-      "shares": 106000,
-      "valueUsd": 9312100,
-      "valueCny": 0,
-      "label": "Form 144 待确认",
-      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726008618/primary_doc.xml"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000414/form4.xml"
     },
     {
       "date": "2026-08-18",
@@ -1282,18 +1318,6 @@
       "label": "集中竞价减持",
       "detail": "公告披露成交均价 ¥23.1225。 按当日或最近 ECB USD/CNY 7.122461 折算美元可比值。",
       "sourceUrl": "https://static.cninfo.com.cn/finalpage/2025-09-26/1224682315.PDF"
-    },
-    {
-      "date": "2025-08-29",
-      "ticker": "CRWV",
-      "person": "Magnetar Financial LLC",
-      "kind": "executed-discretionary",
-      "shares": 80820,
-      "valueUsd": 8274518.34,
-      "valueCny": 0,
-      "label": "月度公开市场出售",
-      "detail": "2025-08 月交易代码 S 合并；未标记 10b5-1。",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000110465925086583/0001104659-25-086583-index.html"
     }
   ],
   "methodology": {
@@ -1328,9 +1352,9 @@
   "automation": {
     "enabled": true,
     "schedule": "A 股 15:47 Asia/Shanghai；美股 16:47 America/New_York（交易日）",
-    "lastSuccessfulRefreshAt": "2026-08-28T10:00:00.000Z",
-    "secLastCheckedAt": "2026-08-28T10:00:00.000Z",
-    "secSessionDate": "2026-08-27",
+    "lastSuccessfulRefreshAt": "2026-09-01T22:49:52.054Z",
+    "secLastCheckedAt": "2026-09-01T22:49:52.054Z",
+    "secSessionDate": "2026-09-01",
     "cninfoLastCheckedAt": "2026-08-28T10:00:00.000Z",
     "cninfoSessionDate": "2026-08-28",
     "cninfoReviewCount": 0,
