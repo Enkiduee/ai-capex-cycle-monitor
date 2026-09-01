@@ -1,7 +1,7 @@
 {
   "version": 4,
-  "updatedAt": "2026-08-28",
-  "fetchedAt": "2026-08-31T17:59:50.353Z",
+  "updatedAt": "2026-09-01",
+  "fetchedAt": "2026-09-01T15:27:42.636Z",
   "isDemoData": false,
   "fx": {
     "base": "USD",
@@ -11,15 +11,11 @@
     "rates": {
       "CNY": {
         "pair": "USD/CNY",
-        "rate": 6.719731,
-        "quoteTime": "2026-08-31T00:00:00.000Z",
-        "fetchedAt": "2026-08-31T17:59:50.353Z",
+        "rate": 6.722261,
+        "quoteTime": "2026-09-01T00:00:00.000Z",
+        "fetchedAt": "2026-09-01T15:27:42.636Z",
         "sourceUrl": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html",
         "observations": [
-          {
-            "date": "2025-02-05",
-            "rate": 7.272788
-          },
           {
             "date": "2025-02-06",
             "rate": 7.288707
@@ -1615,20 +1611,20 @@
           {
             "date": "2026-08-31",
             "rate": 6.719731
+          },
+          {
+            "date": "2026-09-01",
+            "rate": 6.722261
           }
         ]
       },
       "HKD": {
         "pair": "USD/HKD",
-        "rate": 7.837875,
-        "quoteTime": "2026-08-31T00:00:00.000Z",
-        "fetchedAt": "2026-08-31T17:59:50.353Z",
+        "rate": 7.840984,
+        "quoteTime": "2026-09-01T00:00:00.000Z",
+        "fetchedAt": "2026-09-01T15:27:42.636Z",
         "sourceUrl": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html",
         "observations": [
-          {
-            "date": "2025-02-05",
-            "rate": 7.787565
-          },
           {
             "date": "2025-02-06",
             "rate": 7.786486
@@ -3224,6 +3220,10 @@
           {
             "date": "2026-08-31",
             "rate": 7.837875
+          },
+          {
+            "date": "2026-09-01",
+            "rate": 7.840984
           }
         ]
       }
@@ -6122,13 +6122,6 @@
       "sourceUrl": "https://quote.eastmoney.com/zsHSI.html",
       "observations": [
         {
-          "date": "2025-08-08",
-          "turnover": 206719893504,
-          "breakdown": {
-            "shareVolume": 17003120128
-          }
-        },
-        {
           "date": "2025-08-11",
           "turnover": 200901836800,
           "breakdown": {
@@ -7939,6 +7932,13 @@
           "turnover": 231209336832,
           "breakdown": {
             "shareVolume": 14391320576
+          }
+        },
+        {
+          "date": "2026-09-01",
+          "turnover": 238735425536,
+          "breakdown": {
+            "shareVolume": 15385855232
           }
         }
       ]
