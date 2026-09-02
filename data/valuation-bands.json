@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-01",
+  "updatedAt": "2026-09-02",
   "isDemoData": false,
   "methodologyVersion": "pe-cycle-v1",
   "dataNotice": "估值卡同时包含可复算 P/E 情景与截至 2026-07-14 的人工财报/指引研究区间；两者都是研究假设，不是目标价、收益保证、个性化建议或任何形式的买卖推荐。价格带必须在每份财报或重大事件后重算。",
@@ -320,7 +320,7 @@
     "valuationRangeMode": "P/E 情景仅在财报与重大事件后人工复核更新",
     "lastDailyCheckAt": "2026-09-02T05:57:03.909Z",
     "lastDailySecCheckAt": "2026-09-02T05:57:03.909Z",
-    "lastEventDetectedAt": "2026-09-01T21:21:42.830Z"
+    "lastEventDetectedAt": "2026-09-02T21:19:43.508Z"
   },
   "companies": [
     {
@@ -395,11 +395,11 @@
       "segment": "高速连接",
       "tradingViewSymbol": "NASDAQ:AVGO",
       "secCik": "0001730168",
-      "reviewStatus": "reviewed",
+      "reviewStatus": "needs-review",
       "reviewedAt": "2026-07-12",
       "reviewedBy": "项目估值研究",
       "reviewEvidenceUrl": "https://investors.broadcom.com/news-releases/news-release-details/broadcom-inc-announces-second-quarter-fiscal-year-2026-financial",
-      "reviewReason": "已按 Q2 FY2026 官方调整后盈利复核；同时保留 GAAP 对照与并购调整风险。",
+      "reviewReason": "发现新的 SEC 8-K 披露（2026-09-02），现有 EPS 与 P/E 情景已标记为待人工复核。",
       "currency": "USD",
       "confidence": "medium",
       "valuationModel": {
@@ -447,7 +447,13 @@
           "url": "https://www.suredividend.com/wp-content/uploads/2026/04/AVGO-2026-04-15.pdf",
           "type": "historical-valuation"
         }
-      ]
+      ],
+      "latestSecFiling": {
+        "form": "8-K",
+        "filingDate": "2026-09-02",
+        "accessionNumber": "0001730168-26-000076",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1730168/000173016826000076/0001730168-26-000076-index.html"
+      }
     },
     {
       "ticker": "ANET",
@@ -584,7 +590,7 @@
       "reviewedAt": "2026-07-12",
       "reviewedBy": "项目估值研究",
       "reviewEvidenceUrl": "https://www.sec.gov/Archives/edgar/data/1807794/000162828026043303/crdo-20260502.htm",
-      "reviewReason": "发现新的 SEC 8-K 披露（2026-09-01），现有 EPS 与 P/E 情景已标记为待人工复核。",
+      "reviewReason": "发现新的 SEC 10-Q 披露（2026-09-02），现有 EPS 与 P/E 情景已标记为待人工复核。",
       "currency": "USD",
       "confidence": "low",
       "valuationModel": {
@@ -629,10 +635,10 @@
         }
       ],
       "latestSecFiling": {
-        "form": "8-K",
-        "filingDate": "2026-09-01",
-        "accessionNumber": "0001628280-26-059795",
-        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1807794/000162828026059795/0001628280-26-059795-index.html"
+        "form": "10-Q",
+        "filingDate": "2026-09-02",
+        "accessionNumber": "0001628280-26-060111",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1807794/000162828026060111/0001628280-26-060111-index.html"
       }
     },
     {
