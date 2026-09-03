@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-02T22:50:47.833Z",
+  "updatedAt": "2026-09-03T22:49:20.017Z",
   "liveCoverageStart": "2026-07-01",
-  "lastSecCheckAt": "2026-09-02T22:50:47.833Z",
-  "lastSecSessionDate": "2026-09-02",
+  "lastSecCheckAt": "2026-09-03T22:49:20.017Z",
+  "lastSecSessionDate": "2026-09-03",
   "lastCninfoCheckAt": "2026-08-28T10:00:00.000Z",
   "lastCninfoSessionDate": "2026-08-28",
   "historicalTransactions": [
@@ -18256,29 +18256,81 @@
           "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000151384526000094/form4.xml"
         }
       ]
+    },
+    {
+      "ticker": "NBIS",
+      "accessionNumber": "0001513845-26-000096",
+      "filingDate": "2026-09-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000151384526000096/form4.xml",
+      "owner": "Boynton John Wilson IV",
+      "isPlan": false,
+      "transactions": []
+    },
+    {
+      "ticker": "NBIS",
+      "accessionNumber": "0001513845-26-000098",
+      "filingDate": "2026-09-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000151384526000098/form4.xml",
+      "owner": "Volozh Arkadiy",
+      "isPlan": false,
+      "transactions": []
+    },
+    {
+      "ticker": "NBIS",
+      "accessionNumber": "0001513845-26-000100",
+      "filingDate": "2026-09-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000151384526000100/form4.xml",
+      "owner": "Nave Ophir",
+      "isPlan": false,
+      "transactions": []
+    },
+    {
+      "ticker": "NBIS",
+      "accessionNumber": "0001513845-26-000102",
+      "filingDate": "2026-09-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000151384526000102/form4.xml",
+      "owner": "Bunina Elena",
+      "isPlan": false,
+      "transactions": []
+    },
+    {
+      "ticker": "NBIS",
+      "accessionNumber": "0001513845-26-000104",
+      "filingDate": "2026-09-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000151384526000104/form4.xml",
+      "owner": "Radinsky Kira",
+      "isPlan": false,
+      "transactions": []
+    },
+    {
+      "ticker": "NBIS",
+      "accessionNumber": "0001513845-26-000106",
+      "filingDate": "2026-09-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000151384526000106/form4.xml",
+      "owner": "Grimme Arne",
+      "isPlan": false,
+      "transactions": []
+    },
+    {
+      "ticker": "NBIS",
+      "accessionNumber": "0001513845-26-000108",
+      "filingDate": "2026-09-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000151384526000108/form4.xml",
+      "owner": "Ryan Charles E",
+      "isPlan": false,
+      "transactions": []
+    },
+    {
+      "ticker": "NBIS",
+      "accessionNumber": "0001513845-26-000110",
+      "filingDate": "2026-09-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1513845/000151384526000110/form4.xml",
+      "owner": "Weigand Matthew Robert",
+      "isPlan": false,
+      "transactions": []
     }
   ],
   "form144Filings": [
-    {
-      "ticker": "CRWV",
-      "accessionNumber": "0001950047-26-008022",
-      "filingDate": "2026-08-12",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726008022/primary_doc.xml",
-      "owner": "SACHIN JAIN",
-      "notices": [
-        {
-          "date": "2026-08-12",
-          "ticker": "CRWV",
-          "owner": "SACHIN JAIN",
-          "ownerKey": "jain sachin",
-          "shares": 1,
-          "valueUsd": 90.32,
-          "accessionNumber": "0001950047-26-008022",
-          "filingDate": "2026-08-12",
-          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726008022/primary_doc.xml"
-        }
-      ]
-    },
     {
       "ticker": "NBIS",
       "accessionNumber": "0001950047-26-008147",
@@ -19356,6 +19408,26 @@
           "accessionNumber": "0001950047-26-008979",
           "filingDate": "2026-09-02",
           "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726008979/primary_doc.xml"
+        }
+      ]
+    },
+    {
+      "ticker": "LITE",
+      "accessionNumber": "0001950047-26-009045",
+      "filingDate": "2026-09-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726009045/primary_doc.xml",
+      "owner": "WUPEN YUEN",
+      "notices": [
+        {
+          "date": "2026-09-03",
+          "ticker": "LITE",
+          "owner": "WUPEN YUEN",
+          "ownerKey": "wupen yuen",
+          "shares": 500,
+          "valueUsd": 435005,
+          "accessionNumber": "0001950047-26-009045",
+          "filingDate": "2026-09-03",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726009045/primary_doc.xml"
         }
       ]
     }

@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-02",
+  "updatedAt": "2026-09-03",
   "window": {
-    "start": "2025-09-03",
-    "end": "2026-09-02",
+    "start": "2025-09-04",
+    "end": "2026-09-03",
     "label": "近一年（滚动 12 个月）"
   },
   "scope": {
@@ -16,19 +16,19 @@
     "notice": "美股已售按 SEC Form 4，最新 Form 144 仅作为期末待确认快照；A 股按巨潮资讯已实施减持公告；人民币成交用 ECB 交易日参考汇率折算为美元可比值。"
   },
   "summary": {
-    "executedShares": 106586797,
-    "executedValueUsd": 10192024492.58,
+    "executedShares": 106289547,
+    "executedValueUsd": 10165768151.02,
     "executedValueCny": 928238714.39,
-    "usExecutedValueUsd": 10059016899.07,
-    "noticeShares": 480290,
-    "noticeValueUsd": 44340993.08,
-    "pendingShares": 477840,
-    "pendingValueUsd": 42402268.08,
+    "usExecutedValueUsd": 10032760557.51,
+    "noticeShares": 479742,
+    "noticeValueUsd": 43771322.4,
+    "pendingShares": 477792,
+    "pendingValueUsd": 42311927.4,
     "companiesWithSales": 10,
     "companiesWithPendingNotices": 3,
-    "plannedExecutionSharePct": 30.76,
+    "plannedExecutionSharePct": 30.58,
     "topCompanyTicker": "CRWV",
-    "topCompanyConcentrationPct": 88.06,
+    "topCompanyConcentrationPct": 88.03,
     "valueBasis": "美元金额 + A 股人民币成交按交易日参考汇率折算；人民币原值另列"
   },
   "companies": [
@@ -39,10 +39,10 @@
       "coverage": "covered",
       "status": "pending",
       "executed": {
-        "shares": 77570337,
-        "valueUsd": 8974745736.8,
+        "shares": 77289087,
+        "valueUsd": 8949258035.24,
         "valueCny": 0,
-        "filingCount": 326
+        "filingCount": 325
       },
       "notices": {
         "shares": 463692,
@@ -54,8 +54,8 @@
         "valueUsd": 39462813.88,
         "filingCount": 3
       },
-      "planExecutedValueUsd": 2906221114.64,
-      "note": "滚动一年已售 77,570,337 股，美元可比金额约 $8.97B。期末仍有未匹配 Form 144。",
+      "planExecutedValueUsd": 2880733413.08,
+      "note": "滚动一年已售 77,289,087 股，美元可比金额约 $8.95B。期末仍有未匹配 Form 144。",
       "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
     },
     {
@@ -123,14 +123,14 @@
         "filingCount": 37
       },
       "notices": {
-        "shares": 3048,
-        "valueUsd": 2805415.68,
-        "filingCount": 6
+        "shares": 2500,
+        "valueUsd": 2235745,
+        "filingCount": 5
       },
       "pending": {
-        "shares": 1048,
-        "valueUsd": 957590.68,
-        "filingCount": 6
+        "shares": 1000,
+        "valueUsd": 867250,
+        "filingCount": 5
       },
       "planExecutedValueUsd": 121987938.2,
       "note": "滚动一年已售 202,115 股，美元可比金额约 $141.54M。期末仍有未匹配 Form 144。",
@@ -169,10 +169,10 @@
       "coverage": "covered",
       "status": "sold",
       "executed": {
-        "shares": 5596430,
-        "valueUsd": 450940407.04,
+        "shares": 5580430,
+        "valueUsd": 450171767.04,
         "valueCny": 0,
-        "filingCount": 13
+        "filingCount": 12
       },
       "notices": {
         "shares": 0,
@@ -185,7 +185,7 @@
         "filingCount": 0
       },
       "planExecutedValueUsd": 11974000,
-      "note": "滚动一年已售 5,596,430 股，美元可比金额约 $450.94M。期末无活跃未匹配拟售。",
+      "note": "滚动一年已售 5,580,430 股，美元可比金额约 $450.17M。期末无活跃未匹配拟售。",
       "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001780312&type=4&dateb=&owner=include&count=100"
     },
     {
@@ -334,8 +334,8 @@
   ],
   "financing": {
     "window": {
-      "start": "2025-09-03",
-      "end": "2026-09-02",
+      "start": "2025-09-04",
+      "end": "2026-09-03",
       "label": "公司融资（滚动 12 个月）"
     },
     "scope": {
@@ -549,6 +549,18 @@
   },
   "timeline": [
     {
+      "date": "2026-09-03",
+      "ticker": "LITE",
+      "person": "WUPEN YUEN",
+      "kind": "pending",
+      "shares": 500,
+      "valueUsd": 435005,
+      "valueCny": 0,
+      "label": "Form 144 待确认",
+      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726009045/primary_doc.xml"
+    },
+    {
       "date": "2026-09-02",
       "ticker": "LITE",
       "person": "WUPEN YUEN",
@@ -631,18 +643,6 @@
       "label": "月度公开市场出售",
       "detail": "2026-08 月交易代码 S 合并；未标记 10b5-1。",
       "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000002474126000257/form4.xml"
-    },
-    {
-      "date": "2026-08-27",
-      "ticker": "LITE",
-      "person": "MICHAEL EDWARD HURLSTON",
-      "kind": "pending",
-      "shares": 548,
-      "valueUsd": 525345.68,
-      "valueCny": 0,
-      "label": "Form 144 待确认",
-      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726008740/primary_doc.xml"
     },
     {
       "date": "2026-08-26",
@@ -1250,11 +1250,11 @@
       "ticker": "CRWV",
       "person": "多位申报人（月度合并）",
       "kind": "executed",
-      "shares": 14604073,
-      "valueUsd": 1810974539.81,
+      "shares": 14322823,
+      "valueUsd": 1785486838.25,
       "valueCny": 0,
       "label": "月度 Form 4 出售",
-      "detail": "2025-09 月交易代码 S 合并；10b5-1 标记金额约占 19.7%。",
+      "detail": "2025-09 月交易代码 S 合并；10b5-1 标记金额约占 18.6%。",
       "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000205803725000008/0002058037-25-000008-index.html"
     },
     {
@@ -1287,11 +1287,11 @@
       "ticker": "ASTS",
       "person": "Yao Huiwen",
       "kind": "executed",
-      "shares": 56000,
-      "valueUsd": 2391840,
+      "shares": 40000,
+      "valueUsd": 1623200,
       "valueCny": 0,
       "label": "月度 Form 4 出售",
-      "detail": "2025-09 月交易代码 S 合并；10b5-1 标记金额约占 67.9%。",
+      "detail": "2025-09 月交易代码 S 合并；10b5-1 标记金额约占 100.0%。",
       "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1780312/000149315225013908/0001493152-25-013908-index.html"
     },
     {
@@ -1340,9 +1340,9 @@
   "automation": {
     "enabled": true,
     "schedule": "A 股 15:47 Asia/Shanghai；美股 16:47 America/New_York（交易日）",
-    "lastSuccessfulRefreshAt": "2026-09-02T22:50:47.833Z",
-    "secLastCheckedAt": "2026-09-02T22:50:47.833Z",
-    "secSessionDate": "2026-09-02",
+    "lastSuccessfulRefreshAt": "2026-09-03T22:49:20.017Z",
+    "secLastCheckedAt": "2026-09-03T22:49:20.017Z",
+    "secSessionDate": "2026-09-03",
     "cninfoLastCheckedAt": "2026-08-28T10:00:00.000Z",
     "cninfoSessionDate": "2026-08-28",
     "cninfoReviewCount": 0,
