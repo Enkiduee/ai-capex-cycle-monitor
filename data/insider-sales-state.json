@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-03T22:49:20.017Z",
+  "updatedAt": "2026-09-04T22:32:10.662Z",
   "liveCoverageStart": "2026-07-01",
-  "lastSecCheckAt": "2026-09-03T22:49:20.017Z",
-  "lastSecSessionDate": "2026-09-03",
+  "lastSecCheckAt": "2026-09-04T22:32:10.662Z",
+  "lastSecSessionDate": "2026-09-04",
   "lastCninfoCheckAt": "2026-08-28T10:00:00.000Z",
   "lastCninfoSessionDate": "2026-08-28",
   "historicalTransactions": [
@@ -18328,6 +18328,192 @@
       "owner": "Weigand Matthew Robert",
       "isPlan": false,
       "transactions": []
+    },
+    {
+      "ticker": "CRWV",
+      "accessionNumber": "0001769628-26-000415",
+      "filingDate": "2026-09-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000415/form4.xml",
+      "owner": "Intrator Michael N",
+      "isPlan": true,
+      "transactions": [
+        {
+          "date": "2026-09-01",
+          "ticker": "CRWV",
+          "owner": "Intrator Michael N",
+          "ownerKey": "intrator michael n",
+          "shares": 63315,
+          "valueUsd": 5141266.64,
+          "valueCny": 0,
+          "planValueUsd": 5141266.64,
+          "accessionNumber": "0001769628-26-000415",
+          "filingDate": "2026-09-03",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000415/form4.xml"
+        },
+        {
+          "date": "2026-09-01",
+          "ticker": "CRWV",
+          "owner": "Intrator Michael N",
+          "ownerKey": "intrator michael n",
+          "shares": 130609,
+          "valueUsd": 10690033.19,
+          "valueCny": 0,
+          "planValueUsd": 10690033.19,
+          "accessionNumber": "0001769628-26-000415",
+          "filingDate": "2026-09-03",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000415/form4.xml"
+        },
+        {
+          "date": "2026-09-01",
+          "ticker": "CRWV",
+          "owner": "Intrator Michael N",
+          "ownerKey": "intrator michael n",
+          "shares": 6076,
+          "valueUsd": 501510.61,
+          "valueCny": 0,
+          "planValueUsd": 501510.61,
+          "accessionNumber": "0001769628-26-000415",
+          "filingDate": "2026-09-03",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000415/form4.xml"
+        },
+        {
+          "date": "2026-09-01",
+          "ticker": "CRWV",
+          "owner": "Intrator Michael N",
+          "ownerKey": "intrator michael n",
+          "shares": 34092,
+          "valueUsd": 2768318.13,
+          "valueCny": 0,
+          "planValueUsd": 2768318.13,
+          "accessionNumber": "0001769628-26-000415",
+          "filingDate": "2026-09-03",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000415/form4.xml"
+        },
+        {
+          "date": "2026-09-01",
+          "ticker": "CRWV",
+          "owner": "Intrator Michael N",
+          "ownerKey": "intrator michael n",
+          "shares": 70329,
+          "valueUsd": 5756259.86,
+          "valueCny": 0,
+          "planValueUsd": 5756259.86,
+          "accessionNumber": "0001769628-26-000415",
+          "filingDate": "2026-09-03",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000415/form4.xml"
+        },
+        {
+          "date": "2026-09-01",
+          "ticker": "CRWV",
+          "owner": "Intrator Michael N",
+          "ownerKey": "intrator michael n",
+          "shares": 3271,
+          "valueUsd": 269987.03,
+          "valueCny": 0,
+          "planValueUsd": 269987.03,
+          "accessionNumber": "0001769628-26-000415",
+          "filingDate": "2026-09-03",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000415/form4.xml"
+        }
+      ]
+    },
+    {
+      "ticker": "CRWV",
+      "accessionNumber": "0001769628-26-000416",
+      "filingDate": "2026-09-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000416/form4.xml",
+      "owner": "McVeety Kristen J",
+      "isPlan": true,
+      "transactions": [
+        {
+          "date": "2026-09-01",
+          "ticker": "CRWV",
+          "owner": "McVeety Kristen J",
+          "ownerKey": "j kristen mcveety",
+          "shares": 55506,
+          "valueUsd": 4505100.09,
+          "valueCny": 0,
+          "planValueUsd": 4505100.09,
+          "accessionNumber": "0001769628-26-000416",
+          "filingDate": "2026-09-03",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000416/form4.xml"
+        },
+        {
+          "date": "2026-09-01",
+          "ticker": "CRWV",
+          "owner": "McVeety Kristen J",
+          "ownerKey": "j kristen mcveety",
+          "shares": 94307,
+          "valueUsd": 7718622.43,
+          "valueCny": 0,
+          "planValueUsd": 7718622.43,
+          "accessionNumber": "0001769628-26-000416",
+          "filingDate": "2026-09-03",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000416/form4.xml"
+        },
+        {
+          "date": "2026-09-01",
+          "ticker": "CRWV",
+          "owner": "McVeety Kristen J",
+          "ownerKey": "j kristen mcveety",
+          "shares": 6187,
+          "valueUsd": 510406.46,
+          "valueCny": 0,
+          "planValueUsd": 510406.46,
+          "accessionNumber": "0001769628-26-000416",
+          "filingDate": "2026-09-03",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000416/form4.xml"
+        }
+      ]
+    },
+    {
+      "ticker": "LITE",
+      "accessionNumber": "0001489550-26-000009",
+      "filingDate": "2026-09-04",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000148955026000009/form4-09042026_080916.xml",
+      "owner": "Wupen Yuen",
+      "isPlan": true,
+      "transactions": [
+        {
+          "date": "2026-09-02",
+          "ticker": "LITE",
+          "owner": "Wupen Yuen",
+          "ownerKey": "wupen yuen",
+          "shares": 500,
+          "valueUsd": 432245,
+          "valueCny": 0,
+          "planValueUsd": 432245,
+          "accessionNumber": "0001489550-26-000009",
+          "filingDate": "2026-09-04",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000148955026000009/form4-09042026_080916.xml"
+        },
+        {
+          "date": "2026-09-03",
+          "ticker": "LITE",
+          "owner": "Wupen Yuen",
+          "ownerKey": "wupen yuen",
+          "shares": 500,
+          "valueUsd": 435005,
+          "valueCny": 0,
+          "planValueUsd": 435005,
+          "accessionNumber": "0001489550-26-000009",
+          "filingDate": "2026-09-04",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000148955026000009/form4-09042026_080916.xml"
+        },
+        {
+          "date": "2026-09-04",
+          "ticker": "LITE",
+          "owner": "Wupen Yuen",
+          "ownerKey": "wupen yuen",
+          "shares": 500,
+          "valueUsd": 430000,
+          "valueCny": 0,
+          "planValueUsd": 430000,
+          "accessionNumber": "0001489550-26-000009",
+          "filingDate": "2026-09-04",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000148955026000009/form4-09042026_080916.xml"
+        }
+      ]
     }
   ],
   "form144Filings": [
@@ -19428,6 +19614,46 @@
           "accessionNumber": "0001950047-26-009045",
           "filingDate": "2026-09-03",
           "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726009045/primary_doc.xml"
+        }
+      ]
+    },
+    {
+      "ticker": "LITE",
+      "accessionNumber": "0001950047-26-009105",
+      "filingDate": "2026-09-04",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726009105/primary_doc.xml",
+      "owner": "WUPEN YUEN",
+      "notices": [
+        {
+          "date": "2026-09-04",
+          "ticker": "LITE",
+          "owner": "WUPEN YUEN",
+          "ownerKey": "wupen yuen",
+          "shares": 500,
+          "valueUsd": 430000,
+          "accessionNumber": "0001950047-26-009105",
+          "filingDate": "2026-09-04",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726009105/primary_doc.xml"
+        }
+      ]
+    },
+    {
+      "ticker": "GLW",
+      "accessionNumber": "0001969223-26-000996",
+      "filingDate": "2026-09-04",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000196922326000996/primary_doc.xml",
+      "owner": "Michelle Gullo",
+      "notices": [
+        {
+          "date": "2026-09-04",
+          "ticker": "GLW",
+          "owner": "Michelle Gullo",
+          "ownerKey": "gullo michelle",
+          "shares": 9874,
+          "valueUsd": 1503657.17,
+          "accessionNumber": "0001969223-26-000996",
+          "filingDate": "2026-09-04",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000196922326000996/primary_doc.xml"
         }
       ]
     }

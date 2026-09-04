@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-03",
+  "updatedAt": "2026-09-04",
   "window": {
-    "start": "2025-09-04",
-    "end": "2026-09-03",
+    "start": "2025-09-05",
+    "end": "2026-09-04",
     "label": "近一年（滚动 12 个月）"
   },
   "scope": {
@@ -16,19 +16,19 @@
     "notice": "美股已售按 SEC Form 4，最新 Form 144 仅作为期末待确认快照；A 股按巨潮资讯已实施减持公告；人民币成交用 ECB 交易日参考汇率折算为美元可比值。"
   },
   "summary": {
-    "executedShares": 106289547,
-    "executedValueUsd": 10165768151.02,
+    "executedShares": 106734739,
+    "executedValueUsd": 10203522305.46,
     "executedValueCny": 928238714.39,
-    "usExecutedValueUsd": 10032760557.51,
-    "noticeShares": 479742,
-    "noticeValueUsd": 43771322.4,
-    "pendingShares": 477792,
-    "pendingValueUsd": 42311927.4,
+    "usExecutedValueUsd": 10070514711.95,
+    "noticeShares": 476516,
+    "noticeValueUsd": 43252641.05,
+    "pendingShares": 317566,
+    "pendingValueUsd": 27623631.05,
     "companiesWithSales": 10,
-    "companiesWithPendingNotices": 3,
-    "plannedExecutionSharePct": 30.58,
+    "companiesWithPendingNotices": 2,
+    "plannedExecutionSharePct": 30.86,
     "topCompanyTicker": "CRWV",
-    "topCompanyConcentrationPct": 88.03,
+    "topCompanyConcentrationPct": 88.08,
     "valueBasis": "美元金额 + A 股人民币成交按交易日参考汇率折算；人民币原值另列"
   },
   "companies": [
@@ -39,10 +39,10 @@
       "coverage": "covered",
       "status": "pending",
       "executed": {
-        "shares": 77289087,
-        "valueUsd": 8949258035.24,
+        "shares": 77752779,
+        "valueUsd": 8987119539.68,
         "valueCny": 0,
-        "filingCount": 325
+        "filingCount": 327
       },
       "notices": {
         "shares": 463692,
@@ -50,12 +50,12 @@
         "filingCount": 3
       },
       "pending": {
-        "shares": 463692,
-        "valueUsd": 39462813.88,
+        "shares": 307692,
+        "valueUsd": 26119973.88,
         "filingCount": 3
       },
-      "planExecutedValueUsd": 2880733413.08,
-      "note": "滚动一年已售 77,289,087 股，美元可比金额约 $8.95B。期末仍有未匹配 Form 144。",
+      "planExecutedValueUsd": 2918594917.52,
+      "note": "滚动一年已售 77,752,779 股，美元可比金额约 $8.99B。期末仍有未匹配 Form 144。",
       "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=4&dateb=&owner=include&count=100"
     },
     {
@@ -115,25 +115,25 @@
       "name": "Lumentum",
       "market": "NASDAQ",
       "coverage": "covered",
-      "status": "pending",
+      "status": "sold",
       "executed": {
-        "shares": 202115,
-        "valueUsd": 141538956.21,
+        "shares": 203615,
+        "valueUsd": 142836206.21,
         "valueCny": 0,
-        "filingCount": 37
+        "filingCount": 38
       },
       "notices": {
         "shares": 2500,
-        "valueUsd": 2235745,
+        "valueUsd": 2195270,
         "filingCount": 5
       },
       "pending": {
-        "shares": 1000,
-        "valueUsd": 867250,
+        "shares": 0,
+        "valueUsd": 0,
         "filingCount": 5
       },
-      "planExecutedValueUsd": 121987938.2,
-      "note": "滚动一年已售 202,115 股，美元可比金额约 $141.54M。期末仍有未匹配 Form 144。",
+      "planExecutedValueUsd": 123285188.2,
+      "note": "滚动一年已售 203,615 股，美元可比金额约 $142.84M。期末无活跃未匹配拟售。",
       "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001633978&type=4&dateb=&owner=include&count=100"
     },
     {
@@ -221,23 +221,23 @@
       "coverage": "covered",
       "status": "pending",
       "executed": {
-        "shares": 795668,
-        "valueUsd": 113471752.06,
+        "shares": 775668,
+        "valueUsd": 112067152.06,
         "valueCny": 0,
-        "filingCount": 34
+        "filingCount": 33
       },
       "notices": {
-        "shares": 13100,
-        "valueUsd": 1981863.52,
+        "shares": 9874,
+        "valueUsd": 1503657.17,
         "filingCount": 1
       },
       "pending": {
-        "shares": 13100,
-        "valueUsd": 1981863.52,
+        "shares": 9874,
+        "valueUsd": 1503657.17,
         "filingCount": 1
       },
       "planExecutedValueUsd": 0,
-      "note": "滚动一年已售 795,668 股，美元可比金额约 $113.47M。期末仍有未匹配 Form 144。",
+      "note": "滚动一年已售 775,668 股，美元可比金额约 $112.07M。期末仍有未匹配 Form 144。",
       "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000024741&type=4&dateb=&owner=include&count=100"
     },
     {
@@ -334,23 +334,23 @@
   ],
   "financing": {
     "window": {
-      "start": "2025-09-04",
-      "end": "2026-09-03",
+      "start": "2025-09-05",
+      "end": "2026-09-04",
       "label": "公司融资（滚动 12 个月）"
     },
     "scope": {
       "totalCompanies": 12,
-      "enteredCompanies": 4,
+      "enteredCompanies": 3,
       "notice": "首版录入已由官方披露核对的代表性融资事件；其余 8 家显示待补录，不按零融资处理。"
     },
     "summary": {
       "equityValueUsd": 29997100000,
       "equityValueEur": 0,
-      "debtAndConvertibleValueUsd": 22450000000,
+      "debtAndConvertibleValueUsd": 21350000000,
       "debtAndConvertibleValueEur": 2000000000,
       "equityEventCount": 4,
-      "debtAndConvertibleEventCount": 8,
-      "eventCount": 12
+      "debtAndConvertibleEventCount": 7,
+      "eventCount": 11
     },
     "events": [
       {
@@ -506,20 +506,6 @@
         "amountText": "$2.25B",
         "detail": "按发行本金记录，不计额外 $337.5M 选择权；公司预计基础情形净募集额约 $2.21B。",
         "sourceUrl": "https://investors.coreweave.com/news/news-details/2025/CoreWeave-Prices-Upsized-2-25-Billion-Convertible-Senior-Notes-Offering/default.aspx"
-      },
-      {
-        "date": "2025-09-04",
-        "ticker": "LITE",
-        "companyName": "Lumentum",
-        "channel": "convertible",
-        "shortLabel": "可转债",
-        "label": "0.375% 可转换优先票据（2032 年到期）",
-        "statusLabel": "已定价",
-        "amountUsd": 1100000000,
-        "amountEur": 0,
-        "amountText": "$1.10B",
-        "detail": "按发行本金记录，不计额外 $165M 选择权；公司预计基础情形净募集额约 $1.09B。",
-        "sourceUrl": "https://investor.lumentum.com/financial-news-releases/news-details/2025/Lumentum-Announces-Pricing-of-1-1-Billion-Convertible-Notes-Offering/"
       }
     ],
     "methodology": {
@@ -549,52 +535,52 @@
   },
   "timeline": [
     {
-      "date": "2026-09-03",
-      "ticker": "LITE",
-      "person": "WUPEN YUEN",
+      "date": "2026-09-04",
+      "ticker": "GLW",
+      "person": "Michelle Gullo",
       "kind": "pending",
-      "shares": 500,
-      "valueUsd": 435005,
+      "shares": 9874,
+      "valueUsd": 1503657.17,
       "valueCny": 0,
       "label": "Form 144 待确认",
       "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726009045/primary_doc.xml"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000196922326000996/primary_doc.xml"
     },
     {
-      "date": "2026-09-02",
+      "date": "2026-09-04",
       "ticker": "LITE",
-      "person": "WUPEN YUEN",
-      "kind": "pending",
-      "shares": 500,
-      "valueUsd": 432245,
+      "person": "Wupen Yuen",
+      "kind": "executed",
+      "shares": 2000,
+      "valueUsd": 1747770,
       "valueCny": 0,
-      "label": "Form 144 待确认",
-      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000195004726008979/primary_doc.xml"
+      "label": "月度 Form 4 出售",
+      "detail": "2026-09 月交易代码 S 合并；10b5-1 标记金额约占 100.0%。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000148955026000009/form4-09042026_080916.xml"
     },
     {
       "date": "2026-09-01",
       "ticker": "CRWV",
       "person": "多位申报人",
       "kind": "pending",
-      "shares": 463692,
-      "valueUsd": 39462813.88,
+      "shares": 307692,
+      "valueUsd": 26119973.88,
       "valueCny": 0,
       "label": "Form 144 待确认",
       "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000196858226000917/primary_doc.xml"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000195004726008947/primary_doc.xml"
     },
     {
       "date": "2026-09-01",
-      "ticker": "LITE",
-      "person": "Wupen Yuen",
+      "ticker": "CRWV",
+      "person": "多位申报人（月度合并）",
       "kind": "executed",
-      "shares": 500,
-      "valueUsd": 450520,
+      "shares": 463692,
+      "valueUsd": 37861504.44,
       "valueCny": 0,
       "label": "月度 Form 4 出售",
       "detail": "2026-09 月交易代码 S 合并；10b5-1 标记金额约占 100.0%。",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000148955026000008/form4-09022026_010927.xml"
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000416/form4.xml"
     },
     {
       "date": "2026-09-01",
@@ -619,18 +605,6 @@
       "label": "月度 Form 4 出售",
       "detail": "2026-08 月交易代码 S 合并；10b5-1 标记金额约占 99.1%。",
       "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1633978/000148955026000008/form4-09022026_010927.xml"
-    },
-    {
-      "date": "2026-08-28",
-      "ticker": "GLW",
-      "person": "Lewis Steverson",
-      "kind": "pending",
-      "shares": 13100,
-      "valueUsd": 1981863.52,
-      "valueCny": 0,
-      "label": "Form 144 待确认",
-      "detail": "最近 7 日拟售通知中尚未被同日、同申报人 Form 4 匹配的部分。",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/24741/000196922326000964/primary_doc.xml"
     },
     {
       "date": "2026-08-28",
@@ -1273,10 +1247,10 @@
     {
       "date": "2025-09-17",
       "ticker": "GLW",
-      "person": "多位申报人（月度合并）",
+      "person": "Amin Jaymin",
       "kind": "executed-discretionary",
-      "shares": 37721,
-      "valueUsd": 2772306.78,
+      "shares": 17721,
+      "valueUsd": 1367706.78,
       "valueCny": 0,
       "label": "月度公开市场出售",
       "detail": "2025-09 月交易代码 S 合并；未标记 10b5-1。",
@@ -1340,9 +1314,9 @@
   "automation": {
     "enabled": true,
     "schedule": "A 股 15:47 Asia/Shanghai；美股 16:47 America/New_York（交易日）",
-    "lastSuccessfulRefreshAt": "2026-09-03T22:49:20.017Z",
-    "secLastCheckedAt": "2026-09-03T22:49:20.017Z",
-    "secSessionDate": "2026-09-03",
+    "lastSuccessfulRefreshAt": "2026-09-04T22:32:10.662Z",
+    "secLastCheckedAt": "2026-09-04T22:32:10.662Z",
+    "secSessionDate": "2026-09-04",
     "cninfoLastCheckedAt": "2026-08-28T10:00:00.000Z",
     "cninfoSessionDate": "2026-08-28",
     "cninfoReviewCount": 0,
