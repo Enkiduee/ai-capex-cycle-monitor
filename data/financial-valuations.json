@@ -1,7 +1,7 @@
 {
   "version": 1,
   "updatedAt": "2026-09-05",
-  "checkedAt": "2026-09-05T07:21:57.142Z",
+  "checkedAt": "2026-09-05T07:25:54.129Z",
   "methodology": "自动财报情景估值；倍数为固定研究假设，不是分析师目标价，也不由每日股价反推。盈利股使用 GAAP TTM EPS；亏损股使用 TTM 收入情景，加现金、减总负债及一年经营现金消耗，再除以股数。总负债包含非债务项目，属于保守扣减。无收入时仅显示现金压力测试，不计尚未兑现的订单。缺少关键数据不生成新估值。",
   "discoveryError": "",
   "schedule": "每日检查；财报/重大事件巡检后额外计算。数据源尚未结构化时保留待复核状态。",
@@ -11,9 +11,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001878848",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "亏损模型缺少同一期收入、现金、总负债、股数或连续四季经营现金流",
+      "reason": "亏损模型缺少有效的同一期股数，需核验财报口径",
       "financials": {
         "periodEnd": "2026-06-30",
         "filedAt": "2026-08-27",
@@ -139,7 +139,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001513845",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "error",
       "reason": "最新可用财报超过 200 天，须复核披露是否中断"
     },
@@ -148,7 +148,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001051627",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -452,9 +452,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001664703",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "亏损模型缺少同一期收入、现金、总负债、股数或连续四季经营现金流",
+      "reason": "亏损模型缺少有效的同一期股数，需核验财报口径",
       "financials": {
         "periodEnd": "2026-03-31",
         "filedAt": "2026-04-29",
@@ -708,7 +708,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0002023554",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-07-03",
@@ -884,9 +884,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001769628",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "亏损模型缺少同一期收入、现金、总负债、股数或连续四季经营现金流",
+      "reason": "亏损模型缺少有效的同一期股数，需核验财报口径",
       "financials": {
         "periodEnd": "2026-06-30",
         "filedAt": "2026-08-12",
@@ -1140,7 +1140,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001736297",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -1444,7 +1444,7 @@
       "market": "us",
       "currency": "USD",
       "cik": null,
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "unsupported",
       "reason": "未匹配 SEC 发行人，待建立财报数据映射"
     },
@@ -1453,9 +1453,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0002021728",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "缺少连续四季 EPS 或经营利润，无法判断盈利模型适用性",
+      "reason": "缺少连续四季 EPS 经营利润，无法判断盈利模型适用性",
       "financials": {
         "periodEnd": "2026-06-30",
         "filedAt": "2026-08-12",
@@ -1493,7 +1493,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000723125",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-05-28",
@@ -1797,7 +1797,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000707549",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-28",
@@ -1973,7 +1973,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001158114",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -2281,7 +2281,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000789019",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -2457,7 +2457,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000106040",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-07-03",
@@ -2633,7 +2633,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001633978",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-27",
@@ -2813,7 +2813,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000704532",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -3117,7 +3117,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001807794",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
       "reason": "已有模型使用规范化、完整财年或 non-GAAP 盈利，须复核后更新",
       "financials": {
@@ -3381,9 +3381,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001822966",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "亏损模型缺少同一期收入、现金、总负债、股数或连续四季经营现金流",
+      "reason": "亏损模型缺少有效的同一期股数，需核验财报口径",
       "financials": {
         "periodEnd": "2026-06-30",
         "filedAt": "2026-08-05",
@@ -3637,7 +3637,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000002488",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-27",
@@ -3933,9 +3933,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001838359",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "亏损模型缺少同一期收入、现金、总负债、股数或连续四季经营现金流",
+      "reason": "亏损模型缺少有效的同一期收入，需核验财报口径",
       "financials": {
         "periodEnd": "2026-06-30",
         "filedAt": "2026-08-06",
@@ -4143,7 +4143,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001835632",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
       "reason": "已有模型使用规范化、完整财年或 non-GAAP 盈利，须复核后更新",
       "financials": {
@@ -4399,9 +4399,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000820318",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "缺少连续四季 EPS 或经营利润，无法判断盈利模型适用性",
+      "reason": "缺少连续四季 经营利润，无法判断盈利模型适用性",
       "financials": {
         "periodEnd": "2026-06-30",
         "filedAt": "2026-08-14",
@@ -4505,9 +4505,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0002088896",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "缺少连续四季 EPS 或经营利润，无法判断盈利模型适用性",
+      "reason": "缺少连续四季 EPS 经营利润，无法判断盈利模型适用性",
       "financials": {
         "periodEnd": "2026-06-30",
         "filedAt": "2026-08-13",
@@ -4545,9 +4545,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001849056",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "亏损模型缺少同一期收入、现金、总负债、股数或连续四季经营现金流",
+      "reason": "亏损模型缺少有效的同一期收入，需核验财报口径",
       "financials": {
         "periodEnd": "2026-06-30",
         "filedAt": "2026-08-07",
@@ -4755,7 +4755,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001137789",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-07-03",
@@ -4931,9 +4931,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000050863",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "亏损模型缺少同一期收入、现金、总负债、股数或连续四季经营现金流",
+      "reason": "亏损模型缺少有效的同一期总负债，需核验财报口径",
       "financials": {
         "periodEnd": "2026-06-27",
         "filedAt": "2026-07-24",
@@ -5187,7 +5187,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001907982",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -5495,7 +5495,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001819994",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -5803,9 +5803,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001780312",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "缺少连续四季 EPS 或经营利润，无法判断盈利模型适用性",
+      "reason": "缺少连续四季 EPS 经营利润，无法判断盈利模型适用性",
       "financials": {
         "periodEnd": "2026-06-30",
         "filedAt": "2026-08-10",
@@ -5897,7 +5897,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001571996",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-05-01",
@@ -6201,7 +6201,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000024741",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-03-31",
@@ -6497,9 +6497,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001844452",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "亏损模型缺少同一期收入、现金、总负债、股数或连续四季经营现金流",
+      "reason": "亏损模型缺少有效的同一期股数，需核验财报口径",
       "financials": {
         "periodEnd": "2026-06-30",
         "filedAt": "2026-08-13",
@@ -6753,7 +6753,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001440972",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "error",
       "reason": "没有可核验的美元 GAAP 财报"
     },
@@ -6762,9 +6762,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001966983",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "缺少连续四季 EPS 或经营利润，无法判断盈利模型适用性",
+      "reason": "缺少连续四季 经营利润，无法判断盈利模型适用性",
       "financials": {
         "periodEnd": "2026-06-30",
         "filedAt": "2026-08-13",
@@ -6918,7 +6918,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001682852",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -7226,9 +7226,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000319201",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "缺少连续四季 EPS 或经营利润，无法判断盈利模型适用性",
+      "reason": "缺少连续四季 经营利润，无法判断盈利模型适用性",
       "financials": {
         "periodEnd": "2026-06-30",
         "filedAt": "2026-08-06",
@@ -7340,7 +7340,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001640147",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-07-31",
@@ -7648,7 +7648,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001951222",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "error",
       "reason": "最新可用财报超过 200 天，须复核披露是否中断"
     },
@@ -7657,9 +7657,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001477333",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "亏损模型缺少同一期收入、现金、总负债、股数或连续四季经营现金流",
+      "reason": "亏损模型缺少有效的同一期股数，需核验财报口径",
       "financials": {
         "periodEnd": "2026-06-30",
         "filedAt": "2026-08-06",
@@ -7913,7 +7913,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001730168",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
       "reason": "已有模型使用规范化、完整财年或 non-GAAP 盈利，须复核后更新",
       "financials": {
@@ -8177,7 +8177,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001876042",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
       "reason": "金融、客户资金或投资资产结构不适用通用收入与现金模型，需专用估值参数",
       "financials": {
@@ -8433,9 +8433,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001653909",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "缺少连续四季 EPS 或经营利润，无法判断盈利模型适用性",
+      "reason": "缺少连续四季 EPS，无法判断盈利模型适用性",
       "financials": {
         "periodEnd": "2026-06-30",
         "filedAt": "2026-08-19",
@@ -8527,7 +8527,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001692819",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -8831,7 +8831,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001018724",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -9095,7 +9095,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001318605",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -9399,7 +9399,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000915913",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -9695,7 +9695,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001045810",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
       "reason": "已有模型使用规范化、完整财年或 non-GAAP 盈利，须复核后更新",
       "financials": {
@@ -9951,7 +9951,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001868275",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -10255,7 +10255,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001000694",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -10563,7 +10563,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0002099039",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-03-31",
@@ -10731,7 +10731,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001067983",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
       "reason": "金融、客户资金或投资资产结构不适用通用收入与现金模型，需专用估值参数",
       "financials": {
@@ -10871,7 +10871,7 @@
       "market": "us",
       "currency": "USD",
       "cik": null,
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "unsupported",
       "reason": "未匹配 SEC 发行人，待建立财报数据映射"
     },
@@ -10880,9 +10880,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001181412",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "缺少连续四季 EPS 或经营利润，无法判断盈利模型适用性",
+      "reason": "缺少连续四季 EPS 经营利润，无法判断盈利模型适用性",
       "financials": {
         "periodEnd": "2026-06-30",
         "filedAt": "2026-08-04",
@@ -10920,7 +10920,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000883241",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-07-31",
@@ -11224,7 +11224,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001321655",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -11528,7 +11528,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001652044",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -11832,7 +11832,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001652044",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
@@ -12136,9 +12136,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000078003",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "缺少连续四季 EPS 或经营利润，无法判断盈利模型适用性",
+      "reason": "缺少连续四季 经营利润，无法判断盈利模型适用性",
       "financials": {
         "periodEnd": "2026-06-28",
         "filedAt": "2026-08-04",
@@ -12338,7 +12338,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001633917",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
       "reason": "金融、客户资金或投资资产结构不适用通用收入与现金模型，需专用估值参数",
       "financials": {
@@ -12602,7 +12602,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000320193",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-27",
@@ -12906,9 +12906,9 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000051143",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
-      "reason": "缺少连续四季 EPS 或经营利润，无法判断盈利模型适用性",
+      "reason": "缺少连续四季 经营利润，无法判断盈利模型适用性",
       "financials": {
         "periodEnd": "2026-06-30",
         "filedAt": "2026-07-23",
@@ -13108,7 +13108,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000804328",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-28",
@@ -13412,7 +13412,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0000104169",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-07-31",
@@ -13700,7 +13700,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001783879",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "needs-review",
       "reason": "金融、客户资金或投资资产结构不适用通用收入与现金模型，需专用估值参数",
       "financials": {
@@ -13902,7 +13902,7 @@
       "market": "us",
       "currency": "USD",
       "cik": "0001326801",
-      "checkedAt": "2026-09-05T07:21:57.142Z",
+      "checkedAt": "2026-09-05T07:25:54.129Z",
       "status": "ok",
       "financials": {
         "periodEnd": "2026-06-30",
