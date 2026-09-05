@@ -5344,3 +5344,20 @@ a.buy-zone-reference:focus-visible {
   }
 
 }
+
+.buy-zone-financial-model {
+  margin-top: 0.8rem;
+  padding: 0.75rem;
+  border: 1px solid #365261;
+  border-radius: 0.6rem;
+  color: #c7d7e2;
+  font-size: 0.76rem;
+  line-height: 1.6;
+  max-width: 34rem;
+  white-space: normal;
+}
+.buy-zone-financial-model summary { cursor: pointer; }
+.buy-zone-financial-prices { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin-top: 0.4rem; }
+.buy-zone-financial-prices strong { color: #79e7c6; }
+.buy-zone-financial-model p { margin: 0.5rem 0; overflow-wrap: anywhere; }
+.buy-zone-note.is-financial-review { color: #e4bb79; }

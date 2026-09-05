@@ -1,3 +1,4 @@
+import { validFinancialModel } from './lib/financial-model.mjs';
 import { readJson } from './lib/refresh-utils.mjs';
 
 const files = [
@@ -10,6 +11,8 @@ const files = [
   'data/us-watchlist.json',
   'data/market-quotes.json',
   'data/valuation-coverage.json',
+  'data/financial-valuations.json',
+  'data/financial-model-config.json',
   'data/valuation-bands.json',
   'data/insider-sales.json',
   'data/macro.json',
@@ -421,6 +424,33 @@ try {
 } catch (error) {
   errors.push('valuation-coverage.source.homepage 无效');
 }
+const financialConfig = payloads['data/financial-model-config.json'];
+assert(financialConfig.version === 1, '财报模型配置版本无效');
+for (const [ticker, config] of [['defaults', financialConfig.defaults], ...Object.entries(financialConfig.companies)]) {
+  for (const key of ['pe', 'revenue', 'cashHaircuts']) {
+    if (config[key] === undefined && ticker !== 'defaults') continue;
+    const values = config[key];
+    assert(Array.isArray(values) && values.length === 3 && values.every((value, index) => Number.isFinite(value) && value > 0 && (!index || value > values[index - 1])), `${ticker}.${key} 三档假设必须递增且大于零`);
+  }
+}
+const financialSnapshot = payloads['data/financial-valuations.json'];
+assert(financialSnapshot.version === 1 && Array.isArray(financialSnapshot.entries), '财报估值快照格式无效');
+const financialTickers = new Set();
+for (const entry of financialSnapshot.entries) {
+  assert(!financialTickers.has(entry.ticker), `财报估值 ticker 重复：${entry.ticker}`);
+  financialTickers.add(entry.ticker);
+  assert(usEntries.some(item => item.ticker === entry.ticker), `财报估值未知 ticker：${entry.ticker}`);
+  assert(['ok', 'error', 'needs-review', 'unsupported'].includes(entry.status), `${entry.ticker} 财报估值状态无效`);
+  assert(validIso(entry.checkedAt), `${entry.ticker} 财报巡检时间无效`);
+  if (entry.status === 'ok') {
+    assert(validFinancialModel(entry.model), `${entry.ticker} 财报情景价格无效`);
+    assert(validDate(entry.financials?.periodEnd) && validDate(entry.financials?.filedAt), `${entry.ticker} 财报日期无效`);
+    assert(validIso(entry.calculatedAt), `${entry.ticker} 模型计算时间无效`);
+    assert(entry.financials?.evidence?.length > 0, `${entry.ticker} 财报模型缺少来源数据`);
+    assert(typeof entry.inputHash === 'string' && entry.inputHash.length === 64, `${entry.ticker} 模型缺少输入版本`);
+  } else assert(typeof entry.reason === 'string' && entry.reason.trim(), `${entry.ticker} 待复核状态缺少原因`);
+}
+
 const coverageEntries = Array.isArray(valuationCoverage.entries) ? valuationCoverage.entries : [];
 assert(coverageEntries.length === 196, '全目录量化区间必须包含 196 个非重点标的');
 const directoryKeys = new Set([

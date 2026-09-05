@@ -1,0 +1,118 @@
+name: Refresh daily valuation references
+
+on:
+  schedule:
+    - cron: '37 17 * * 1-5'
+      timezone: 'Asia/Hong_Kong'
+    - cron: '37 17 * * 1-5'
+      timezone: 'America/New_York'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Fetch and validate without publishing
+        required: true
+        default: false
+        type: boolean
+
+permissions: {}
+concurrency:
+  group: data-refresh-main
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      changed: ${{ steps.publish.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Validate valuation refresh invariants
+        run: node scripts/test-valuations.mjs
+      - name: Refresh all historical references
+        env:
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+        run: |
+          args=()
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          node scripts/build-valuation-coverage.mjs "${args[@]}"
+      - name: Validate snapshot
+        run: |
+          node scripts/validate-data.mjs
+          node scripts/validate-site.mjs
+      - name: Publish changed references
+        id: publish
+        env:
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git add -- data/valuation-coverage.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "ai-capex-valuation-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore(data): refresh daily valuation references"
+          pushed=false
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "Refusing to overwrite newer valuation data" >&2
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              pushed=true
+              break
+            fi
+            sleep $((attempt * 2))
+          done
+          if [ "$pushed" != "true" ]; then exit 1; fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: refresh
+    if: needs.refresh.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Validate before deployment
+        run: |
+          node scripts/validate-data.mjs
+          node scripts/validate-site.mjs
+          node scripts/test-valuations.mjs
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: .
+      - name: Deploy refreshed references
+        id: deployment
+        uses: actions/deploy-pages@v5

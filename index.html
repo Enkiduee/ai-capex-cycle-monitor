@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#0b1017">
     <title>AI CapEx Cycle Monitor｜AI 数据中心资本开支周期雷达</title>
     <link rel="icon" type="image/svg+xml" href="./assets/logo.svg">
-    <link rel="stylesheet" href="./css/styles.css?v=20260828-market-scope-v4">
+    <link rel="stylesheet" href="./css/styles.css?v=20260905-valuations-v1">
     <script>
       (function () {
         var routes = ['overview', 'hyperscalers', 'turnover', 'supply-chain', 'insider-sales', 'macro', 'events', 'methodology'];
@@ -19,12 +19,12 @@
         document.documentElement.dataset.initialRoute = routes.indexOf(candidate) >= 0 ? candidate : 'overview';
       }());
     </script>
-    <script type="module" src="https://widgets.tradingview-widget.com/w/en/tv-mini-chart.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
+    <script async type="module" src="https://widgets.tradingview-widget.com/w/en/tv-mini-chart.js"></script>
+    <script async src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js" onload="window.dispatchEvent(new Event('capex-charts-ready'))"></script>
     <script defer src="./js/utils.js?v=20260828-annual-v2"></script>
     <script defer src="./js/scoring.js?v=20260828-annual-v2"></script>
     <script defer src="./js/charts.js?v=20260828-market-scope-v4"></script>
-    <script defer src="./js/app.js?v=20260828-market-scope-v4"></script>
+    <script defer src="./js/app.js?v=20260905-valuations-v1"></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
@@ -426,7 +426,7 @@
             <p class="eyebrow">Price &amp; valuation watch</p>
             <h2 id="buy-zones-title">买入区间与估值观察</h2>
           </div>
-          <p>股票资料目录全部建立三档区间；重点标的采用财报研究，其余采用价格分布量化方法。</p>
+          <p>行情与历史价格区间每日刷新；美股财报情景估值随新披露重算，亏损股另看收入、现金消耗与股数。</p>
         </div>
 
         <article class="buy-zones-card" aria-labelledby="buy-zones-title" aria-describedby="buy-zones-disclosure">

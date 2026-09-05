@@ -10,6 +10,7 @@
     hkWatchlist: { path: './data/hk-watchlist.json', label: '港股资料' },
     usWatchlist: { path: './data/us-watchlist.json', label: '美股资料' },
     marketQuotes: { path: './data/market-quotes.json', label: '自动行情快照' },
+    financialValuations: { path: './data/financial-valuations.json', label: '财报自动估值' },
     valuationCoverage: { path: './data/valuation-coverage.json', label: '全目录估值区间' },
     valuation: { path: './data/valuation-bands.json', label: '价格与估值观察' },
     insiderSales: { path: './data/insider-sales.json', label: '减持与融资' },
@@ -1107,7 +1108,7 @@
       entry
     ]));
 
-    return stockWatchlistUniverse().map((row) => {
+    const universe = stockWatchlistUniverse().map((row) => {
       const researched = researchedByKey.get(`${row.market}:${row.ticker}`);
       if (researched) {
         return {
@@ -1141,6 +1142,11 @@
         view: '已纳入估值观察，等待完成基本面与估值研究。'
       };
     });
+    const financialByTicker = new Map((state.data.financialValuations?.entries || []).map(item => [item.ticker, item]));
+    return universe.map(company => ({ ...company,
+      financialValuation: company.directoryMarket === 'us' ? financialByTicker.get(company.ticker) : null
+    }));
+
   }
 
   function updateMarketTabs(selector, dataAttribute, activeMarket, counts) {
@@ -1213,6 +1219,33 @@
   function renderStockWatchlist(data) {
     state.data.stockWatchlist = data;
     renderStockWatchlistTable();
+  }
+
+  function financialValuationMarkup(company) {
+    const entry = company.financialValuation;
+    if (!entry) return '<span class="buy-zone-note">财报估值：尚未接入自动模型</span>';
+    const stale = !entry.checkedAt || Date.now() - new Date(entry.checkedAt).getTime() > 3 * 86400000;
+    if (entry.status !== 'ok' || !entry.model || stale) {
+      return `<span class="buy-zone-note is-financial-review">财报估值待复核：${escapeHTML(stale ? '超过三天未成功巡检' : entry.reason || '缺少可核验数据')}。上方为历史价格区间。</span>`;
+    }
+    const model = entry.model;
+    const format = value => formatBuyZonePrice(value, company.currency, 2);
+    const labels = ['保守', '基准', '乐观'];
+    const scenarios = model.prices.map((price, index) => `<span>${labels[index]} <strong>${escapeHTML(format(price))}</strong></span>`).join('');
+    const financials = entry.financials;
+    const inputs = Object.entries(model.inputs).map(([key, value]) => {
+      const names = { eps: 'TTM 摊薄 EPS', revenue: 'TTM 收入', cash: '现金', liabilities: '总负债', shares: '期末股数', cashBurnReserve: '现金消耗预留' };
+      return `${names[key] || key} ${Number(value).toLocaleString('zh-CN', { maximumFractionDigits: 4 })}`;
+    }).join('；');
+    const source = safeExternalUrl(entry.sourceUrl);
+    return `<details class="buy-zone-financial-model">
+      <summary>${escapeHTML(model.label)} · 财报期 ${escapeHTML(formatDate(financials.periodEnd))}<span class="buy-zone-financial-prices">${scenarios}</span></summary>
+      <p>财报披露 ${escapeHTML(formatDate(financials.filedAt))} · 模型计算 ${escapeHTML(formatDate(entry.calculatedAt))}</p>
+      <p>${escapeHTML(model.formula)}；情景参数 ${escapeHTML(model.multiples.join(' / '))}（${escapeHTML(model.multipleSource)}）</p>
+      <p>${escapeHTML(inputs)}。${escapeHTML(entry.assumptionNotice)}</p>
+      ${model.prices.some(price => price === 0) ? '<p>零值表示该情景下普通股剩余价值不足，不是买入价格。</p>' : ''}
+      ${source ? `<a href="${escapeHTML(source)}" target="_blank" rel="noopener noreferrer nofollow">核验 SEC 财报 ↗</a>` : ''}
+    </details>`;
   }
 
   function renderBuyZones(data) {
@@ -1309,8 +1342,8 @@
           : `<span class="buy-zone-reference">${escapeHTML(referencePrice)}</span>`;
       const quoteMeta = isPending
         ? '<span class="buy-zone-quote-meta"><span>已纳入 · 尚未建立估值参数</span></span>'
-        : isQuantitative
-          ? `<span class="buy-zone-quote-meta"><span>量化参考价 · ${escapeHTML(formatDate(company.referencePriceDate))} · ${escapeHTML(confidenceLabel(company.confidence))}置信度</span></span>`
+        : isQuantitative && !quote
+          ? `<span class="buy-zone-quote-meta"><span>行情参考价 · ${escapeHTML(formatDate(company.referencePriceDate))} · ${escapeHTML(Date.now() - new Date(company.referencePriceDate).getTime() > 7 * 86400000 ? '旧行情，待更新' : company.refresh?.status === 'ok' ? '每日更新' : company.refresh?.message || '历史快照，待刷新')}</span></span>`
           : quote
           ? `<span class="buy-zone-quote-meta"><span class="buy-zone-quote-change ${escapeHTML(change.className)}">${escapeHTML(change.text)}</span><span>自动快照 · ${escapeHTML(formatMarketQuoteTime(quote.quoteTime, quote.market))} ${quote.market === 'cn' ? '上海' : '美东'}</span></span><span class="buy-zone-analysis-price">研究价 ${escapeHTML(formatBuyZonePrice(company.referencePrice, currency, 2))}</span>`
           : '<span class="buy-zone-quote-meta"><span>研究参考价 · 等待自动行情</span></span>';
@@ -1349,6 +1382,7 @@
             <span class="buy-zone-status ${escapeHTML(status.className)}">${escapeHTML(status.label)}</span>
             ${isPending ? '' : `<span class="buy-zone-distance-grid" aria-label="参考价相对三档价格区间两端的百分比区间">${distanceMarkup}</span>`}
             <span class="buy-zone-note">${escapeHTML(textValue(company.view, '等待补充研究备注。'))}</span>
+            ${financialValuationMarkup(company)}
           </td>
         </tr>
       `;
@@ -2833,6 +2867,7 @@
       hkWatchlist: () => {},
       usWatchlist: () => {},
       marketQuotes: () => {},
+      financialValuations: () => {},
       valuationCoverage: () => {},
       valuation: renderValuation,
       insiderSales: renderInsiderSales,
@@ -2858,6 +2893,12 @@
       notice.textContent = `${failureCount} 个数据模块未能加载；其余内容仍可正常查看。`;
     }
   }
+
+  window.addEventListener('capex-charts-ready', () => {
+    if (state.data.hyperscalers) renderHyperscalers(state.data.hyperscalers);
+    if (state.data.marketTurnover) renderMarketTurnover(state.data.marketTurnover);
+    refreshRouteMedia(state.routing.active, { refreshValuation: false });
+  });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initialize, { once: true });

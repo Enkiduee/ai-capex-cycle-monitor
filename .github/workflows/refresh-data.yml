@@ -44,7 +44,7 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     permissions:
       contents: write
     outputs:
@@ -92,10 +92,12 @@ jobs:
         run: |
           node scripts/validate-site.mjs
           node scripts/test-sec-monitor.mjs
+          node scripts/test-valuations.mjs
           node scripts/test-market-quotes.mjs
           node scripts/test-market-turnover.mjs
 
       - name: Check SEC filings and refresh status
+        id: filings
         env:
           MODE: ${{ steps.mode.outputs.mode }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
@@ -105,6 +107,30 @@ jobs:
             args+=(--dry-run)
           fi
           node scripts/check-sec-filings.mjs "${args[@]}"
+
+      - name: Refresh report-based financial scenarios
+        id: financials
+        continue-on-error: true
+        env:
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+        run: |
+          args=()
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          node scripts/refresh-financial-models.mjs "${args[@]}"
+
+      - name: Refresh reference prices after new reports
+        if: steps.filings.outputs.new_filings != '0' || steps.mode.outputs.mode == 'full' || steps.mode.outputs.mode == 'bootstrap'
+        continue-on-error: true
+        env:
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+        run: |
+          args=()
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          node scripts/build-valuation-coverage.mjs "${args[@]}"
+
+      - name: Report unavailable financial provider
+        if: steps.financials.outcome == 'failure'
+        run: echo "::warning::Financial provider unavailable; no new model prices were published."
 
       - name: Validate all data contracts
         run: node scripts/validate-data.mjs
@@ -121,7 +147,7 @@ jobs:
             exit 0
           fi
 
-          git add -- data/events.json data/valuation-bands.json data/sec-filings-state.json
+          git add -- data/events.json data/valuation-bands.json data/sec-filings-state.json data/valuation-coverage.json data/financial-valuations.json
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "No data changes detected."
@@ -204,6 +230,7 @@ jobs:
           node scripts/validate-site.mjs
           node scripts/validate-data.mjs
           node scripts/test-sec-monitor.mjs
+          node scripts/test-valuations.mjs
           node scripts/test-market-turnover.mjs
 
       - name: Configure GitHub Pages

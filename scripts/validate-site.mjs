@@ -119,7 +119,7 @@ assert(html.includes('id="buy-zones-search"'), '买入区间速览必须支持�
 assert(html.includes('data-buy-zone-market="cn"') && html.includes('data-buy-zone-market="hk"') && html.includes('data-buy-zone-market="us"'), '买入区间速览必须按沪深、港股和美股分类');
 assert(app.includes("state.buyZones.market"), '买入区间速览必须保存当前市场分类');
 assert(app.includes('renderBuyZones(data)'), '估值页面必须从统一数据源渲染买入区间速览');
-assert(app.includes('function buyZoneUniverse(data)') && app.includes('return stockWatchlistUniverse().map'), '估值买入区间必须覆盖股票资料目录中的全部标的');
+assert(app.includes('function buyZoneUniverse(data)') && app.includes('const universe = stockWatchlistUniverse().map'), '估值买入区间必须覆盖股票资料目录中的全部标的');
 assert(app.includes("researchStatus: 'quantitative'") && app.includes('coverageByKey'), '非重点标的必须合并量化三档区间');
 assert(html.includes('股票资料目录中的 208 个标的均已建立三档区间'), '页面必须说明 208 个目录标的均已建立估值买入区间');
 assert(app.includes('buyZoneDistanceMetrics'), '买入区间速览必须计算相对三档价格区间两端的百分比距离');

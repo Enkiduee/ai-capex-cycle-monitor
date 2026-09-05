@@ -280,3 +280,29 @@ The dashboard is provided for informational, research, and educational purposes 
 ## 10. 📜 License
 
 本项目采用 [MIT License](./LICENSE)。Copyright © 2026 AI CapEx Cycle Monitor Contributors.
+
+### 每日参考价与财报自动估值
+
+`build-valuation-coverage.mjs` 现已接入独立的每日估值工作流（港股和美股各在当地 17:37），每日刷新 196 个非重点标的的行情参考价和一年历史价格区间。参考价的日期采用数据源的交易日期，周末不伪造新交易日；单一证券失败保留旧价、旧区间和旧日期，并标明异常，全部请求失败不写文件。三只特殊证券仍需人工数据，不能显示为每日更新成功。
+
+`refresh-financial-models.mjs` 由 SEC 巡检工作流每天及每四小时调用，并支持原有 `financial-report` / `major-event` 事件。它将美股普通股的 SEC GAAP 数据及模型价格写入 `data/financial-valuations.json`。新财报、更正财报或估值假设变化会重新计算；重复巡检保留原计算时间。无需额外 API Key，复用仓库的 `SEC_USER_AGENT` 联系信息配置。
+
+页面把“行情参考价 / 历史价格区间”与“财报情景估值”分开显示。后者在每只股票的区间说明下展示保守、基准、乐观价格，并可展开查看财报期、公式、输入、固定倍数假设和官方来源。
+
+- 盈利股：连续四季 GAAP EPS × 三档 P/E；已有适用的 GAAP 模型沿用其倍数。默认 12/20/30 倍为低置信度压力测试假设。
+- 亏损股：`max(0, TTM收入 × 情景倍数 + 现金 − 总负债 − 一年经营现金消耗) ÷ 期末普通股数`。总负债含非债务负债，属于保守扣减，不能将其称为标准 EV/Sales。默认收入倍数 1/3/5，可在 `data/financial-model-config.json` 按公司修改。SMR 配置 3/6/10，BIRD 配置 0.25/0.5/1，均为明确的情景假设，不是分析师预测。
+- 零收入公司：现金按 50%/75%/100% 压力测试，扣除总负债和一年现金消耗；不对尚未兑现的订单或商业化计划假定价值。结果可以为零，零值不是买入价。
+- TTM 优先使用完整财年，或“上财年 + 本年累计 − 上年同期累计”，否则只接受四个连续、不重叠的季度；缺少比较期不猜测。
+- non-GAAP、刻意采用完整财年规范化的既有模型、缺少股数或其他关键字段的公司、特殊股权结构和过旧财报标记待复核。ADR、A 股、港股尚未接入此 SEC 自动财报模型；每日历史行情仍更新。SEC 标准标签不涵盖全部公司自定义披露，未覆盖的字段不以零补齐。
+
+运行与验证：
+
+```sh
+node scripts/build-valuation-coverage.mjs --dry-run
+node scripts/refresh-financial-models.mjs --dry-run
+node scripts/test-valuations.mjs
+node scripts/validate-data.mjs
+node scripts/validate-site.mjs
+```
+
+SEC 数据接口说明：https://www.sec.gov/search-filings/edgar-application-programming-interfaces

@@ -1,14 +1,16 @@
+import { pathToFileURL } from 'node:url';
 import {
   dateOnly,
   fetchJson,
   now,
+  parseArgs,
   readJson,
   round,
   writeJsonIfChanged
 } from './lib/refresh-utils.mjs';
 
 const OUTPUT_PATH = 'data/valuation-coverage.json';
-const CONCURRENCY = 10;
+const CONCURRENCY = 5;
 const USER_AGENT = 'Mozilla/5.0 (compatible; AI-CapEx-Cycle-Monitor/1.0)';
 
 const SPECIAL_REFERENCES = Object.freeze({
@@ -207,7 +209,7 @@ function sourceUrlFor(symbol) {
   return symbol ? `https://finance.yahoo.com/quote/${encodeURIComponent(symbol)}/history/` : '';
 }
 
-function normalizeHistory(payload, entry, symbol) {
+export function normalizeHistory(payload, entry, symbol) {
   const chart = payload && payload.chart;
   if (chart && chart.error) {
     throw new Error(`${entry.ticker} 历史行情错误：${chart.error.description || chart.error.code || 'unknown'}`);
@@ -244,8 +246,11 @@ function normalizeHistory(payload, entry, symbol) {
     ? metaPrice
     : observations.at(-1).price;
   const referenceEpoch = Number(meta.regularMarketTime || observations.at(-1).timestamp);
+  if (meta.currency && meta.currency !== entry.currency) throw new Error(`${entry.ticker} 行情币种不匹配`);
+  if (referenceEpoch * 1000 > now().getTime() + 86400000) throw new Error(`${entry.ticker} 行情日期在未来`);
   return {
     symbol,
+    lastSplitDate: Object.values(result.events?.splits || {}).map(event => dateOnly(new Date(event.date * 1000))).sort().at(-1) || '',
     referencePrice,
     referencePriceDate: dateOnly(new Date(referenceEpoch * 1000)),
     historyStart: dateOnly(new Date(observations[0].timestamp * 1000)),
@@ -254,7 +259,7 @@ function normalizeHistory(payload, entry, symbol) {
   };
 }
 
-async function loadHistory(entry) {
+export async function loadHistory(entry) {
   const symbol = yahooHistorySymbol(entry);
   if (!symbol) return null;
   const payload = await fetchJson(
@@ -271,7 +276,7 @@ async function loadHistory(entry) {
   return normalizeHistory(payload, entry, symbol);
 }
 
-function buildCoverageEntry(entry, history, specialReference) {
+export function buildCoverageEntry(entry, history, specialReference) {
   const usesFallbackReference = !history;
   const referencePrice = history ? history.referencePrice : specialReference.referencePrice;
   const prices = history ? history.prices : [];
@@ -299,6 +304,7 @@ function buildCoverageEntry(entry, history, specialReference) {
     referencePrice: round(referencePrice, priceDecimals(referencePrice)),
     referencePriceDate: history ? history.referencePriceDate : specialReference.referencePriceDate,
     referencePriceApproximate: usesFallbackReference,
+    lastSplitDate: history?.lastSplitDate || '',
     historyStart: history ? history.historyStart : '',
     historyEnd: history ? history.historyEnd : '',
     observationCount,
@@ -321,65 +327,66 @@ function buildCoverageEntry(entry, history, specialReference) {
   };
 }
 
+export async function refreshCoverage({ dryRun = false, load = loadHistory, previous, directory } = {}) {
 const [stockWatchlist, hkWatchlist, usWatchlist, valuation] = await Promise.all([
-  readJson('data/stock-watchlist.json'),
-  readJson('data/hk-watchlist.json'),
-  readJson('data/us-watchlist.json'),
-  readJson('data/valuation-bands.json')
+  readJson('data/stock-watchlist.json'), readJson('data/hk-watchlist.json'),
+  readJson('data/us-watchlist.json'), readJson('data/valuation-bands.json')
 ]);
-const manualKeys = new Set((valuation.manualBuyZones && valuation.manualBuyZones.entries || []).map(
-  (entry) => `${marketGroup(entry.market, entry.currency)}:${entry.ticker}`
+previous ??= await readJson(OUTPUT_PATH);
+const previousByKey = new Map(previous.entries.map(entry => [directoryKey(entry), entry]));
+const manualKeys = new Set((valuation.manualBuyZones?.entries || []).map(
+  entry => `${marketGroup(entry.market, entry.currency)}:${entry.ticker}`
 ));
-const entries = directoryEntries(stockWatchlist, hkWatchlist, usWatchlist).filter(
-  (entry) => !manualKeys.has(`${entry.market}:${entry.ticker}`)
+const entries = directory || directoryEntries(stockWatchlist, hkWatchlist, usWatchlist).filter(
+  entry => !manualKeys.has(`${entry.market}:${entry.ticker}`)
 );
+const checkedAt = now().toISOString();
 const results = new Array(entries.length);
 let cursor = 0;
-
+let successCount = 0;
+const failures = [];
 async function worker() {
   while (cursor < entries.length) {
-    const index = cursor;
-    cursor += 1;
+    const index = cursor++;
     const entry = entries[index];
-    const specialReference = SPECIAL_REFERENCES[directoryKey(entry)];
-    const history = await loadHistory(entry);
-    if (!history && !specialReference) {
-      throw new Error(`${directoryKey(entry)} 缺少历史行情和特殊参考价`);
+    const key = directoryKey(entry);
+    try {
+      const history = await load(entry);
+      const special = SPECIAL_REFERENCES[key];
+      if (!history && !special) throw new Error('缺少历史行情和特殊参考价');
+      const next = buildCoverageEntry(entry, history, special);
+      const old = previousByKey.get(key);
+      if (old && next.referencePriceDate < old.referencePriceDate) throw new Error('行情日期倒退');
+      const stale = new Date(checkedAt) - new Date(`${next.referencePriceDate}T00:00:00Z`) > 7 * 86400000;
+      results[index] = {
+        ...next,
+        refresh: { status: !history ? 'manual' : stale ? 'stale' : 'ok', checkedAt,
+          message: !history ? '特殊证券暂需人工更新' : stale ? '数据源未提供近 7 日行情，可能停牌、退市或延迟' : '' }
+      };
+      if (history) successCount++;
+    } catch (error) {
+      const old = previousByKey.get(key);
+      if (!old) throw new Error(`${key}: ${error.message}；没有可保留的历史值`);
+      failures.push(key);
+      results[index] = { ...old, refresh: { status: 'error', checkedAt, message: '行情抓取失败，保留上次价格和日期' } };
+      console.warn(`[coverage] ${key}: ${error.message}`);
     }
-    results[index] = buildCoverageEntry(entry, history, specialReference);
   }
 }
-
 await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
-
-const generatedAt = now();
+// 全部请求失败时不把旧快照重新盖上今天的日期。
+if (!successCount) throw new Error('全部历史行情请求失败，未写入快照');
 const output = {
-  version: 1,
-  updatedAt: dateOnly(generatedAt),
-  generatedAt: generatedAt.toISOString(),
-  methodology: {
-    label: '全目录三档估值 / 买入区间覆盖',
-    coverage: '12 个重点标的使用财报与业务研究区间；其余标的使用近一年日线价格分布，历史不足或特殊证券采用低置信度参考价阶梯。',
-    stockBands: '普通股票与 ADR 使用近一年复权日线收盘价的 8%–22%、32%–47%、58%–74% 分位区间，依次对应安全、合理与激进档。',
-    pooledBands: 'ETF、指数与主题板块使用 10%–25%、35%–50%、60%–75% 分位区间。',
-    leveragedBands: '杠杆产品使用更保守的 5%–18%、30%–42%、52%–65% 分位区间，并统一标为低置信度。',
-    fallbackBands: '无完整历史时，以参考价的 64%–72%、78%–86%、92%–100% 建立低置信度观察区间。',
-    notice: '量化区间是基于历史价格分布的纪律工具，不等同于公司内在价值；历史表现不保证未来结果，使用前应复核最新财报、成分结构、流动性与产品条款。'
-  },
-  source: {
-    label: 'Yahoo Finance Historical Data + 用户提供的特殊证券参考价',
-    homepage: 'https://finance.yahoo.com/',
-    dataNotice: '第三方行情可能延迟、缺失或调整；特殊证券参考价来自用户提供截图。'
-  },
+  ...previous,
+  updatedAt: dateOnly(checkedAt), generatedAt: checkedAt,
+  refresh: { checkedAt, successCount, failedKeys: failures, schedule: '每日亚洲及美国收盘后更新；财报事件触发额外刷新' },
   entries: results
 };
+if (!directory) await writeJsonIfChanged(OUTPUT_PATH, output, { dryRun });
+console.log(`coverage: ${successCount} fetched, ${failures.length} retained after errors`);
+return output;
+}
 
-const changed = await writeJsonIfChanged(OUTPUT_PATH, output);
-const confidenceCounts = results.reduce((counts, entry) => {
-  counts[entry.confidence] = (counts[entry.confidence] || 0) + 1;
-  return counts;
-}, {});
-console.log(
-  `${changed ? 'updated' : 'unchanged'} ${OUTPUT_PATH}: ${results.length} entries, `
-  + `${confidenceCounts.medium || 0} medium confidence, ${confidenceCounts.low || 0} low confidence`
-);
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  await refreshCoverage({ dryRun: Boolean(parseArgs()['dry-run']) });
+}
