@@ -1,7 +1,7 @@
 {
   "version": 4,
-  "updatedAt": "2026-09-02",
-  "fetchedAt": "2026-09-04T14:56:45.431Z",
+  "updatedAt": "2026-09-03",
+  "fetchedAt": "2026-09-05T00:13:25.095Z",
   "isDemoData": false,
   "fx": {
     "base": "USD",
@@ -7955,14 +7955,6 @@
       "sourceUrl": "https://www.cboe.com/markets/us/equities/market-statistics/historical-market-volume/",
       "observations": [
         {
-          "date": "2025-08-21",
-          "turnover": 642290267442,
-          "breakdown": {
-            "shareVolume": 13298126099,
-            "tapeCNotional": 298893915577
-          }
-        },
-        {
           "date": "2025-08-22",
           "turnover": 863893604417,
           "breakdown": {
@@ -10032,6 +10024,14 @@
           "breakdown": {
             "shareVolume": 15328844928,
             "tapeCNotional": 401945842996
+          }
+        },
+        {
+          "date": "2026-09-03",
+          "turnover": 915986630555,
+          "breakdown": {
+            "shareVolume": 15772981496,
+            "tapeCNotional": 459145165382
           }
         }
       ]
@@ -12144,13 +12144,6 @@
       "sourceUrl": "https://www.cboe.com/markets/us/equities/market-statistics/historical-market-volume/",
       "observations": [
         {
-          "date": "2025-08-21",
-          "turnover": 298893915577,
-          "breakdown": {
-            "shareVolume": 6750141340
-          }
-        },
-        {
           "date": "2025-08-22",
           "turnover": 403685485803,
           "breakdown": {
@@ -13961,6 +13954,13 @@
           "turnover": 401945842996,
           "breakdown": {
             "shareVolume": 7749235826
+          }
+        },
+        {
+          "date": "2026-09-03",
+          "turnover": 459145165382,
+          "breakdown": {
+            "shareVolume": 7846473247
           }
         }
       ]
