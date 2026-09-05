@@ -1239,7 +1239,7 @@
     }).join('；');
     const source = safeExternalUrl(entry.sourceUrl);
     return `<details class="buy-zone-financial-model">
-      <summary>${escapeHTML(model.label)} · 财报期 ${escapeHTML(formatDate(financials.periodEnd))}<span class="buy-zone-financial-prices">${scenarios}</span></summary>
+      <summary>${escapeHTML(model.label)} · ${escapeHTML(confidenceLabel(model.confidence))}置信度 · 财报期 ${escapeHTML(formatDate(financials.periodEnd))}<span class="buy-zone-financial-prices">${scenarios}</span></summary>
       <p>财报披露 ${escapeHTML(formatDate(financials.filedAt))} · 模型计算 ${escapeHTML(formatDate(entry.calculatedAt))}</p>
       <p>${escapeHTML(model.formula)}；情景参数 ${escapeHTML(model.multiples.join(' / '))}（${escapeHTML(model.multipleSource)}）</p>
       <p>${escapeHTML(inputs)}。${escapeHTML(entry.assumptionNotice)}</p>

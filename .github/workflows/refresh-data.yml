@@ -8,6 +8,7 @@ on:
       - .github/workflows/refresh-data.yml
       - scripts/**
       - data/valuation-bands.json
+      - data/financial-model-config.json
       - data/sec-filings-state.json
   schedule:
     - cron: '23 1 * * *'

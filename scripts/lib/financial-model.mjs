@@ -118,12 +118,13 @@ export function calculateFinancialModel(financials, assumptions, reviewedModel) 
       formula: 'TTM GAAP 摊薄 EPS × P/E', multiples, multipleSource: sameBasis ? '已有同口径研究假设' : '默认研究假设',
       inputs: { eps: f.eps.value }, confidence: sameBasis ? 'medium' : 'low' };
   }
-  if (!f.eps || !f.operatingIncome) throw new Error('缺少连续四季 EPS 或经营利润，无法判断盈利模型适用性');
+  if (!f.eps || !f.operatingIncome) throw new Error(`缺少连续四季${!f.eps ? ' EPS' : ''}${!f.operatingIncome ? ' 经营利润' : ''}，无法判断盈利模型适用性`);
   if (![f.cash, f.liabilities, f.shares, f.operatingCashFlow?.value, f.revenue?.value].every(Number.isFinite)
     || !positive(f.shares) || f.cash < 0 || f.liabilities < 0 || f.revenue.value < 0) {
-    throw new Error('亏损模型缺少同一期收入、现金、总负债、股数或连续四季经营现金流');
+    const fields = [['收入', f.revenue?.value], ['现金', f.cash], ['总负债', f.liabilities], ['股数', f.shares], ['经营现金流', f.operatingCashFlow?.value]];
+    throw new Error(`亏损模型缺少有效的同一期${fields.filter(([, value]) => !Number.isFinite(value)).map(([name]) => name).join('、') || '财务输入'}，需核验财报口径`);
   }
-  if (Number.isFinite(f.minorityInterest) && f.minorityInterest > 0) throw new Error('存在少数股东权益，需要核验合并收入与普通股权益归属');
+  if (Number.isFinite(f.minorityInterest) && f.minorityInterest !== 0) throw new Error('存在少数股东权益，需要核验合并收入与普通股权益归属');
   const burn = Math.max(0, -f.operatingCashFlow.value) * assumptions.cashBurnYears;
   const inputs = { revenue: f.revenue.value, cash: f.cash, liabilities: f.liabilities, shares: f.shares, cashBurnReserve: burn };
   if (f.revenue.value === 0) {

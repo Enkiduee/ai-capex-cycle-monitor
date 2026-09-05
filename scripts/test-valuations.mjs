@@ -80,3 +80,4 @@ try {
   if (beforeTime === undefined) delete process.env.REFRESH_NOW; else process.env.REFRESH_NOW = beforeTime;
 }
 console.log('financial refresh integration passed: first model, idempotency, revised report repricing, partial-data and outage safety');
+assert.throws(() => calculateFinancialModel({ ...f, minorityInterest: -100 }, assumptions), /少数股东/, 'Negative minority equity still requires ownership reconciliation');
